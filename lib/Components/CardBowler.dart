@@ -1,7 +1,10 @@
+import 'package:cric_scorer/models/Bowler.dart';
 import 'package:flutter/material.dart';
 
 class CardBowler extends StatefulWidget {
-  const CardBowler({super.key});
+  final List<Bowler> bowlers;
+  final Function(Bowler?)? OnTap;
+  CardBowler(this.bowlers,{this.OnTap,super.key});
 
   @override
   State<CardBowler> createState() => _CardBowlerState();
@@ -28,59 +31,13 @@ class _CardBowlerState extends State<CardBowler> {
               5: FlexColumnWidth(1),
             },
             defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-            children: <TableRow>[
-              TableRow(
-                  decoration: BoxDecoration(
-                    border: _border,
-                  ),
-                  children: const <Widget>[
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(10, 10.0, 0, 10.0),
-                      child: Text(
-                        'Bowler',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: 'Roboto',
-                            fontSize: 13),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                      child: Text(
-                        'O',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                      child: Text(
-                        'M',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                      child: Text(
-                        'W',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                      child: Text(
-                        'R',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                      child: Text(
-                        'Eco',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ]),
-              const TableRow(children: <Widget>[
+            children: List.generate(widget.bowlers.length+1, (index) {
+              if (index == 0){
+                return TableRow(
+                decoration: BoxDecoration(
+                border: _border,
+            ),
+              children: const <Widget>[
                 Padding(
                   padding: EdgeInsets.fromLTRB(10, 10.0, 0, 10.0),
                   child: Text(
@@ -94,48 +51,22 @@ class _CardBowlerState extends State<CardBowler> {
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
                   child: Text(
-                    'R',
+                    'O',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
                   child: Text(
-                    'B',
+                    'M',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
                   child: Text(
-                    '4s',
+                    'W',
                     style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                  child: Text(
-                    '6s',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                  child: Text(
-                    'RN',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ]),
-              const TableRow(children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.fromLTRB(10, 10.0, 0, 10.0),
-                  child: Text(
-                    'Bowler',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'Roboto',
-                        fontSize: 13),
                   ),
                 ),
                 Padding(
@@ -148,33 +79,105 @@ class _CardBowlerState extends State<CardBowler> {
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
                   child: Text(
-                    'B',
+                    'Eco',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                  child: Text(
-                    '4s',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                  child: Text(
-                    '6s',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                  child: Text(
-                    'RN',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ]),
-            ],
+              ]);
+              }else{
+                Bowler bowler=widget.bowlers[index-1];
+                return TableRow(
+                    children: <Widget>[
+                      GestureDetector(
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(10, 10.0, 0, 10.0),
+                          child: Text(
+                            bowler.name,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'Roboto',
+                                fontSize: 13),
+                          ),
+                        ),
+                        onTap: (){
+                          if (widget.OnTap != null){
+                            widget.OnTap!(bowler);
+                          }
+                        },
+                      ),
+                      GestureDetector(
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                          child: Text(
+                            bowler.overs.toStringAsFixed(1),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        onTap: (){
+                          if (widget.OnTap != null){
+                            widget.OnTap!(bowler);
+                          }
+                        },
+                      ),
+                      GestureDetector(
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                          child: Text(
+                            bowler.maidens.toString(),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        onTap: (){
+                          if (widget.OnTap != null){
+                            widget.OnTap!(bowler);
+                          }
+                        },
+                      ),
+                      GestureDetector(
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                          child: Text(
+                            bowler.wickets.toString(),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        onTap: (){
+                          if (widget.OnTap != null){
+                            widget.OnTap!(bowler);
+                          }
+                        },
+                      ),
+                      GestureDetector(
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                          child: Text(
+                            bowler.runs.toString(),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        onTap: (){
+                          if (widget.OnTap != null){
+                            widget.OnTap!(bowler);
+                          }
+                        },
+                      ),
+                      GestureDetector(
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                          child: Text(
+                            bowler.economy.toStringAsFixed(2),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        onTap: (){
+                          if (widget.OnTap != null){
+                            widget.OnTap!(bowler);
+                          }
+                        },
+                      ),
+                    ]);
+              }
+            })
           ),
         ));
   }

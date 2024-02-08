@@ -1,19 +1,36 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class CardMatchSettings extends StatefulWidget {
-  const CardMatchSettings({super.key});
+  final _CardMatchSettingsState _state = _CardMatchSettingsState();
+  final String team1,team2;
+  final String? errorTextOver;
+  final String? errorTextPlayer;
+  final TextEditingController oversController;
+  final TextEditingController noplayersController;
+
+  CardMatchSettings(this.team1,this.team2,this.errorTextOver,this.errorTextPlayer,this.oversController,this.noplayersController,{super.key});
 
   @override
-  State<CardMatchSettings> createState() => _CardMatchSettingsState();
+  State<CardMatchSettings> createState() => _state;
+
+  Map<String, String> getInfo() => _state.getRequiredInfo();
 }
 
 class _CardMatchSettingsState extends State<CardMatchSettings> {
-  TextEditingController oversController = new TextEditingController();
-  TextEditingController noplayersController = new TextEditingController();
   List<String> teems = List<String>.of(["Team 1", "team 2"]);
   String tossWonBy = "Team 1";
-  String chooseto="Bat";
+  String chooseto = "Bat";
+
+
+
+
+  Map<String, String> getRequiredInfo() => Map.of({
+        "toss": tossWonBy,
+        "optTo": chooseto,
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +40,15 @@ class _CardMatchSettingsState extends State<CardMatchSettings> {
         elevation: 20,
         color: Colors.transparent,
         child: Padding(
-          padding: EdgeInsets.only(left: 5.0,right: 5.0,top: 20.0,bottom: 20.0),
+          padding:
+              EdgeInsets.only(left: 5.0, right: 5.0, top: 20.0, bottom: 20.0),
           child: Column(
             children: <Widget>[
               Expanded(
-                child:Padding(
-                  padding: EdgeInsets.only(left: 2.5,right: 2.5,top: 5,bottom: 5),
-                  child:Column(
+                child: Padding(
+                  padding:
+                      EdgeInsets.only(left: 2.5, right: 2.5, top: 5, bottom: 5),
+                  child: Column(
                     children: [
                       Container(
                         width: double.infinity,
@@ -43,15 +62,15 @@ class _CardMatchSettingsState extends State<CardMatchSettings> {
                         ),
                       ),
                       Expanded(
-                        child:Padding(
+                        child: Padding(
                           padding: EdgeInsets.all(0.0),
                           child: Row(
                             children: [
                               Expanded(
-                                child:  ListTile(
+                                child: ListTile(
                                   visualDensity: VisualDensity(vertical: -4),
                                   title: Text(
-                                    "Team 1",
+                                    widget.team1,
                                     style: TextStyle(color: Colors.white),
                                     textAlign: TextAlign.start,
                                   ),
@@ -70,7 +89,7 @@ class _CardMatchSettingsState extends State<CardMatchSettings> {
                                 child: ListTile(
                                   visualDensity: VisualDensity(vertical: -4),
                                   title: Text(
-                                    "Team 2",
+                                    widget.team2,
                                     style: TextStyle(color: Colors.white),
                                   ),
                                   leading: Radio<String>(
@@ -93,9 +112,10 @@ class _CardMatchSettingsState extends State<CardMatchSettings> {
                 ),
               ),
               Expanded(
-                child:Padding(
-                  padding: EdgeInsets.only(left: 2.5,right: 2.5,top: 5,bottom: 5),
-                  child:Column(
+                child: Padding(
+                  padding:
+                      EdgeInsets.only(left: 2.5, right: 2.5, top: 5, bottom: 5),
+                  child: Column(
                     children: [
                       Container(
                         width: double.infinity,
@@ -109,12 +129,12 @@ class _CardMatchSettingsState extends State<CardMatchSettings> {
                         ),
                       ),
                       Expanded(
-                        child:Padding(
+                        child: Padding(
                           padding: EdgeInsets.all(0.0),
                           child: Row(
                             children: [
                               Expanded(
-                                child:  ListTile(
+                                child: ListTile(
                                   visualDensity: VisualDensity(vertical: -4),
                                   title: Text(
                                     "Bat",
@@ -160,34 +180,52 @@ class _CardMatchSettingsState extends State<CardMatchSettings> {
               ),
               Expanded(
                 child: Padding(
-                    padding: EdgeInsets.only(left: 5.0,right: 5.0),
+                    padding: EdgeInsets.only(left: 5.0, right: 5.0),
                     child: TextField(
+                      onTap: () {
+                        setState(() {
+                          if(widget.errorTextOver!=null)
+                            widget.errorTextOver!= null;
+                          if(widget.errorTextPlayer!=null)
+                            widget.errorTextPlayer!= null;
+                        });
+                      },
+                      onChanged: (val){
+                        print(widget.oversController.text+val);
+                        print(widget.key);
+                      },
                       keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly
-                      ],
-                      controller: oversController,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      controller: widget.oversController,
                       textAlign: TextAlign.start,
                       decoration: InputDecoration(
-                        labelText: "Overs",
-                        labelStyle: TextStyle(color: Colors.white),
-                      ),
+                          labelText: "Overs",
+                          labelStyle: TextStyle(color: Colors.white),
+                          errorText: widget.errorTextOver),
                     )),
               ),
               Expanded(
                 child: Padding(
-                    padding: EdgeInsets.only(left: 5.0,right: 5.0),
+                    padding: EdgeInsets.only(left: 5.0, right: 5.0),
                     child: TextField(
+                      onTap: () {
+                        setState(() {
+                          if(widget.errorTextOver!=null)
+                            widget.errorTextOver!= null;
+                          if(widget.errorTextPlayer!=null)
+                            widget.errorTextPlayer!= null;
+                        });
+                      },
                       keyboardType: TextInputType.number,
                       inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly
+                        FilteringTextInputFormatter.digitsOnly,
                       ],
-                      controller: noplayersController,
+                      controller: widget.noplayersController,
                       textAlign: TextAlign.start,
                       decoration: InputDecoration(
-                        labelText: "No Of Playes",
-                        labelStyle: TextStyle(color: Colors.white),
-                      ),
+                          labelText: "No Of Playes",
+                          labelStyle: TextStyle(color: Colors.white),
+                          errorText: widget.errorTextPlayer),
                     )),
               ),
             ],

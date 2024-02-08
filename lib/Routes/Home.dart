@@ -39,10 +39,10 @@ class _HomeState extends State<Home> {
       });
     } else {
       print("No");
-      if (int.parse(oversController.text) > 450) {
+      if (int.parse(oversController.text) > 450 && int.parse(oversController.text) < 1) {
         allGood = false;
         setState(() {
-          errorTextOver = "too big";
+          errorTextOver = "Range : 1 - 450";
           oversController.text = "";
         });
       } else {
@@ -58,10 +58,10 @@ class _HomeState extends State<Home> {
         errorTextPlayer = 'Required';
       });
     } else {
-      if (int.parse(noplayersController.text) > 25) {
+      if (int.parse(noplayersController.text) > 25 && int.parse(noplayersController.text) < 3) {
         allGood = false;
         setState(() {
-          errorTextPlayer = "too big";
+          errorTextPlayer = "Range : 3 - 25";
           noplayersController.text = "";
         });
       } else {

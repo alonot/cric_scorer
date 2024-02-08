@@ -282,7 +282,7 @@ class _GetWicketState extends State<GetWicket> {
                                   if (wicketType != "Run Out") {
                                     batter!.outBy += 'b ${match!.currentBowler}';
                                   }
-
+                                  match!.wicketOrder.add(batter!);
                                   match!.currentBatters.remove(batter);
                                   batter = Batter(battercntrl.text);
                                   match!.addBatter(batter);

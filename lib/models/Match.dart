@@ -19,6 +19,7 @@ class TheMatch {
   late List<int> score;
   late List<int> wickets;
   late List<Batter> currentBatters;
+  late List<Batter> wicketOrder;
   late Bowler? currentBowler;
   late List<List<Batter>> batters;
   late List<List<Bowler>> bowlers;
@@ -33,6 +34,7 @@ class TheMatch {
     this.bowlers = List.of([[], []]);
     currentBatters = List.of([]);
     currentBowler = null;
+    wicketOrder = [];
     currentBatterIndex = 0;
     Overs = List.of([[], []]);
     inning = 1;
@@ -158,6 +160,12 @@ class TheMatch {
       var runOnBall = int.parse(result[0][0]);
       var s = result[1];
 
+      //  Handle Wicket
+      if (result[0].length != 1){
+        var batter = wicketOrder.removeLast();
+        currentBatters.remove(batters[currentTeam].removeLast());
+        currentBatters.add(batter);
+      }
 
       // decreasing the batters run
       if (s == "" || s == "Nb") {
@@ -174,19 +182,26 @@ class TheMatch {
 
       // Handling the team score
       score[currentTeam] -= runOnBall;
-      currentBowler!.removeBowl(runOnBall, s, result[0].length != 1, runInOver);
 
       // decreasing the over count
       if (s != "Wd" && s != "Nb") {
         if ((count * 10).toInt() % 10 == 0) {
           over_count[currentTeam] -= 0.5;
-          // TODO : handle previous Bowler
+          var bowlerName= Overs[currentTeam].last.bowlerName;
+          Bowler? bowler;
+          for (Bowler b in bowlers[currentTeam]){
+            if (b.name == bowlerName){
+              bowler = b;
+              break;
+            }
+          }
+          currentBowler = bowler;
         } else {
           over_count[currentTeam] -= 0.1;
         }
+      currentBowler!.removeBowl(runOnBall, s, result[0].length != 1, runInOver);
       }
 
-      // TODO : Handle Wicket
     return false;
     }else{
       return true;

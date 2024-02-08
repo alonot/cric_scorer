@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
 class CardScorer extends StatefulWidget {
-  void Function(String,String) update;
-  void Function() popIt;
-  CardScorer(this.update,this.popIt, {super.key});
+  final void Function(String,String) update;
+  final void Function() popIt;
+  final void Function() swap;
+  final void Function() retire;
+  final void Function() endInning;
+  const CardScorer(this.update,this.popIt,this.swap,this.retire,this.endInning, {super.key});
 
   @override
   State<CardScorer> createState() => _CardScorerState();
@@ -188,9 +191,10 @@ class _CardScorerState extends State<CardScorer> {
                                   scale: 0.85,
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      widget.update(type,"0");
+                                      widget.update(type,"0"+(wicket? "OUT":""));
                                       setState(() {
                                         type = "";
+                                        wicket=false;
                                       });
                                     },
                                     style: ElevatedButton.styleFrom(
@@ -217,9 +221,10 @@ class _CardScorerState extends State<CardScorer> {
                                   scale: 0.85,
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      widget.update(type,"1");
+                                      widget.update(type,"1"+(wicket? "OUT":""));
                                       setState(() {
                                         type = "";
+                                        wicket=false;
                                       });
                                     },
                                     style: ElevatedButton.styleFrom(
@@ -246,9 +251,10 @@ class _CardScorerState extends State<CardScorer> {
                                   scale: 0.85,
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      widget.update(type,"2");
+                                      widget.update(type,"2"+(wicket? "OUT":""));
                                       setState(() {
                                         type = "";
+                                        wicket=false;
                                       });
                                     },
                                     style: ElevatedButton.styleFrom(
@@ -275,9 +281,10 @@ class _CardScorerState extends State<CardScorer> {
                                   scale: 0.85,
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      widget.update(type,"3");
+                                      widget.update(type,"3"+(wicket? "OUT":""));
                                       setState(() {
                                         type = "";
+                                        wicket=false;
                                       });
                                     },
                                     style: ElevatedButton.styleFrom(
@@ -306,9 +313,10 @@ class _CardScorerState extends State<CardScorer> {
                                   scale: 0.85,
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      widget.update(type,"4");
+                                      widget.update(type,"4"+(wicket? "OUT":""));
                                       setState(() {
                                         type = "";
+                                        wicket=false;
                                       });
                                     },
                                     style: ElevatedButton.styleFrom(
@@ -335,9 +343,10 @@ class _CardScorerState extends State<CardScorer> {
                                     scale: 0.85,
                                     child: ElevatedButton(
                                       onPressed: () {
-                                        widget.update(type,"5");
+                                        widget.update(type,"5"+(wicket? "OUT":""));
                                         setState(() {
                                           type = "";
+                                          wicket=false;
                                         });
                                       },
                                       style: ElevatedButton.styleFrom(
@@ -365,9 +374,10 @@ class _CardScorerState extends State<CardScorer> {
                                     scale: 0.85,
                                     child: ElevatedButton(
                                       onPressed: () {
-                                        widget.update(type,"6");
+                                        widget.update(type,"6"+(wicket? "OUT":""));
                                         setState(() {
                                           type = "";
+                                          wicket=false;
                                         });
                                       },
                                       style: ElevatedButton.styleFrom(
@@ -394,7 +404,9 @@ class _CardScorerState extends State<CardScorer> {
                                   child: Transform.scale(
                                     scale: 0.85,
                                     child: ElevatedButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        widget.endInning();
+                                      },
                                       style: ElevatedButton.styleFrom(
                                           side: BorderSide(
                                               width: 1.5,
@@ -449,7 +461,9 @@ class _CardScorerState extends State<CardScorer> {
                                     padding: EdgeInsets.symmetric(
                                         vertical: 3.0, horizontal: 2.0),
                                     child: ElevatedButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        widget.retire();
+                                      },
                                       style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.red,
                                           padding: EdgeInsets.symmetric(
@@ -471,7 +485,9 @@ class _CardScorerState extends State<CardScorer> {
                                     padding: EdgeInsets.symmetric(
                                         vertical: 3.0, horizontal: 2.0),
                                     child: ElevatedButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        widget.swap();
+                                      },
                                       style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.red,
                                           shape: RoundedRectangleBorder(

@@ -1,7 +1,4 @@
 
-
-import 'package:cric_scorer/utils/util.dart';
-
 class Over{
   int over_no;
   bool wasMaiden;

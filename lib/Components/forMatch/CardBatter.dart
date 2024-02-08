@@ -2,8 +2,8 @@ import 'package:cric_scorer/models/Batter.dart';
 import 'package:flutter/material.dart';
 
 class CardBatter extends StatefulWidget {
-  List<Batter> batters ;
-  CardBatter(this.batters,{super.key});
+  final List<Batter> batters ;
+  const CardBatter(this.batters,{super.key});
 
   @override
   State<CardBatter> createState() => _CardBatterState();
@@ -69,7 +69,7 @@ class _CardBatterState extends State<CardBatter> {
                     children: <Widget>[
                       Padding(padding: EdgeInsets.fromLTRB(10, 10.0, 0, 10.0),
                         child: Text(
-                          batter.name,
+                          batter.name+(index == 1?"*":""),
                           style: TextStyle(color: Colors.white,fontFamily: 'Roboto',fontSize: 13),
                         ),),
                       Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 10),child: Text(

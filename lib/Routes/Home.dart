@@ -123,7 +123,7 @@ class _HomeState extends State<Home> {
                             if(result) {
                               Map<String,String> info1=infoCard.getInfo();
                               Map<String,String> info2= matchsetting.getInfo();
-                              var result =Util.viewModel!.setCurrentMatch(TheMatch(info1['team1']!,
+                              Util.viewModel!.setCurrentMatch(TheMatch(info1['team1']!,
                                   info1['team1Url']!,
                                   info1['team2']!,
                                   info1['team2Url']!,

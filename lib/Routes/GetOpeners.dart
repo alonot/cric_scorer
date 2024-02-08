@@ -139,7 +139,7 @@ class _GetOpenersState extends State<GetOpeners> {
                             match.Overs[match.currentTeam].add(Over(0,bowler.name,[batter1.name]));
                             match.currentBatterIndex = 0;
                             print(match.team1);
-                            Navigator.pushNamed(context, "Match Page");
+                            Navigator.pushNamedAndRemoveUntil(context, "Match Page",(route)=> false);
                           }
                         }else{
                           randomError="View Model Not Found. I need A restart~~";

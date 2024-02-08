@@ -35,11 +35,11 @@ class _CardInfoScorerState extends State<CardInfoScorer> {
     setState(() {
       var randomError = "";
       if (viewModel != null) {
-        TheMatch match = viewModel.getCurrentMatch();
+        TheMatch? match = viewModel.getCurrentMatch();
         if (match == null) {
           Navigator.pop(context);
         } else {
-          debugPrint(match!.currentTeam.toString());
+          debugPrint(match.currentTeam.toString());
           loading = true;
           _team2Url = match.team2url;
           _team1Url = match.team1url;

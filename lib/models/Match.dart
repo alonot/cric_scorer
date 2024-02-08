@@ -94,8 +94,7 @@ class TheMatch {
             .addRun(runOnBall); // Add Batter's run and bowl
         // Checking for change of strike
         if (runOnBall % 2 == 1) {
-          currentBatterIndex++;
-          currentBatterIndex %= 2;
+          currentBatters= List.of(currentBatters.reversed);
         }
       }
 
@@ -163,8 +162,7 @@ class TheMatch {
       // decreasing the batters run
       if (s == "" || s == "Nb") {
         if (runOnBall % 2 == 1) {
-          currentBatterIndex++;
-          currentBatterIndex %= 2;
+          currentBatters = List.of(currentBatters.reversed);
         }
         currentBatters[currentBatterIndex].removeRun(runOnBall);
       }

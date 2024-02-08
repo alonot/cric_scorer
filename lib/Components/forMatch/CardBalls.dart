@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:cric_scorer/models/Match.dart';
 import 'package:cric_scorer/utils/util.dart';
@@ -36,26 +35,34 @@ class _CardBallsState extends State<CardBalls> {
     return Card(
         elevation: 20,
         color: Colors.transparent,
-        child: Padding(
+        child: Center(child: Padding(
           padding: EdgeInsets.only(left: 20.0, right: 20.0),
-          child: ListView.builder(
+          child: Center(child: ListView.builder(
             itemCount: count,
             itemBuilder: (context, index) {
               return Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: Container(
-                    width: 25,
-                    height: 25,
-                    // color: Colors.red,
-                    decoration: const BoxDecoration(
-                        shape: BoxShape.circle, color: Colors.red),
-                    child: Center(
-                      child: Text(bowls[index][0]),
-                    ),
+                  child: Column(
+                    children: [
+                      Expanded(child: Container(
+                        width: 25,
+                        height: 25,
+                        // color: Colors.red,
+                        decoration: const BoxDecoration(
+                            shape: BoxShape.circle, color: Colors.red),
+                        child: Center(
+                          child: Text(bowls[index][0][0]),
+                        ),
+                      )),
+                      bowls[index][1].isNotEmpty ?
+                      Center(
+                        child: Text(bowls[index][1],style: TextStyle(color: Colors.white,fontSize: 10),),
+                      ) : SizedBox(width: 0,height: 0,)
+                    ],
                   ));
             },
             scrollDirection: Axis.horizontal,
-          ),
-        ));
+          ),),
+        ),));
   }
 }

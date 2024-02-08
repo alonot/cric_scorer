@@ -3,6 +3,8 @@ import 'package:cric_scorer/models/Match.dart';
 import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';
 
+import 'package:cric_scorer/Components/forMatch/CardBatter.dart';
+
 class GetWicket extends StatefulWidget {
   const GetWicket({super.key});
 
@@ -14,26 +16,88 @@ class _GetWicketState extends State<GetWicket> {
   TextEditingController battercntrl = TextEditingController();
   TextEditingController helpercntrl = TextEditingController();
   List<String> batters = [];
+  List<Batter> retiredBatters =[];
   late TheMatch? match;
   String wicketType = 'Bowled';
   String batterOut = '';
   bool showhelper = false;
 
+
+  void HandleWicket(){
+    if (showhelper) {
+      print("Yes"+helpercntrl.text);
+      if (helpercntrl.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            Util.getsnackbar('Fields must not be empty'));
+        return;
+      }
+    }
+    if (match != null) {
+      Batter? batter;
+      for (Batter b in match!.currentBatters) {
+        if (b.name == batterOut) {
+          batter = b;
+          break;
+        }
+      }
+      switch (wicketType) {
+        case "Hit Wicket":
+          batter!.outBy = 'Hit Wicket';
+          break;
+        case "LBW":
+          batter!.outBy = 'LBW ';
+          break;
+        case "Stumping":
+          batter!.outBy = 'St ${helpercntrl.text} ';
+          break;
+        case "Catch Out":
+          batter!.outBy = 'c ${helpercntrl.text}';
+          break;
+        case 'Run out':
+          batter!.outBy = 'run out (${helpercntrl.text})';
+          break;
+      }
+      if (wicketType != "Run Out") {
+        batter!.outBy += 'b ${match!.currentBowler}';
+      }
+      match!.wicketOrder.add(batter!);
+      match!.currentBatters.remove(batter);
+    }
+  }
+
+  void onTap(Batter b){
+    final match = this.match;
+    if(match != null){
+      HandleWicket();
+      b.outBy='';
+      match.currentBatters.add(b);
+      match!.currentBatters = List.of(match!.currentBatters.reversed);
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var viewModel = Util.viewModel;
     if (viewModel != null) {
-      match = viewModel.getCurrentMatch();
+      this.match = viewModel.getCurrentMatch();
+      final match = this.match;
       if (match != null) {
         batters = [
-          match!.currentBatters[0].name,
-          match!.currentBatters[1].name
+          match.currentBatters[0].name,
+          match.currentBatters[1].name
         ];
         batterOut = batters[0];
+        retiredBatters=[];
+        for(Batter b in match.batters[match.currentTeam]){
+          if (b.outBy == "Retired Out"){
+            retiredBatters.add(b);
+          }
+        }
       }
     }
 
-    return Scaffold(
+    return PopScope(canPop: false,child: Scaffold(
       key: Key("Get Wicket Scaffold"),
       backgroundColor: Colors.transparent,
       body: Container(
@@ -48,9 +112,8 @@ class _GetWicketState extends State<GetWicket> {
               padding: EdgeInsets.all(15.0),
               child: Center(
                   child: SingleChildScrollView(
-                    child: SizedBox(
+                    child: Container(
                       width: MediaQuery.of(context).size.width,
-                      height: showhelper ? 500 : 440,
                       child: Column(children: [
                         Card(
                           elevation: 20,
@@ -235,6 +298,7 @@ class _GetWicketState extends State<GetWicket> {
                             ),
                           ),
                         ),
+                        CardBatter(retiredBatters, false, onTap,key: Key("Unique"),),
                         Padding(
                           padding: EdgeInsets.only(top: 20, bottom: 20),
                           child: Center(
@@ -246,49 +310,11 @@ class _GetWicketState extends State<GetWicket> {
                                       Util.getsnackbar('Fields must not be empty'));
                                   return;
                                 }
-                                if (showhelper) {
-                                  print("Yes"+helpercntrl.text);
-                                  if (helpercntrl.text.isEmpty) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        Util.getsnackbar('Fields must not be empty'));
-                                    return;
-                                  }
-                                }
-                                if (match != null) {
-                                  Batter? batter;
-                                  for (Batter b in match!.currentBatters) {
-                                    if (b.name == batterOut) {
-                                      batter = b;
-                                      break;
-                                    }
-                                  }
-                                  switch (wicketType) {
-                                    case "Hit Wicket":
-                                      batter!.outBy = 'Hit Wicket';
-                                      break;
-                                    case "LBW":
-                                      batter!.outBy = 'LBW ';
-                                      break;
-                                    case "Stumping":
-                                      batter!.outBy = 'St ${helpercntrl.text} ';
-                                      break;
-                                    case "Catch Out":
-                                      batter!.outBy = 'c ${helpercntrl.text}';
-                                      break;
-                                    case 'Run out':
-                                      batter!.outBy = 'run out (${helpercntrl.text})';
-                                      break;
-                                  }
-                                  if (wicketType != "Run Out") {
-                                    batter!.outBy += 'b ${match!.currentBowler}';
-                                  }
-                                  match!.wicketOrder.add(batter!);
-                                  match!.currentBatters.remove(batter);
-                                  batter = Batter(battercntrl.text);
-                                  match!.addBatter(batter);
-
-                                  Navigator.pop(context);
-                                }
+                                Batter? batter;
+                                batter = Batter(battercntrl.text);
+                                match!.addBatter(batter);
+                                match!.currentBatters = List.of(match!.currentBatters.reversed);
+                                Navigator.pop(context);
                               },
                               child: Text(
                                 "Let's Play!!",
@@ -305,6 +331,6 @@ class _GetWicketState extends State<GetWicket> {
                   )),
             ),
           )),
-    );
+    ),);
   }
 }

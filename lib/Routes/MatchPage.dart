@@ -1,3 +1,4 @@
+
 import 'package:cric_scorer/Components/CardBowler.dart';
 import 'package:cric_scorer/Components/forMatch//CardInfoScorer.dart';
 import 'package:cric_scorer/Components/forMatch//CardScorer.dart';
@@ -26,11 +27,16 @@ class _MatchPageState extends State<MatchPage> {
   }
 
   void swap() {
-    match!.currentBatters = List.of(match!.currentBatters.reversed);
+    setState(() {
+      match!.currentBatters = List.of(match!.currentBatters.reversed);
+    });
   }
 
-  void retire() {
-    // TODO : Retire the batter
+  void retire() async{
+    // retire the batter
+    // match?.wickets[match!.currentTeam] +=1;
+    await Navigator.pushNamed(context, "Get Batter")
+        .then((value) => {setState(() {})});
   }
 
   void endInning() {
@@ -135,7 +141,7 @@ class _MatchPageState extends State<MatchPage> {
                     width: double.infinity,
                     color: Colors.transparent,
                     height: 130,
-                    child: CardBatter(match!.currentBatters,
+                    child: CardBatter(match!.currentBatters,true,null,
                         key: const Key("MatchPageBatter")),
                   ),
                   Container(

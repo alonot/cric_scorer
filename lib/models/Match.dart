@@ -69,6 +69,7 @@ class TheMatch {
     if (wickets[currentTeam] != no_of_players - 1 &&
         over_count[currentTeam] != totalOvers) {
       currentBatters.add(batter);
+
       batters[currentTeam].add(batter);
       return true;
     } else {
@@ -118,6 +119,7 @@ class TheMatch {
         if (s != "Wd" && s != "Nb") {
           if ((count * 10).toInt() % 10 == 5) {
             over_count[currentTeam] += 0.5;
+            currentBatters= List.of(currentBatters.reversed);
             if (over_count[currentTeam] == totalOvers)
               return false; // If over limit exeeded . Do not take new bowler.
 
@@ -162,9 +164,11 @@ class TheMatch {
 
       //  Handle Wicket
       if (result[0].length != 1){
+        wickets[currentTeam]-=1;
         var batter = wicketOrder.removeLast();
         currentBatters.remove(batters[currentTeam].removeLast());
         currentBatters.add(batter);
+        currentBatters = List.of(currentBatters.reversed);
       }
 
       // decreasing the batters run
@@ -187,6 +191,7 @@ class TheMatch {
       if (s != "Wd" && s != "Nb") {
         if ((count * 10).toInt() % 10 == 0) {
           over_count[currentTeam] -= 0.5;
+          currentBatters= List.of(currentBatters.reversed);
           var bowlerName= Overs[currentTeam].last.bowlerName;
           Bowler? bowler;
           for (Bowler b in bowlers[currentTeam]){

@@ -134,6 +134,7 @@ class _GetOpenersState extends State<GetOpeners> {
                             Batter batter1 =  Batter(batter1cntrl.text);
                             Batter batter2 =  Batter(batter2cntrl.text);
                             match!.addBowler(bowler);
+                            match!.currentBatters=[];
                             match.addBatter(batter1);
                             match.addBatter(batter2);
                             match.Overs[match.currentTeam].add(Over(0,bowler.name,[batter1.name]));

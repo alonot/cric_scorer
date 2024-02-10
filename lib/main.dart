@@ -4,7 +4,9 @@ import 'package:cric_scorer/Routes/GetBatter.dart';
 import 'package:cric_scorer/Routes/GetBowler.dart';
 import 'package:cric_scorer/Routes/GetOpeners.dart';
 import 'package:cric_scorer/Routes/GetWicket.dart';
+import 'package:cric_scorer/Routes/MainPage.dart';
 import 'package:cric_scorer/Routes/MatchPage.dart';
+import 'package:cric_scorer/Routes/WinnerPage.dart';
 import 'package:cric_scorer/repository/MatchRepository.dart';
 import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -23,14 +25,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'CricScorer',
-      initialRoute: "New Match",
+      initialRoute: Util.mainPageRoute,
       routes: {
-        "New Match": (context) => Home(),
-        "Get Openers":(context) => GetOpeners(),
-        "Get Bowler": (context) => GetBowler(),
-        "Get Batter": (context) => GetBatter(),
-        "Wicket":(context) => GetWicket(),
-        "Match Page":(context) => MatchPage()
+        Util.homeRoute: (context) => Home(),
+        Util.getOpenersRoute:(context) => GetOpeners(),
+        Util.getBowlerRoute: (context) => GetBowler(),
+        Util.getBatterRoute: (context) => GetBatter(),
+        Util.wicketRoute:(context) => GetWicket(),
+        Util.matchPageRoute:(context) => MatchPage(),
+        Util.mainPageRoute:(context) => MainPage(),
+        Util.winnerPageRoute:(context) => WinnerPage(),
       },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.transparent),

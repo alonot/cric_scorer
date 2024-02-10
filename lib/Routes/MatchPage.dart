@@ -1,4 +1,3 @@
-
 import 'package:cric_scorer/Components/CardBowler.dart';
 import 'package:cric_scorer/Components/forMatch//CardInfoScorer.dart';
 import 'package:cric_scorer/Components/forMatch//CardScorer.dart';
@@ -32,10 +31,10 @@ class _MatchPageState extends State<MatchPage> {
     });
   }
 
-  void retire() async{
+  void retire() async {
     // retire the batter
     // match?.wickets[match!.currentTeam] +=1;
-    await Navigator.pushNamed(context, "Get Batter")
+    await Navigator.pushNamed(context, Util.getBatterRoute)
         .then((value) => {setState(() {})});
   }
 
@@ -52,29 +51,62 @@ class _MatchPageState extends State<MatchPage> {
     if (run.contains("OUT")) {
       match!.wickets[match!.currentTeam] += 1;
     }
-    if(match!.inning == 2){
+    if (match!.inning == 2) {
       var cur = match!.currentTeam;
-      if (match!.score[cur] == match!.score[(cur+1)%2]){
-        // TODO : Display Winning message
+      if (match!.score[cur] >= match!.score[(cur + 1) % 2]) {
+        match!.hasWon = true;
+        Util.team = cur == 0 ? match!.team1 : match!.team2;
+        Util.wonBy =
+            (match!.no_of_players - 1 - match!.wickets[cur]).toString();
+        Navigator.pushNamed(context, Util.winnerPageRoute);
+      } else if (match!.wickets[match!.currentTeam] ==
+          match!.no_of_players - 1) {
+        Util.team = cur == 0 ? match!.team2 : match!.team1;
+        match!.hasWon = true;
+        Util.wonBy =
+            (match!.score[(cur + 1) % 2] - match!.score[cur] + 1).toString();
+        Navigator.pushNamed(context, Util.winnerPageRoute);
       }
     }
+
     if (match!.over_count[match!.currentTeam] >= match!.totalOvers ||
         match!.wickets[match!.currentTeam] == match!.no_of_players - 1) {
       // Call the openers . change the current Team index;
-      if(match!.inning == 1){
-      match!.inning = 2;
-      match!.currentTeam++;
-      match!.currentTeam %= 2;
-        await Navigator.pushNamedAndRemoveUntil(context, "Get Openers",(route){ debugPrint(route.settings.name);return false;})
-            .then((value) => setState(() {}));
+      if (match!.inning == 1) {
+        if (run.contains("OUT")) {
+          await Navigator.pushNamed(context, Util.wicketRoute)
+              .then((value) => {setState(() {})});
+        }
+        match!.inning = 2;
+        match!.currentTeam++;
+        match!.currentTeam %= 2;
+        await Navigator.pushNamedAndRemoveUntil(context, Util.getOpenersRoute,
+            (route) {
+          debugPrint(route.settings.name);
+          return false;
+        }).then((value) => setState(() {}));
+      } else {
+        var cur = match!.currentTeam;
+        if (match!.score[cur] >= match!.score[(cur + 1) % 2]) {
+          Util.team = cur == 0 ? match!.team1 : match!.team2;
+          Util.wonBy =
+              (match!.no_of_players - 1 - match!.wickets[cur]).toString();
+        } else {
+          Util.team = cur == 0 ? match!.team2 : match!.team1;
+          Util.wonBy =
+              (match!.score[(cur + 1) % 2] - match!.score[cur] + 1).toString();
+        }
+        match!.hasWon = true;
+        if (run.contains("OUT")) {
+          await Navigator.pushNamed(context, Util.wicketRoute)
+              .then((value) => {setState(() {})});
+        }
+        Navigator.pushNamed(context, Util.winnerPageRoute);
       }
-    } else if (run.contains("OUT")) {
-      await Navigator.pushNamed(context, "Wicket")
-          .then((value) => {setState(() {})});
     }
 
     if (needABowler) {
-      await Navigator.pushNamed(context, "Get Bowler")
+      await Navigator.pushNamed(context, Util.getBowlerRoute)
           .then((value) => {setState(() {})});
     }
     isLoading = false;
@@ -93,8 +125,8 @@ class _MatchPageState extends State<MatchPage> {
   }
 
   void goBack() {
-    Navigator.pushNamedAndRemoveUntil(context, "New Match", (route) {
-      print(route.settings.name);
+    Navigator.pushNamedAndRemoveUntil(context, Util.homeRoute, (route) {
+      debugPrint(route.settings.name);
       return false;
     });
   }
@@ -141,7 +173,7 @@ class _MatchPageState extends State<MatchPage> {
                     width: double.infinity,
                     color: Colors.transparent,
                     height: 130,
-                    child: CardBatter(match!.currentBatters,true,null,
+                    child: CardBatter(match!.currentBatters, true, null,
                         key: const Key("MatchPageBatter")),
                   ),
                   Container(

@@ -10,6 +10,7 @@ class TheMatch {
   String team2;
   String toss;
   String optTo;
+  bool hasWon;
   late int currentTeam;
   late int inning;
   int totalOvers;
@@ -27,7 +28,7 @@ class TheMatch {
 
   TheMatch(this.team1, this.team1url, this.team2, this.team2url, this.toss,
       this.optTo, this.no_of_players, this.totalOvers,
-      {overs, batters, bowlers, over_count, score}) {
+      {overs, batters, bowlers, over_count, score,this.hasWon = false}) {
     this.over_count = List.of([0.0, 0.0]);
     this.score = List.of([0, 0]);
     this.batters = List.of([[], []]);

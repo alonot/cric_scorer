@@ -15,6 +15,9 @@ class _GetBatterState extends State<GetBatter> {
   TextEditingController battercntrl = TextEditingController();
   List<Batter> retiredBatters =[];
   TheMatch? match;
+  String score = "0";
+  String wickets = "0";
+  String overs = "0.0";
 
   void onTap(Batter b){
     final match = this.match;
@@ -32,6 +35,9 @@ class _GetBatterState extends State<GetBatter> {
       match = viewModel.getCurrentMatch();
       if(match != null){
         retiredBatters=[];
+        score = match!.score[match!.currentTeam].toString();
+        wickets = match!.wickets[match!.currentTeam].toString();
+        overs = match!.over_count[match!.currentTeam].toStringAsFixed(1);
         for(Batter b in match!.batters[match!.currentTeam]){
           if (b.outBy == "Retired Out"){
             retiredBatters.add(b);
@@ -74,9 +80,9 @@ class _GetBatterState extends State<GetBatter> {
                                   text: TextSpan(children: [
                                     TextSpan(text: 'Socre : '),
                                     TextSpan(
-                                        text: '197-5', style: TextStyle(color: Colors.red)),
+                                        text: score+"-"+wickets, style: TextStyle(color: Colors.red)),
                                     TextSpan(
-                                        text: ' 18.2 OVERS',
+                                        text: overs+' OVERS',
                                         style: TextStyle(color: Colors.blueGrey))
                                   ])),
                             )
@@ -100,7 +106,7 @@ class _GetBatterState extends State<GetBatter> {
                                 match.currentBatters.removeAt(match.currentBatterIndex);
                                 print(match.currentBatters);
                                 match.addBatter(Batter(battercntrl.text));
-                                match!.currentBatters = List.of(match!.currentBatters.reversed);
+                                match.currentBatters = List.of(match.currentBatters.reversed);
                                 Navigator.pop(context);
                               }
                             }
@@ -115,10 +121,8 @@ class _GetBatterState extends State<GetBatter> {
                         ),
                       ),
                     ),
-
                   ],
                 )
-
 
             )
         )),);

@@ -55,6 +55,15 @@ class _CardInfoScorerState extends State<CardInfoScorer> {
               match.currentTeam == 1 ? Colors.white : Color(0xff9b9b9b);
           _is2ndinning = match.inning == 2;
           loading = false;
+
+          if(_is2ndinning){
+            int cur = match.currentTeam;
+            _needrun = (match.score[(cur+1)%2] - match.score[cur] +1).toString() ;
+            int curBalls =(((match.over_count[cur]*10).toInt()/10).toInt() * 6) + ((match.over_count[cur]*10).toInt()%10).toInt();
+            int totalBalls =(((match.totalOvers*10).toInt()/10).toInt() * 6);
+            _needfrom = (totalBalls - curBalls ).toString();
+          }
+
         }
       } else {
         randomError = "View Model Not Found. I need A restart~~";

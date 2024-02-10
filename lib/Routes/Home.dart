@@ -29,6 +29,13 @@ class _HomeState extends State<Home> {
     });
   }
 
+  void resetError(){
+    setState(() {
+      errorTextPlayer = null;
+      errorTextOver = null;
+    });
+  }
+
   bool validate() {
     var allGood = true;
     if (oversController.text.isEmpty) {
@@ -38,8 +45,8 @@ class _HomeState extends State<Home> {
         errorTextOver = 'Required';
       });
     } else {
-      print("No");
-      if (int.parse(oversController.text) > 450 && int.parse(oversController.text) < 1) {
+      print("No ${oversController.text}");
+      if (int.parse(oversController.text) > 450 || int.parse(oversController.text) < 1) {
         allGood = false;
         setState(() {
           errorTextOver = "Range : 1 - 450";
@@ -58,7 +65,7 @@ class _HomeState extends State<Home> {
         errorTextPlayer = 'Required';
       });
     } else {
-      if (int.parse(noplayersController.text) > 25 && int.parse(noplayersController.text) < 3) {
+      if (int.parse(noplayersController.text) > 25 || int.parse(noplayersController.text) < 3) {
         allGood = false;
         setState(() {
           errorTextPlayer = "Range : 3 - 25";
@@ -84,8 +91,9 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    var focusbtn = FocusNode();
     infoCard = CardInfo(update);
-    matchsetting= CardMatchSettings(_team1,_team2,errorTextOver,errorTextPlayer,oversController,noplayersController,key: Key("supreb"),);
+    matchsetting= CardMatchSettings(_team1,_team2,errorTextOver,errorTextPlayer,oversController,noplayersController,focusbtn,resetError,key: Key("supreb"),);
     return Container(
         decoration: BoxDecoration(
           border: null,
@@ -108,7 +116,7 @@ class _HomeState extends State<Home> {
                   Container(
                     width: MediaQuery.of(context).size.width,
                     color: Colors.transparent,
-                    height: 280,
+                    height: 350,
                     child: matchsetting,
                   ),
                   Padding(
@@ -142,6 +150,7 @@ class _HomeState extends State<Home> {
                             ScaffoldMessenger.of(context).showSnackBar(Util.getsnackbar(randomError));
                           }
                         },
+                        focusNode: focusbtn,
                         child: Text(
                           "Let's Play!!",
                           style: TextStyle(color: Colors.white),

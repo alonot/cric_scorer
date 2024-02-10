@@ -69,14 +69,15 @@ class _MatchPageState extends State<MatchPage> {
       }
     }
 
+    if (run.contains("OUT")) {
+      await Navigator.pushNamed(context, Util.wicketRoute)
+          .then((value) => {setState(() {})});
+    }
+
     if (match!.over_count[match!.currentTeam] >= match!.totalOvers ||
         match!.wickets[match!.currentTeam] == match!.no_of_players - 1) {
       // Call the openers . change the current Team index;
       if (match!.inning == 1) {
-        if (run.contains("OUT")) {
-          await Navigator.pushNamed(context, Util.wicketRoute)
-              .then((value) => {setState(() {})});
-        }
         match!.inning = 2;
         match!.currentTeam++;
         match!.currentTeam %= 2;
@@ -97,10 +98,6 @@ class _MatchPageState extends State<MatchPage> {
               (match!.score[(cur + 1) % 2] - match!.score[cur] + 1).toString();
         }
         match!.hasWon = true;
-        if (run.contains("OUT")) {
-          await Navigator.pushNamed(context, Util.wicketRoute)
-              .then((value) => {setState(() {})});
-        }
         Navigator.pushNamed(context, Util.winnerPageRoute);
       }
     }
@@ -155,42 +152,22 @@ class _MatchPageState extends State<MatchPage> {
               padding: EdgeInsets.only(top: 0, left: 10, right: 10, bottom: 15),
               child: ListView(
                 children: <Widget>[
-                  Container(
-                    width: double.infinity,
-                    color: Colors.transparent,
-                    height: 180,
-                    child: CardInfoScorer(),
+                  Flex(direction: Axis.vertical,
+                  children: [CardInfoScorer(key : Key("K1") ),],
                   ),
-                  Container(
-                    width: double.infinity,
-                    color: Colors.transparent,
-                    height: 65,
-                    child: CardBalls(
+                  Flex(
+                    direction: Axis.vertical,
+                    children: [CardBalls(
                       key: Key("K2"),
-                    ),
+                    ),]
                   ),
-                  Container(
-                    width: double.infinity,
-                    color: Colors.transparent,
-                    height: 130,
-                    child: CardBatter(match!.currentBatters, true, null,
-                        key: const Key("MatchPageBatter")),
-                  ),
-                  Container(
-                    width: double.infinity,
-                    color: Colors.transparent,
-                    height: 100,
-                    child: CardBowler([match!.currentBowler!],
-                        key: const Key("MatchPageBowler")),
-                  ),
-                  Container(
-                    width: double.infinity,
-                    color: Colors.transparent,
-                    height: 200,
-                    child: CardScorer(
-                        updateScore, popScore, swap, retire, endInning,
-                        key: Key("Score1")),
-                  ),
+                  CardBatter(match!.currentBatters, true, null,
+                      key: const Key("MatchPageBatter")),
+                  CardBowler([match!.currentBowler!],
+                      key: const Key("MatchPageBowler")),
+                  CardScorer(
+                      updateScore, popScore, swap, retire, endInning,
+                      key: Key("Score1")),
                 ],
               ),
             ),

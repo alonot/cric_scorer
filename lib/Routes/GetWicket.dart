@@ -35,6 +35,7 @@ class _GetWicketState extends State<GetWicket> {
       }
     }
     if (match != null) {
+      print("yes");
       Batter? batter;
       for (Batter b in match!.currentBatters) {
         if (b.name == batterOut) {
@@ -63,7 +64,9 @@ class _GetWicketState extends State<GetWicket> {
         batter!.outBy += 'b ${match!.currentBowler}';
       }
       match!.wicketOrder.add(batter!);
+      debugPrint(match!.currentBatters[0].name);
       match!.currentBatters.remove(batter);
+      debugPrint(match!.currentBatters[0].name);
     }
   }
 
@@ -88,7 +91,7 @@ class _GetWicketState extends State<GetWicket> {
         batters = [match.currentBatters[0].name, match.currentBatters[1].name];
         batterOut = batters[0];
         retiredBatters = [];
-        isMatchOver = !match.hasWon;
+        isMatchOver = match.hasWon;
         score = match.score[match.currentTeam].toString();
         wickets = match.wickets[match.currentTeam].toString();
         overs = match.over_count[match.currentTeam].toStringAsFixed(1);
@@ -99,6 +102,8 @@ class _GetWicketState extends State<GetWicket> {
         }
       }
     }
+
+    var focusNextBatter = FocusNode();
 
     return PopScope(
       canPop: false,
@@ -112,41 +117,42 @@ class _GetWicketState extends State<GetWicket> {
                   image: AssetImage('assests/background.jpg'),
                   fit: BoxFit.cover),
             ),
-            child: Scaffold(
-              backgroundColor: Colors.transparent,
-              body: Padding(
-                padding: EdgeInsets.all(15.0),
-                child: Center(
-                    child: SingleChildScrollView(
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    child: Column(children: [
-                      Card(
+            child: Padding(
+              padding: EdgeInsets.all(15.0),
+              child: Center(
+                  child: SingleChildScrollView(
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(children: [
+                    Container(
+                      key: Key("popo"),
+                      child: Card(
                         elevation: 20,
                         color: Colors.transparent,
                         shadowColor: Colors.black,
-                        child: Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 20.0),
-                                  child: RichText(
-                                      text: TextSpan(children: [
-                                    TextSpan(text: 'Socre : '),
-                                    TextSpan(
-                                        text: score + "-" + wickets,
-                                        style: TextStyle(color: Colors.red)),
-                                    TextSpan(
-                                        text: overs + ' OVERS',
-                                        style:
-                                            TextStyle(color: Colors.blueGrey))
-                                  ])),
-                                ),
-                              ),
-                              Table(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Container(
+                                child: Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 10.0),
+                                    child: RichText(
+                                        text: TextSpan(children: [
+                                          TextSpan(text: 'Socre : '),
+                                          TextSpan(
+                                              text: score + "-" + wickets,
+                                              style: TextStyle(color: Colors.red)),
+                                          TextSpan(
+                                              text: " : " + overs + ' OVERS',
+                                              style:
+                                              TextStyle(color: Colors.blueGrey))
+                                        ])),
+                                  ),
+                                )),
+                            Container(
+                              key: Key("0"),
+                              child: Table(
                                 children: [
                                   TableRow(children: [
                                     ListTile(
@@ -252,84 +258,101 @@ class _GetWicketState extends State<GetWicket> {
                                   ]),
                                 ],
                               ),
-                              Text(
+                            ),
+                            Container(
+                              child: Text(
                                 'Who Got Out?',
                                 style: TextStyle(color: Colors.white),
                               ),
-                              Row(
+                            ),
+                            Container(
+                              child: Column(
                                 children: [
-                                  Expanded(
+                                  Container(
                                       child: ListTile(
-                                    title: Text(
-                                      batters[0],
-                                      style: TextStyle(color: Colors.white),
+                                        title: Text(
+                                          batters[0],
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        leading: Radio<String>(
+                                          groupValue: batterOut,
+                                          value: batters[0],
+                                          onChanged: (val) {
+                                            setState(() {
+                                              if (val != null) {
+                                                batterOut = batters[0];
+                                              }
+                                            });
+                                          },
+                                        ),
+                                      )),
+                                  Container(
+                                    child: ListTile(
+                                      title: Text(
+                                        batters[1],
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      leading: Radio<String>(
+                                        groupValue: batterOut,
+                                        value: batters[1],
+                                        onChanged: (val) {
+                                          setState(() {
+                                            if (val != null) {
+                                              batterOut = batters[1];
+                                            }
+                                          });
+                                        },
+                                      ),
                                     ),
-                                    leading: Radio<String>(
-                                      groupValue: batterOut,
-                                      value: batters[0],
-                                      onChanged: (val) {
-                                        setState(() {
-                                          if (val != null) {
-                                            batterOut = batters[0];
-                                          }
-                                        });
-                                      },
-                                    ),
-                                  )),
-                                  Expanded(
-                                      child: ListTile(
-                                    title: Text(
-                                      batters[1],
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    leading: Radio<String>(
-                                      groupValue: batterOut,
-                                      value: batters[1],
-                                      onChanged: (val) {
-                                        setState(() {
-                                          if (val != null) {
-                                            batterOut = batters[1];
-                                          }
-                                        });
-                                      },
-                                    ),
-                                  )),
+                                  ),
                                 ],
                               ),
-                              showhelper
+                            ),
+                            Container(
+                              child: showhelper
                                   ? TextField(
-                                      controller: helpercntrl,
-                                      textAlign: TextAlign.start,
-                                      decoration: InputDecoration(
-                                          labelText: 'Who Helped',
-                                          labelStyle:
-                                              TextStyle(color: Colors.white)),
-                                    )
+                                controller: helpercntrl,
+                                textAlign: TextAlign.start,
+                                onEditingComplete: (){
+                                  FocusScope.of(context).requestFocus(focusNextBatter);
+                                },
+                                decoration: InputDecoration(
+                                    labelText: 'Who Helped',
+                                    labelStyle:
+                                    TextStyle(color: Colors.white)),
+                              )
                                   : SizedBox(
-                                      width: 0,
-                                      height: 0,
-                                    ),
-                              !isMatchOver
+                                width: 0,
+                                height: 0,
+                              ),
+                            ),
+                            Container(
+                              child: !isMatchOver
                                   ? TextField(
-                                      controller: battercntrl,
-                                      textAlign: TextAlign.start,
-                                      decoration: InputDecoration(
-                                          labelText: 'Next Batter',
-                                          labelStyle:
-                                              TextStyle(color: Colors.white)),
-                                    )
+                                controller: battercntrl,
+                                textAlign: TextAlign.start,
+                                focusNode: focusNextBatter,
+                                decoration: InputDecoration(
+                                    labelText: 'Next Batter',
+                                    labelStyle:
+                                    TextStyle(color: Colors.white)),
+                              )
                                   : SizedBox(width: 0, height: 0),
-                            ],
-                          ),
+                            )
+                          ],
                         ),
                       ),
-                      CardBatter(
+                    ),
+                    Container(
+                      child: CardBatter(
                         retiredBatters,
                         false,
                         onTap,
                         key: Key("Unique"),
                       ),
-                      Padding(
+                    ),
+                    Container(
+                      child: Padding(
                         padding: EdgeInsets.only(top: 20, bottom: 20),
                         child: Center(
                           child: ElevatedButton(
@@ -341,6 +364,7 @@ class _GetWicketState extends State<GetWicket> {
                                         'Fields must not be empty'));
                                 return;
                               }
+                              HandleWicket();
                               Batter? batter;
                               batter = Batter(battercntrl.text);
                               match!.addBatter(batter);
@@ -358,10 +382,10 @@ class _GetWicketState extends State<GetWicket> {
                           ),
                         ),
                       ),
-                    ]),
-                  ),
-                )),
-              ),
+                    ),
+                  ]),
+                ),
+              )),
             )),
       ),
     );

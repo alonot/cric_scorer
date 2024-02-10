@@ -17,42 +17,42 @@ class _GetOpenersState extends State<GetOpeners> {
   TextEditingController batter1cntrl = TextEditingController();
   TextEditingController batter2cntrl = TextEditingController();
   TextEditingController bowlercntrl = TextEditingController();
-  String? errorBatter1=null;
-  String? errorBatter2=null;
-  String? errorBowler=null;
+  String? errorBatter1 = null;
+  String? errorBatter2 = null;
+  String? errorBowler = null;
 
-  bool _validate(){
+  bool _validate() {
     bool allGood = true;
-    if(batter1cntrl.text.isEmpty){
-      allGood=false;
+    if (batter1cntrl.text.isEmpty) {
+      allGood = false;
       setState(() {
-        errorBatter1="required";
+        errorBatter1 = "required";
       });
-    }else{
+    } else {
       setState(() {
-        errorBatter1=null;
-      });
-    }
-
-    if(batter2cntrl.text.isEmpty){
-      allGood=false;
-      setState(() {
-        errorBatter2="required";
-      });
-    }else{
-      setState(() {
-        errorBatter2=null;
+        errorBatter1 = null;
       });
     }
 
-    if(bowlercntrl.text.isEmpty){
-      allGood=false;
+    if (batter2cntrl.text.isEmpty) {
+      allGood = false;
       setState(() {
-        errorBowler="required";
+        errorBatter2 = "required";
       });
-    }else{
+    } else {
       setState(() {
-        errorBowler=null;
+        errorBatter2 = null;
+      });
+    }
+
+    if (bowlercntrl.text.isEmpty) {
+      allGood = false;
+      setState(() {
+        errorBowler = "required";
+      });
+    } else {
+      setState(() {
+        errorBowler = null;
       });
     }
     return allGood;
@@ -60,6 +60,9 @@ class _GetOpenersState extends State<GetOpeners> {
 
   @override
   Widget build(BuildContext context) {
+    var focusBatter2 = FocusNode();
+    var focusBowler = FocusNode();
+
     return Container(
         decoration: BoxDecoration(
           border: null,
@@ -86,6 +89,9 @@ class _GetOpenersState extends State<GetOpeners> {
                           TextField(
                             controller: batter1cntrl,
                             textAlign: TextAlign.start,
+                            onEditingComplete: () {
+                              FocusScope.of(context).requestFocus(focusBatter2);
+                            },
                             decoration: InputDecoration(
                                 labelText: 'Batter 1',
                                 errorText: errorBatter1,
@@ -94,6 +100,10 @@ class _GetOpenersState extends State<GetOpeners> {
                           TextField(
                             controller: batter2cntrl,
                             textAlign: TextAlign.start,
+                            focusNode: focusBatter2,
+                            onEditingComplete: () {
+                              FocusScope.of(context).requestFocus(focusBowler);
+                            },
                             decoration: InputDecoration(
                                 labelText: 'Batter 2',
                                 errorText: errorBatter2,
@@ -105,6 +115,7 @@ class _GetOpenersState extends State<GetOpeners> {
                             inputFormatters: [
                               FilteringTextInputFormatter.singleLineFormatter
                             ],
+                            focusNode: focusBowler,
                             decoration: InputDecoration(
                                 labelText: 'Bowler',
                                 errorText: errorBowler,
@@ -121,32 +132,38 @@ class _GetOpenersState extends State<GetOpeners> {
                     child: ElevatedButton(
                       onPressed: () {
                         debugPrint("Lets Play!2!");
-                        var randomError="";
-                        if (Util.viewModel != null){
-                          bool result =_validate();
+                        var randomError = "";
+                        if (Util.viewModel != null) {
+                          bool result = _validate();
                           print(result);
-                          if(result) {
+                          if (result) {
                             var match = Util.viewModel?.getCurrentMatch();
-                            if(match == null){
+                            if (match == null) {
                               Navigator.pop(context);
                             }
-                            Bowler bowler= Bowler(bowlercntrl.text);
-                            Batter batter1 =  Batter(batter1cntrl.text);
-                            Batter batter2 =  Batter(batter2cntrl.text);
+                            Bowler bowler = Bowler(bowlercntrl.text);
+                            Batter batter1 = Batter(batter1cntrl.text);
+                            Batter batter2 = Batter(batter2cntrl.text);
                             match!.addBowler(bowler);
-                            match!.currentBatters=[];
+                            match!.currentBatters = [];
                             match.addBatter(batter1);
                             match.addBatter(batter2);
-                            match.Overs[match.currentTeam].add(Over(0,bowler.name,[batter1.name]));
+                            match.Overs[match.currentTeam]
+                                .add(Over(0, bowler.name, [batter1.name]));
                             match.currentBatterIndex = 0;
-                            print(match.team1);
-                            Navigator.pushNamedAndRemoveUntil(context, Util.matchPageRoute,(route)=> false);
+                            debugPrint(match.team1);
+                            Navigator.pushNamedAndRemoveUntil(
+                                context, Util.matchPageRoute, (route) => false);
                           }
-                        }else{
-                          randomError="View Model Not Found. I need A restart~~";
+                        } else {
+                          randomError =
+                              "View Model Not Found. I need A restart~~";
                         }
-                        if(randomError.isNotEmpty){
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Colors.grey,content: Text(randomError),));
+                        if (randomError.isNotEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            backgroundColor: Colors.grey,
+                            content: Text(randomError),
+                          ));
                         }
                       },
                       child: Text(
@@ -155,7 +172,7 @@ class _GetOpenersState extends State<GetOpeners> {
                       ),
                       style: ButtonStyle(
                           backgroundColor:
-                          MaterialStateProperty.all(Color(0x42A4E190))),
+                              MaterialStateProperty.all(Color(0x42A4E190))),
                     ),
                   ),
                 ),

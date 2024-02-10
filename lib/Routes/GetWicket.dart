@@ -74,9 +74,9 @@ class _GetWicketState extends State<GetWicket> {
     final match = this.match;
     if (match != null) {
       HandleWicket();
-      b.outBy = '';
+      b.outBy = 'Not Out';
       match.currentBatters.add(b);
-      match!.currentBatters = List.of(match!.currentBatters.reversed);
+      match.currentBatters = List.of(match.currentBatters.reversed);
       Navigator.pop(context);
     }
   }
@@ -111,7 +111,7 @@ class _GetWicketState extends State<GetWicket> {
         key: Key("Get Wicket Scaffold"),
         backgroundColor: Colors.transparent,
         body: Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               border: null,
               image: DecorationImage(
                   image: AssetImage('assests/background.jpg'),
@@ -136,27 +136,27 @@ class _GetWicketState extends State<GetWicket> {
                             Container(
                                 child: Center(
                                   child: Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 10.0),
+                                    padding: const EdgeInsets.symmetric(vertical: 10.0),
                                     child: RichText(
                                         text: TextSpan(children: [
-                                          TextSpan(text: 'Socre : '),
+                                          const TextSpan(text: 'Socre : '),
                                           TextSpan(
                                               text: score + "-" + wickets,
-                                              style: TextStyle(color: Colors.red)),
+                                              style: const TextStyle(color: Colors.red)),
                                           TextSpan(
                                               text: " : " + overs + ' OVERS',
                                               style:
-                                              TextStyle(color: Colors.blueGrey))
+                                              const TextStyle(color: Colors.blueGrey))
                                         ])),
                                   ),
                                 )),
                             Container(
-                              key: Key("0"),
+                              key: const Key("0"),
                               child: Table(
                                 children: [
                                   TableRow(children: [
                                     ListTile(
-                                      title: Text(
+                                      title: const Text(
                                         'Bowled',
                                         style: TextStyle(color: Colors.white),
                                       ),

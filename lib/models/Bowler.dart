@@ -1,12 +1,12 @@
 
 
 class Bowler{
-  String name;
-  int runs=0;
-  int wickets=0;
-  double overs=0.0;
-  int maidens=0;
-  double economy=0;
+  late String name;
+  late int runs=0;
+  late int wickets=0;
+  late double overs=0.0;
+  late int maidens=0;
+  late double economy=0;
 
 
   void getReadyForNewMatch(){
@@ -15,6 +15,21 @@ class Bowler{
      overs=0.0;
      maidens=0;
      economy=0;
+  }
+
+  @override
+  String toString(){
+    return "$name#$wickets#$overs#$maidens#$economy";
+  }
+
+  Bowler.fromString(String bowlerString){
+    List<String> arrayOfDatas = bowlerString.split("#");
+    name = arrayOfDatas[0];
+    runs = int.parse(arrayOfDatas[1]);
+    wickets = int.parse(arrayOfDatas[2]);
+    overs = double.parse(arrayOfDatas[3]);
+    maidens = int.parse(arrayOfDatas[4]);
+    economy = double.parse(arrayOfDatas[5]);
   }
 
   Bowler(this.name,{ this.runs=0, this.wickets=0, this.overs=0, this.maidens=0,});

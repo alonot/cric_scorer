@@ -22,7 +22,7 @@ class _GetBatterState extends State<GetBatter> {
   void onTap(Batter b){
     final match = this.match;
     if(match != null){
-      b.outBy='';
+      b.outBy='Not Out';
       match.currentBatters.add(b);
       Navigator.pop(context);
     }
@@ -104,7 +104,7 @@ class _GetBatterState extends State<GetBatter> {
                               if(match != null){
                                 match.currentBatters[match.currentBatterIndex].outBy = 'Retired Out';
                                 match.currentBatters.removeAt(match.currentBatterIndex);
-                                print(match.currentBatters);
+                                debugPrint(match.currentBatters[0].toString());
                                 match.addBatter(Batter(battercntrl.text));
                                 match.currentBatters = List.of(match.currentBatters.reversed);
                                 Navigator.pop(context);

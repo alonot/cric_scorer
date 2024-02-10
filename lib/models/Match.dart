@@ -1,34 +1,37 @@
+
 import 'package:cric_scorer/models/Batter.dart';
 import 'package:cric_scorer/models/Bowler.dart';
 import 'package:cric_scorer/models/Over.dart';
+import 'package:flutter/cupertino.dart';
 
 class TheMatch {
   // Have given this name to avoid clashes with dart:core Match class
-  String team1url;
-  String team2url;
-  String team1;
-  String team2;
-  String toss;
-  String optTo;
-  bool hasWon;
+  late int? id;
+  late String team1url;
+  late String team2url;
+  late String team1;
+  late String team2;
+  late String toss;
+  late String optTo;
+  late bool hasWon;
   late int currentTeam;
   late int inning;
-  int totalOvers;
-  late List<double> over_count;
-  int no_of_players;
+  late int totalOvers;
+  late int no_of_players;
   late int currentBatterIndex;
+  late Bowler? currentBowler;
   late List<int> score;
   late List<int> wickets;
+  late List<double> over_count;
   late List<Batter> currentBatters;
   late List<Batter> wicketOrder;
-  late Bowler? currentBowler;
   late List<List<Batter>> batters;
   late List<List<Bowler>> bowlers;
   late List<List<Over>> Overs;
 
   TheMatch(this.team1, this.team1url, this.team2, this.team2url, this.toss,
       this.optTo, this.no_of_players, this.totalOvers,
-      {overs, batters, bowlers, over_count, score,this.hasWon = false}) {
+      {this.id = null,overs, batters, bowlers, over_count, score,this.hasWon = false}) {
     this.over_count = List.of([0.0, 0.0]);
     this.score = List.of([0, 0]);
     this.batters = List.of([[], []]);
@@ -47,7 +50,7 @@ class TheMatch {
         : optTo == "Bat"
             ? 1
             : 0;
-    print(currentTeam.toString() + toss + optTo);
+    debugPrint(currentTeam.toString() + toss + optTo);
 
     if (over_count != null) {
       this.over_count = over_count;
@@ -213,4 +216,89 @@ class TheMatch {
       return true;
     }
   }
+
+
+  Map<String,dynamic> matchToMap () {
+    Map<String,dynamic> theMatchMap = Map();
+    if (id != null) {
+      theMatchMap['id'] = id;
+    }
+    theMatchMap['team1'] = team1;
+    theMatchMap['team2'] = team2;
+    theMatchMap['team1url'] = team1url;
+    theMatchMap['team2url'] = team2url;
+    theMatchMap['toss'] = toss;
+    theMatchMap['optTo'] = optTo;
+    theMatchMap['hasWon'] = hasWon;
+    theMatchMap['inning'] = inning;
+    theMatchMap['no_of_players'] = no_of_players;
+    theMatchMap['totalOvers'] = totalOvers;
+    theMatchMap['currentBatterIndex'] = currentBatterIndex;
+    theMatchMap['currentTeam'] = currentTeam;
+
+    theMatchMap['score'] = score.join('#');
+    theMatchMap['wickets'] = wickets.join('#');
+    theMatchMap['over_count'] = over_count.join('#');
+    theMatchMap['currentBatters'] = currentBatters.join("*");
+    theMatchMap['wicketOrder'] = wicketOrder.join("*");
+
+    // storing batters
+    String allBattersString = "";
+    int count = 0;
+    for (List<Batter> lst in batters){
+      count++;
+      allBattersString += lst.join("*");
+      if (count ==1) {
+        allBattersString += "%";
+      }
+    }
+    theMatchMap['batters'] =allBattersString;
+
+    // storing bowlers
+    String allBowlersString = "";
+    count = 0;
+    for (List<Bowler> lst in bowlers){
+      count++;
+      allBowlersString += lst.join("*");
+      if (count ==1) {
+        allBowlersString += "%";
+      }
+    }
+
+    theMatchMap['bowlers'] = allBowlersString;
+
+    // storing Overs
+    String allOversString = "";
+    count = 0;
+    for (List<Over> lst in Overs){
+      count++;
+      allOversString += lst.join("*");
+      if (count ==1) {
+        allOversString += "%";
+      }
+    }
+
+    theMatchMap['Overs'] = allOversString;
+
+    return theMatchMap;
+  }
+
+  TheMatch.fromMap(Map<String,dynamic> map){
+    hasWon=map['hasWon'];
+    team1=map['team1'];
+    team2=map['team2'];
+    team1url=map['team1url'];
+    team2url=map['team2url'];
+    toss=map['toss'];
+    optTo=map['optTo'];
+    no_of_players=map['no_of_players'];
+    currentBatterIndex=map['currentBatterIndex'];
+    inning=map['inning'];
+    totalOvers=map['totalOvers'];
+    currentTeam=map['currentTeam'];
+
+
+
+  }
+
 }

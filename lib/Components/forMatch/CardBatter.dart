@@ -146,7 +146,7 @@ class _CardBatterState extends State<CardBatter> {
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(0, 10, 0, 10), child: Text(
                         batter.strikeRate.toStringAsFixed(2),
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.white,fontSize: 10),
                       ),),
                       onTap: () {
                         if (widget.onTap != null) {

@@ -297,7 +297,79 @@ class TheMatch {
     totalOvers=map['totalOvers'];
     currentTeam=map['currentTeam'];
 
+    List<String> arrayOfScore = map['score'].split('#');
+    List<String> arrayOfWicket = map['wickets'].split('#');
+    List<String> arrayOfOverCount = map['over_count'].split('#');
+    List<String> arrayOfCurrentBatter = map['currentBatters'].split('*');
+    List<String> arrayOfWicketOrder = map['wicketOrder'].split('*');
 
+    //getting score
+    for (String s in arrayOfScore){
+      score.add(int.parse(s));
+    }
+
+    //getting wickets
+    for (String s in arrayOfWicket){
+      wickets.add(int.parse(s));
+    }
+
+    //getting over_count
+    for (String s in arrayOfOverCount){
+      over_count.add(double.parse(s));
+    }
+
+    //getting currentBatters
+    for (String s in arrayOfCurrentBatter){
+      currentBatters.add(Batter.fromString(s));
+    }
+
+    //getting wicketOrder
+    for (String s in arrayOfWicketOrder){
+      wicketOrder.add(Batter.fromString(s));
+    }
+
+    List<String> arrayOfArrayOfbatters = map['batters'].split('%');
+    List<String> arrayOfArrayOfbowlers = map['bowlers'].split('%');
+    List<String> arrayOfArrayOfOvers = map['Overs'].split('%');
+
+    int count = 0;
+    // getting batters
+    for (String s in arrayOfArrayOfbatters){
+      List<String> arrayOfBatters = s.split('*');
+      if (arrayOfBatters.isNotEmpty) {
+        batters.add([]);
+        for (String s in arrayOfBatters) {
+          batters[count].add(Batter.fromString(s));
+        }
+        count ++;
+      }
+    }
+
+    count = 0;
+    // getting bowlers
+    for (String s in arrayOfArrayOfbowlers){
+      List<String> arrayOfBowlers = s.split('*');
+      if (arrayOfBowlers.isNotEmpty) {
+        bowlers.add([]);
+        for (String s in arrayOfBowlers) {
+          bowlers[count].add(Bowler.fromString(s));
+        }
+        count ++;
+      }
+    }
+
+    count = 0;
+    // getting Overs
+    for (String s in arrayOfArrayOfOvers){
+      List<String> arrayOfOvers = s.split('*');
+      if (arrayOfOvers.isNotEmpty) {
+        Overs.add([]);
+        for (String s in arrayOfOvers) {
+          Overs[count].add(Over.fromString(s));
+        }
+        count ++;
+      }
+    }
 
   }
 

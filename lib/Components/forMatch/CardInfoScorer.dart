@@ -1,18 +1,17 @@
+import 'package:cric_scorer/MatchViewModel.dart';
 import 'package:cric_scorer/models/Match.dart';
+import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';
 
-import '/utils/util.dart';
-
 class CardInfoScorer extends StatefulWidget {
-  final viewModel = Util.viewModel;
-   CardInfoScorer({super.key});
+  const CardInfoScorer({super.key});
 
   @override
-  State<CardInfoScorer> createState() => _CardInfoScorerState(viewModel);
+  State<CardInfoScorer> createState() => _CardInfoScorerState();
 }
 
 class _CardInfoScorerState extends State<CardInfoScorer> {
-  var viewModel;
+  final MatchViewModel viewModel = MatchViewModel();
   String _team1Url = "assests/csk.jpg";
   String _team2Url = "assests/rcb.jpg";
   String _team1 = "Team 1";
@@ -27,8 +26,6 @@ class _CardInfoScorerState extends State<CardInfoScorer> {
   Color _team2Color = Colors.white;
   bool _is2ndinning = false;
   bool loading = false;
-
-  _CardInfoScorerState(this.viewModel);
 
   @override
   Widget build(BuildContext context) {
@@ -56,14 +53,17 @@ class _CardInfoScorerState extends State<CardInfoScorer> {
           _is2ndinning = match.inning == 2;
           loading = false;
 
-          if(_is2ndinning){
+          if (_is2ndinning) {
             int cur = match.currentTeam;
-            _needrun = (match.score[(cur+1)%2] - match.score[cur] +1).toString() ;
-            int curBalls =(((match.over_count[cur]*10).toInt()/10).toInt() * 6) + ((match.over_count[cur]*10).toInt()%10).toInt();
-            int totalBalls =(((match.totalOvers*10).toInt()/10).toInt() * 6);
-            _needfrom = (totalBalls - curBalls ).toString();
+            _needrun =
+                (match.score[(cur + 1) % 2] - match.score[cur] + 1).toString();
+            int curBalls =
+                (((match.over_count[cur] * 10).toInt() / 10).toInt() * 6) +
+                    ((match.over_count[cur] * 10).toInt() % 10).toInt();
+            int totalBalls =
+                (((match.totalOvers * 10).toInt() / 10).toInt() * 6);
+            _needfrom = (totalBalls - curBalls).toString();
           }
-
         }
       } else {
         randomError = "View Model Not Found. I need A restart~~";
@@ -77,14 +77,15 @@ class _CardInfoScorerState extends State<CardInfoScorer> {
     });
 
     return !loading
-        ? Card(
-            elevation: 20,
-            color: Colors.transparent,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: 150,
-              child: Center(
-                  child: Column(
+        ? GestureDetector(
+            child: Card(
+                elevation: 20,
+                color: Colors.transparent,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: 150,
+                  child: Center(
+                      child: Column(
                     children: [
                       Flexible(
                           flex: 8,
@@ -92,149 +93,158 @@ class _CardInfoScorerState extends State<CardInfoScorer> {
                             children: <Widget>[
                               Flexible(
                                   child: Row(
-                                    children: <Widget>[
-                                      Expanded(
-                                          child: ElevatedButton(
-                                            onPressed: null,
-                                            style: ElevatedButton.styleFrom(
-                                              shape: CircleBorder(),
-                                              padding: EdgeInsets.only(right: 0),
-                                            ),
-                                            child: Container(
-                                              width: 70,
-                                              height: 70,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                image: DecorationImage(
-                                                    image: AssetImage(_team1Url),
-                                                    fit: BoxFit.cover),
-                                              ),
-                                            ),
-                                          )), // Team 1 Avatar
-                                      Expanded(
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              Container(
-                                                child: Text(
-                                                  _team1,
-                                                  style: TextStyle(
-                                                      color:_team1Color, fontSize: 12),
-                                                  textAlign: TextAlign.start,
-                                                ),
-                                                width: double.infinity,
-                                              ),
-                                              Container(
-                                                width: double.infinity,
-                                                child: Text(
-                                                  _score1,
-                                                  style: TextStyle(
-                                                      color:_team1Color,
-                                                      fontSize: 25,
-                                                      fontWeight: FontWeight.bold),
-                                                ),
-                                              ),
-                                              Container(
-                                                width: double.infinity,
-                                                child: Text(
-                                                  _overs1 + ' OVERS',
-                                                  style: TextStyle(
-                                                      color: _team1Color, fontSize: 12),
-                                                ),
-                                              ),
-                                            ],
-                                          )), // Team 1 score
+                                children: <Widget>[
+                                  Expanded(
+                                      child: ElevatedButton(
+                                    onPressed: null,
+                                    style: ElevatedButton.styleFrom(
+                                      shape: CircleBorder(),
+                                      padding: EdgeInsets.only(right: 0),
+                                    ),
+                                    child: Container(
+                                      width: 70,
+                                      height: 70,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                            image: AssetImage(_team1Url),
+                                            fit: BoxFit.cover),
+                                      ),
+                                    ),
+                                  )), // Team 1 Avatar
+                                  Expanded(
+                                      child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        child: Text(
+                                          _team1,
+                                          style: TextStyle(
+                                              color: _team1Color, fontSize: 12),
+                                          textAlign: TextAlign.start,
+                                        ),
+                                        width: double.infinity,
+                                      ),
+                                      Container(
+                                        width: double.infinity,
+                                        child: Text(
+                                          _score1,
+                                          style: TextStyle(
+                                              color: _team1Color,
+                                              fontSize: 25,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                      Container(
+                                        width: double.infinity,
+                                        child: Text(
+                                          _overs1 + ' OVERS',
+                                          style: TextStyle(
+                                              color: _team1Color, fontSize: 12),
+                                        ),
+                                      ),
                                     ],
-                                  )),
+                                  )), // Team 1 score
+                                ],
+                              )),
                               Flexible(
                                   child: Row(
-                                    children: <Widget>[
-                                      Expanded(
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.end,
-                                          children: [
-                                            Container(
-                                              child: Text(
-                                                _team2,
-                                                style: TextStyle(
-                                                    color:_team2Color,
-                                                    fontSize: 12),
-                                                textAlign: TextAlign.end,
-                                              ),
-                                              width: double.infinity,
-                                            ),
-                                            Container(
-                                              width: double.infinity,
-                                              child: Text(_score2,
-                                                  style: TextStyle(
-                                                      color:_team2Color,
-                                                      fontSize: 25,
-                                                      fontWeight: FontWeight.bold),
-                                                  textAlign: TextAlign.end),
-                                            ),
-                                            Container(
-                                              width: double.infinity,
-                                              child: Text(_overs2 + ' OVERS',
-                                                  style: TextStyle(
-                                                      color: _team2Color, fontSize: 12),
-                                                  textAlign: TextAlign.end),
-                                            ),
-                                          ],
-                                        ),
-                                      ), // Team 2 Score
-                                      Expanded(
-                                        child: ElevatedButton(
-                                          onPressed: null,
-                                          style: ElevatedButton.styleFrom(
-                                            shape: CircleBorder(),
-                                            padding: EdgeInsets.only(right: 0),
+                                children: <Widget>[
+                                  Expanded(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Container(
+                                          child: Text(
+                                            _team2,
+                                            style: TextStyle(
+                                                color: _team2Color,
+                                                fontSize: 12),
+                                            textAlign: TextAlign.end,
                                           ),
-                                          child: Container(
-                                            width: 70,
-                                            height: 70,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              image: DecorationImage(
-                                                  image: AssetImage(_team2Url),
-                                                  fit: BoxFit.cover),
-                                            ),
-                                          ),
+                                          width: double.infinity,
                                         ),
-                                      ), // Team 2 Avatar
-                                    ],
-                                  )),
+                                        Container(
+                                          width: double.infinity,
+                                          child: Text(_score2,
+                                              style: TextStyle(
+                                                  color: _team2Color,
+                                                  fontSize: 25,
+                                                  fontWeight: FontWeight.bold),
+                                              textAlign: TextAlign.end),
+                                        ),
+                                        Container(
+                                          width: double.infinity,
+                                          child: Text(_overs2 + ' OVERS',
+                                              style: TextStyle(
+                                                  color: _team2Color,
+                                                  fontSize: 12),
+                                              textAlign: TextAlign.end),
+                                        ),
+                                      ],
+                                    ),
+                                  ), // Team 2 Score
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: null,
+                                      style: ElevatedButton.styleFrom(
+                                        shape: CircleBorder(),
+                                        padding: EdgeInsets.only(right: 0),
+                                      ),
+                                      child: Container(
+                                        width: 70,
+                                        height: 70,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          image: DecorationImage(
+                                              image: AssetImage(_team2Url),
+                                              fit: BoxFit.cover),
+                                        ),
+                                      ),
+                                    ),
+                                  ), // Team 2 Avatar
+                                ],
+                              )),
                             ],
                           )),
                       _is2ndinning
                           ? Flexible(
-                          flex: 3,
-                          child: Padding(
-                            padding: EdgeInsets.only(top: 10, bottom: 10),
-                            child: RichText(
-                              text: TextSpan(
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                  children: [
-                                    TextSpan(text: 'Need '),
-                                    TextSpan(
-                                        text: _needrun + ' runs ',
-                                        style: TextStyle(color: Colors.red)),
-                                    TextSpan(text: 'from '),
-                                    TextSpan(
-                                        text: _needfrom + ' balls',
-                                        style: TextStyle(color: Colors.red)),
-                                  ]),
-                            ),
-                          ))
+                              flex: 3,
+                              child: Padding(
+                                padding: EdgeInsets.only(top: 10, bottom: 10),
+                                child: RichText(
+                                  text: TextSpan(
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                      children: [
+                                        TextSpan(text: 'Need '),
+                                        TextSpan(
+                                            text: _needrun + ' runs ',
+                                            style:
+                                                TextStyle(color: Colors.red)),
+                                        TextSpan(text: 'from '),
+                                        TextSpan(
+                                            text: _needfrom + ' balls',
+                                            style:
+                                                TextStyle(color: Colors.red)),
+                                      ]),
+                                ),
+                              ))
                           : new SizedBox(
-                        width: 0,
-                        height: 0,
-                      ),
+                              width: 0,
+                              height: 0,
+                            ),
                     ],
                   )),
-            ))
+                )),
+            onTap: () {
+                Navigator.pushNamed(context, Util.scoreCardRoute);
+            },
+          )
         : SizedBox(
             width: 0,
             height: 0,

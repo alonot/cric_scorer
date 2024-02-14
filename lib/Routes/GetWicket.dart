@@ -1,8 +1,10 @@
-import 'package:cric_scorer/Components/forMatch/CardBatter.dart';
+import 'package:cric_scorer/Components/CardBatter.dart';
 import 'package:cric_scorer/models/Batter.dart';
 import 'package:cric_scorer/models/Match.dart';
 import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';
+
+import 'package:cric_scorer/MatchViewModel.dart';
 
 class GetWicket extends StatefulWidget {
   const GetWicket({super.key});
@@ -12,6 +14,7 @@ class GetWicket extends StatefulWidget {
 }
 
 class _GetWicketState extends State<GetWicket> {
+  final MatchViewModel viewModel = MatchViewModel();
   TextEditingController battercntrl = TextEditingController();
   TextEditingController helpercntrl = TextEditingController();
   List<String> batters = [];
@@ -25,7 +28,7 @@ class _GetWicketState extends State<GetWicket> {
   String wickets = "0";
   String overs = "0.0";
 
-  void HandleWicket() {
+  void HandleWicket() async {
     if (showhelper) {
       print("Yes" + helpercntrl.text);
       if (helpercntrl.text.isEmpty) {
@@ -67,24 +70,25 @@ class _GetWicketState extends State<GetWicket> {
       debugPrint(match!.currentBatters[0].name);
       match!.currentBatters.remove(batter);
       debugPrint(match!.currentBatters[0].name);
+
+      await viewModel.updateMatch(match!);
     }
   }
 
-  void onTap(Batter b) {
+  void onTap(Batter b) async {
     final match = this.match;
     if (match != null) {
       HandleWicket();
       b.outBy = 'Not Out';
       match.currentBatters.add(b);
       match.currentBatters = List.of(match.currentBatters.reversed);
+      await viewModel.updateMatch(match);
       Navigator.pop(context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    var viewModel = Util.viewModel;
-    if (viewModel != null) {
       this.match = viewModel.getCurrentMatch();
       final match = this.match;
       if (match != null) {
@@ -101,9 +105,7 @@ class _GetWicketState extends State<GetWicket> {
           }
         }
       }
-    }
 
-    var focusNextBatter = FocusNode();
 
     return PopScope(
       canPop: false,
@@ -313,9 +315,6 @@ class _GetWicketState extends State<GetWicket> {
                                   ? TextField(
                                 controller: helpercntrl,
                                 textAlign: TextAlign.start,
-                                onEditingComplete: (){
-                                  FocusScope.of(context).requestFocus(focusNextBatter);
-                                },
                                 decoration: InputDecoration(
                                     labelText: 'Who Helped',
                                     labelStyle:
@@ -331,7 +330,6 @@ class _GetWicketState extends State<GetWicket> {
                                   ? TextField(
                                 controller: battercntrl,
                                 textAlign: TextAlign.start,
-                                focusNode: focusNextBatter,
                                 decoration: InputDecoration(
                                     labelText: 'Next Batter',
                                     labelStyle:
@@ -356,7 +354,7 @@ class _GetWicketState extends State<GetWicket> {
                         padding: EdgeInsets.only(top: 20, bottom: 20),
                         child: Center(
                           child: ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
                               debugPrint("Lets Continue > Got Wicket!!");
                               if (battercntrl.text.isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -370,6 +368,7 @@ class _GetWicketState extends State<GetWicket> {
                               match!.addBatter(batter);
                               match!.currentBatters =
                                   List.of(match!.currentBatters.reversed);
+                              await viewModel.updateMatch(match!);
                               Navigator.pop(context);
                             },
                             child: Text(

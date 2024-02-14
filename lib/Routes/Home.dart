@@ -3,7 +3,8 @@ import 'package:cric_scorer/Components/forHome/CardMatchSettings.dart';
 import 'package:cric_scorer/models/Match.dart';
 import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+
+import 'package:cric_scorer/MatchViewModel.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -13,23 +14,24 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final MatchViewModel viewModel = MatchViewModel();
   late CardMatchSettings matchsetting;
   late CardInfo infoCard;
-  String _team1="Team 1",_team2="Team 2";
+  String _team1 = "Team 1", _team2 = "Team 2";
   String? errorTextOver;
   String? errorTextPlayer;
-  final TextEditingController oversController=TextEditingController();
-  final TextEditingController noplayersController=TextEditingController();
+  final TextEditingController oversController = TextEditingController();
+  final TextEditingController noplayersController = TextEditingController();
 
-  void update(String t1,String t2){
-    debugPrint(t1+t2);
+  void update(String t1, String t2) {
+    debugPrint(t1 + t2);
     setState(() {
-      _team1=t1;
-      _team2=t2;
+      _team1 = t1;
+      _team2 = t2;
     });
   }
 
-  void resetError(){
+  void resetError() {
     setState(() {
       errorTextPlayer = null;
       errorTextOver = null;
@@ -46,7 +48,8 @@ class _HomeState extends State<Home> {
       });
     } else {
       print("No ${oversController.text}");
-      if (int.parse(oversController.text) > 450 || int.parse(oversController.text) < 1) {
+      if (int.parse(oversController.text) > 450 ||
+          int.parse(oversController.text) < 1) {
         allGood = false;
         setState(() {
           errorTextOver = "Range : 1 - 450";
@@ -65,7 +68,8 @@ class _HomeState extends State<Home> {
         errorTextPlayer = 'Required';
       });
     } else {
-      if (int.parse(noplayersController.text) > 25 || int.parse(noplayersController.text) < 3) {
+      if (int.parse(noplayersController.text) > 25 ||
+          int.parse(noplayersController.text) < 3) {
         allGood = false;
         setState(() {
           errorTextPlayer = "Range : 3 - 25";
@@ -77,23 +81,32 @@ class _HomeState extends State<Home> {
         });
       }
     }
-    if(_team1 == _team2 ){
-          allGood=false;
-          ScaffoldMessenger.of(context).showSnackBar(Util.getsnackbar("Both names cannot be same!!!"));
-        }
-        if(_team1.isEmpty || _team2.isEmpty ){
-          allGood=false;
-          ScaffoldMessenger.of(context).showSnackBar(Util.getsnackbar("Team name cannot be Empty!!!"));
-        }
+    if (_team1 == _team2) {
+      allGood = false;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(Util.getsnackbar("Both names cannot be same!!!"));
+    }
+    if (_team1.isEmpty || _team2.isEmpty) {
+      allGood = false;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(Util.getsnackbar("Team name cannot be Empty!!!"));
+    }
     return allGood;
   }
 
-
   @override
   Widget build(BuildContext context) {
-    var focusbtn = FocusNode();
     infoCard = CardInfo(update);
-    matchsetting= CardMatchSettings(_team1,_team2,errorTextOver,errorTextPlayer,oversController,noplayersController,focusbtn,resetError,key: Key("supreb"),);
+    matchsetting = CardMatchSettings(
+      _team1,
+      _team2,
+      errorTextOver,
+      errorTextPlayer,
+      oversController,
+      noplayersController,
+      resetError,
+      key: Key("supreb"),
+    );
     return Container(
         decoration: BoxDecoration(
           border: null,
@@ -104,7 +117,8 @@ class _HomeState extends State<Home> {
           backgroundColor: Color(0x89000000),
           body: SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.only(top: 50, left: 10, right: 10, bottom: 15),
+              padding:
+                  EdgeInsets.only(top: 50, left: 10, right: 10, bottom: 15),
               child: Column(
                 children: <Widget>[
                   Container(
@@ -125,39 +139,38 @@ class _HomeState extends State<Home> {
                       child: ElevatedButton(
                         onPressed: () {
                           debugPrint("Lets Play!!");
-                          var randomError="";
-                          if (Util.viewModel != null){
-                            bool result =validate();
-                            if(result) {
-                              Map<String,String> info1=infoCard.getInfo();
-                              Map<String,String> info2= matchsetting.getInfo();
-                              Util.viewModel!.setCurrentMatch(TheMatch(info1['team1']!,
-                                  info1['team1Url']!,
-                                  info1['team2']!,
-                                  info1['team2Url']!,
-                                  info2['toss']!,
-                                  info2['optTo']!,
-                                  int.parse(noplayersController.text),
-                                  int.parse(oversController.text),
-                              )
+                          var randomError = "";
+                            bool result = validate();
+                            if (result) {
+                              Map<String, String> info1 = infoCard.getInfo();
+                              Map<String, String> info2 =
+                                  matchsetting.getInfo();
+                              TheMatch match = TheMatch(
+                                info1['team1']!,
+                                info1['team1Url']!,
+                                info1['team2']!,
+                                info1['team2Url']!,
+                                info2['toss']!,
+                                info2['optTo']!,
+                                int.parse(noplayersController.text),
+                                int.parse(oversController.text),
                               );
+                              viewModel!.setCurrentMatch(match);
+                              _save(match);
                               Navigator.pushNamed(context, "Get Openers");
                             }
-                          }else{
-                            randomError="View Model Not Found. I need A restart~~";
-                          }
-                          if(randomError.isNotEmpty){
-                            ScaffoldMessenger.of(context).showSnackBar(Util.getsnackbar(randomError));
+                          if (randomError.isNotEmpty) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(Util.getsnackbar(randomError));
                           }
                         },
-                        focusNode: focusbtn,
                         child: Text(
                           "Let's Play!!",
                           style: TextStyle(color: Colors.white),
                         ),
                         style: ButtonStyle(
                             backgroundColor:
-                            MaterialStateProperty.all(Color(0x42A4E190))),
+                                MaterialStateProperty.all(Color(0x42A4E190))),
                       ),
                     ),
                   ),
@@ -166,5 +179,14 @@ class _HomeState extends State<Home> {
             ),
           ),
         ));
+  }
+
+  void _save(TheMatch match) async {
+    int result;
+    result = await viewModel.insertMatch(match);
+    if(result != -1){
+      match.id = result;
+    }
+    print(result.toString()+"IDDDD");
   }
 }

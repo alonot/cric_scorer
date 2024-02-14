@@ -2,6 +2,7 @@
 import 'package:cric_scorer/models/Batter.dart';
 import 'package:cric_scorer/models/Bowler.dart';
 import 'package:cric_scorer/models/Over.dart';
+import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/cupertino.dart';
 
 class TheMatch {
@@ -19,7 +20,7 @@ class TheMatch {
   late int totalOvers;
   late int no_of_players;
   late int currentBatterIndex;
-  late Bowler? currentBowler;
+  Bowler? currentBowler;
   late List<int> score;
   late List<int> wickets;
   late List<double> over_count;
@@ -28,6 +29,7 @@ class TheMatch {
   late List<List<Batter>> batters;
   late List<List<Bowler>> bowlers;
   late List<List<Over>> Overs;
+  late int date;
 
   TheMatch(this.team1, this.team1url, this.team2, this.team2url, this.toss,
       this.optTo, this.no_of_players, this.totalOvers,
@@ -67,6 +69,10 @@ class TheMatch {
     if (score != null) {
       this.score = score;
     }
+    
+    DateTime now = DateTime.now();
+    date = timeNowMinutes(now);
+    
   }
 
   bool addBatter(Batter batter) {
@@ -218,7 +224,7 @@ class TheMatch {
   }
 
 
-  Map<String,dynamic> matchToMap () {
+  Map<String,dynamic> toMap () {
     Map<String,dynamic> theMatchMap = Map();
     if (id != null) {
       theMatchMap['id'] = id;
@@ -229,12 +235,68 @@ class TheMatch {
     theMatchMap['team2url'] = team2url;
     theMatchMap['toss'] = toss;
     theMatchMap['optTo'] = optTo;
-    theMatchMap['hasWon'] = hasWon;
+    theMatchMap['hasWon'] = hasWon.toString();
     theMatchMap['inning'] = inning;
     theMatchMap['no_of_players'] = no_of_players;
     theMatchMap['totalOvers'] = totalOvers;
     theMatchMap['currentBatterIndex'] = currentBatterIndex;
     theMatchMap['currentTeam'] = currentTeam;
+    theMatchMap['currentBowler'] = currentBowler.toString();
+
+    theMatchMap['score'] = score.join('#');
+    theMatchMap['wickets'] = wickets.join('#');
+    theMatchMap['over_count'] = over_count.join('#');
+    theMatchMap['currentBatters'] = currentBatters.join("*");
+    theMatchMap['wicketOrder'] = wicketOrder.join("*");
+    theMatchMap['date'] = date;
+
+    // storing batters
+    String allBattersString = "";
+    int count = 0;
+    for (List<Batter> lst in batters){
+      count++;
+      allBattersString += lst.join("*");
+      if (count ==1) {
+        allBattersString += "%";
+      }
+    }
+    theMatchMap['batters'] =allBattersString;
+
+    // storing bowlers
+    String allBowlersString = "";
+    count = 0;
+    for (List<Bowler> lst in bowlers){
+      count++;
+      allBowlersString += lst.join("*");
+      if (count ==1) {
+        allBowlersString += "%";
+      }
+    }
+
+    theMatchMap['bowlers'] = allBowlersString;
+
+    // storing Overs
+    String allOversString = "";
+    count = 0;
+    for (List<Over> lst in Overs){
+      count++;
+      allOversString += lst.join("*");
+      if (count ==1) {
+        allOversString += "%";
+      }
+    }
+
+    theMatchMap['Overs'] = allOversString;
+
+    return theMatchMap;
+  }
+
+
+  Map<String,dynamic> tolesserMap () {
+    Map<String,dynamic> theMatchMap = Map();
+    theMatchMap['currentBatterIndex'] = currentBatterIndex;
+    theMatchMap['currentTeam'] = currentTeam;
+    theMatchMap['currentBowler'] = currentBowler.toString();
 
     theMatchMap['score'] = score.join('#');
     theMatchMap['wickets'] = wickets.join('#');
@@ -284,7 +346,8 @@ class TheMatch {
   }
 
   TheMatch.fromMap(Map<String,dynamic> map){
-    hasWon=map['hasWon'];
+    id = map['id'];
+    hasWon=bool.parse(map['hasWon']);
     team1=map['team1'];
     team2=map['team2'];
     team1url=map['team1url'];
@@ -296,6 +359,10 @@ class TheMatch {
     inning=map['inning'];
     totalOvers=map['totalOvers'];
     currentTeam=map['currentTeam'];
+    if (map['currentBowler'] != "null") {
+      currentBowler = Bowler.fromString(map['currentBowler']);
+    }
+    date = int.parse(map['date']);
 
     List<String> arrayOfScore = map['score'].split('#');
     List<String> arrayOfWicket = map['wickets'].split('#');
@@ -304,27 +371,34 @@ class TheMatch {
     List<String> arrayOfWicketOrder = map['wicketOrder'].split('*');
 
     //getting score
+    score = [];
     for (String s in arrayOfScore){
       score.add(int.parse(s));
     }
 
     //getting wickets
+    wickets = [];
     for (String s in arrayOfWicket){
       wickets.add(int.parse(s));
     }
 
     //getting over_count
+    over_count = [];
     for (String s in arrayOfOverCount){
       over_count.add(double.parse(s));
     }
 
     //getting currentBatters
+    currentBatters = [];
     for (String s in arrayOfCurrentBatter){
+      if (s != "")
       currentBatters.add(Batter.fromString(s));
     }
 
     //getting wicketOrder
+    wicketOrder = [];
     for (String s in arrayOfWicketOrder){
+      if (s != "")
       wicketOrder.add(Batter.fromString(s));
     }
 
@@ -334,40 +408,43 @@ class TheMatch {
 
     int count = 0;
     // getting batters
+    batters = [[],[]];
     for (String s in arrayOfArrayOfbatters){
-      List<String> arrayOfBatters = s.split('*');
-      if (arrayOfBatters.isNotEmpty) {
-        batters.add([]);
-        for (String s in arrayOfBatters) {
-          batters[count].add(Batter.fromString(s));
-        }
-        count ++;
+      if (s != "") {
+        List<String> arrayOfBatters = s.split('*');
+          for (String s in arrayOfBatters) {
+            batters[count].add(Batter.fromString(s));
+          }
+          count++;
       }
     }
+    // debugPrint("FROMMATCH${batters.toString()}");
 
     count = 0;
     // getting bowlers
+    bowlers=[[],[]];
     for (String s in arrayOfArrayOfbowlers){
-      List<String> arrayOfBowlers = s.split('*');
-      if (arrayOfBowlers.isNotEmpty) {
-        bowlers.add([]);
-        for (String s in arrayOfBowlers) {
-          bowlers[count].add(Bowler.fromString(s));
-        }
-        count ++;
+      if (s != "") {
+        List<String> arrayOfBowlers = s.split('*');
+          bowlers.add([]);
+          for (String s in arrayOfBowlers) {
+            bowlers[count].add(Bowler.fromString(s));
+          }
+          count ++;
       }
     }
 
     count = 0;
     // getting Overs
+    Overs = [[],[]];
     for (String s in arrayOfArrayOfOvers){
-      List<String> arrayOfOvers = s.split('*');
-      if (arrayOfOvers.isNotEmpty) {
-        Overs.add([]);
-        for (String s in arrayOfOvers) {
-          Overs[count].add(Over.fromString(s));
-        }
-        count ++;
+      if (s != "") {
+        List<String> arrayOfOvers = s.split('*');
+          Overs.add([]);
+          for (String s in arrayOfOvers) {
+            Overs[count].add(Over.fromString(s));
+          }
+          count ++;
       }
     }
 

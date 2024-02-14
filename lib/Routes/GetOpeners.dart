@@ -4,6 +4,7 @@ import 'package:cric_scorer/models/Over.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:cric_scorer/MatchViewModel.dart';
 import '../utils/util.dart';
 
 class GetOpeners extends StatefulWidget {
@@ -14,6 +15,7 @@ class GetOpeners extends StatefulWidget {
 }
 
 class _GetOpenersState extends State<GetOpeners> {
+  final MatchViewModel viewModel = MatchViewModel();
   TextEditingController batter1cntrl = TextEditingController();
   TextEditingController batter2cntrl = TextEditingController();
   TextEditingController bowlercntrl = TextEditingController();
@@ -56,6 +58,39 @@ class _GetOpenersState extends State<GetOpeners> {
       });
     }
     return allGood;
+  }
+
+  void onPlayBtnClicked() async {
+    debugPrint("Lets Play!2!");
+    var randomError = "";
+      bool result = _validate();
+      print(result);
+      if (result) {
+        var match = viewModel.getCurrentMatch();
+        if (match == null) {
+          Navigator.pop(context);
+        }
+        Bowler bowler = Bowler(bowlercntrl.text);
+        Batter batter1 = Batter(batter1cntrl.text);
+        Batter batter2 = Batter(batter2cntrl.text);
+        match!.addBowler(bowler);
+        match.currentBatters = [];
+        match.addBatter(batter1);
+        match.addBatter(batter2);
+        match.Overs[match.currentTeam]
+            .add(Over(0, bowler.name, [batter1.name]));
+        match.currentBatterIndex = 0;
+        debugPrint(match.team1);
+        await viewModel.updateMatch(match);
+        Navigator.pushNamedAndRemoveUntil(
+            context, Util.matchPageRoute, (route) => false);
+      }
+    if (randomError.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.grey,
+        content: Text(randomError),
+      ));
+    }
   }
 
   @override
@@ -130,41 +165,8 @@ class _GetOpenersState extends State<GetOpeners> {
                   padding: EdgeInsets.only(top: 20, bottom: 20),
                   child: Center(
                     child: ElevatedButton(
-                      onPressed: () {
-                        debugPrint("Lets Play!2!");
-                        var randomError = "";
-                        if (Util.viewModel != null) {
-                          bool result = _validate();
-                          print(result);
-                          if (result) {
-                            var match = Util.viewModel?.getCurrentMatch();
-                            if (match == null) {
-                              Navigator.pop(context);
-                            }
-                            Bowler bowler = Bowler(bowlercntrl.text);
-                            Batter batter1 = Batter(batter1cntrl.text);
-                            Batter batter2 = Batter(batter2cntrl.text);
-                            match!.addBowler(bowler);
-                            match!.currentBatters = [];
-                            match.addBatter(batter1);
-                            match.addBatter(batter2);
-                            match.Overs[match.currentTeam]
-                                .add(Over(0, bowler.name, [batter1.name]));
-                            match.currentBatterIndex = 0;
-                            debugPrint(match.team1);
-                            Navigator.pushNamedAndRemoveUntil(
-                                context, Util.matchPageRoute, (route) => false);
-                          }
-                        } else {
-                          randomError =
-                              "View Model Not Found. I need A restart~~";
-                        }
-                        if (randomError.isNotEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            backgroundColor: Colors.grey,
-                            content: Text(randomError),
-                          ));
-                        }
+                      onPressed: () async {
+                        onPlayBtnClicked();
                       },
                       child: Text(
                         "Let's Play!!",

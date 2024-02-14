@@ -1,7 +1,8 @@
 
 import 'package:cric_scorer/models/Match.dart';
-import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';
+
+import 'package:cric_scorer/MatchViewModel.dart';
 
 class CardBalls extends StatefulWidget {
 
@@ -18,17 +19,16 @@ class _CardBallsState extends State<CardBalls> {
 
   @override
   Widget build(BuildContext context) {
-    var viewModel = Util.viewModel;
-    if(viewModel != null){
-      TheMatch? match = viewModel.getCurrentMatch();
-      if (match != null){
-          if(match.Overs[match.currentTeam].isNotEmpty){
-        setState(() {
-           bowls = match.Overs[match.currentTeam].last.bowls;
-           count = bowls.length;
-        });
-          }
-      }
+    var viewModel = MatchViewModel();
+    TheMatch? match = viewModel.getCurrentMatch();
+    if (match != null){
+        if(match.Overs[match.currentTeam].isNotEmpty){
+      setState(() {
+         bowls = match.Overs[match.currentTeam].last.bowls;
+         count = bowls.length;
+         debugPrint("$count, $bowls");
+      });
+        }
     }
 
 

@@ -2,10 +2,12 @@ import 'package:cric_scorer/Components/CardBowler.dart';
 import 'package:cric_scorer/Components/forMatch//CardInfoScorer.dart';
 import 'package:cric_scorer/Components/forMatch//CardScorer.dart';
 import 'package:cric_scorer/Components/forMatch/CardBalls.dart';
-import 'package:cric_scorer/Components/forMatch/CardBatter.dart';
+import 'package:cric_scorer/Components/CardBatter.dart';
 import 'package:cric_scorer/models/Match.dart';
 import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';
+
+import 'package:cric_scorer/MatchViewModel.dart';
 
 class MatchPage extends StatefulWidget {
   const MatchPage({super.key});
@@ -15,20 +17,28 @@ class MatchPage extends StatefulWidget {
 }
 
 class _MatchPageState extends State<MatchPage> {
-  var viewModel = Util.viewModel;
+  final MatchViewModel viewModel = MatchViewModel();
   TheMatch? match;
   bool isLoading = false;
 
-  _MatchPageState() {
-    if (viewModel != null) {
-      match = viewModel!.getCurrentMatch()!;
-    }
+  _MatchPageState(){
+    match = viewModel.getCurrentMatch();
   }
 
-  void swap() {
+  void swap() async{
     setState(() {
+      isLoading =true;
       match!.currentBatters = List.of(match!.currentBatters.reversed);
     });
+
+    if (match != null) {
+      await viewModel.updateMatch(match!);
+    }
+    setState(() {
+      isLoading=false;
+    });
+
+
   }
 
   void retire() async {
@@ -106,10 +116,19 @@ class _MatchPageState extends State<MatchPage> {
       await Navigator.pushNamed(context, Util.getBowlerRoute)
           .then((value) => {setState(() {})});
     }
-    isLoading = false;
+    if (match != null) {
+      debugPrint("heres");
+      await viewModel.updateMatch(match!);
+      debugPrint("jjsd");
+    }
+
+    setState(() {
+
+      isLoading = false;
+    });
   }
 
-  void popScore() {
+  void popScore() async {
     isLoading = true;
     setState(() {
       bool result = match!.popScore();
@@ -118,7 +137,12 @@ class _MatchPageState extends State<MatchPage> {
         goBack();
       }
     });
+    if (match != null) {
+      await viewModel.updateMatch(match!);
+    }
+    setState(() {
     isLoading = false;
+    });
   }
 
   void goBack() {
@@ -135,9 +159,9 @@ class _MatchPageState extends State<MatchPage> {
       child: PopScope(
         canPop: false,
         onPopInvoked: (bool didPop) {
-          debugPrint(didPop.toString());
-          debugPrint("ue");
-          goBack();
+          // debugPrint(didPop.toString());
+          // debugPrint("ue");
+          Navigator.pushNamedAndRemoveUntil(context, Util.mainPageRoute, (route) => false);
         },
         child: Container(
           decoration: BoxDecoration(

@@ -6,14 +6,13 @@ import 'package:cric_scorer/Routes/GetOpeners.dart';
 import 'package:cric_scorer/Routes/GetWicket.dart';
 import 'package:cric_scorer/Routes/MainPage.dart';
 import 'package:cric_scorer/Routes/MatchPage.dart';
+import 'package:cric_scorer/Routes/Scoreboard.dart';
 import 'package:cric_scorer/Routes/WinnerPage.dart';
-import 'package:cric_scorer/repository/MatchRepository.dart';
 import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  var repository = MatchRepository();
-  Util.viewModel = MatchViewModel(repository);
+  MatchViewModel();
   runApp(const MyApp());
 }
 
@@ -35,6 +34,7 @@ class MyApp extends StatelessWidget {
         Util.matchPageRoute:(context) => MatchPage(),
         Util.mainPageRoute:(context) => MainPage(),
         Util.winnerPageRoute:(context) => WinnerPage(),
+        Util.scoreCardRoute:(context) => Scoreboard(),
       },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.transparent),

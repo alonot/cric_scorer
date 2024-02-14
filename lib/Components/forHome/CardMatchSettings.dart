@@ -11,9 +11,8 @@ class CardMatchSettings extends StatefulWidget {
   final TextEditingController oversController;
   final TextEditingController noplayersController;
   final Function() reset;
-  final FocusNode focusNode;
 
-  CardMatchSettings(this.team1,this.team2,this.errorTextOver,this.errorTextPlayer,this.oversController,this.noplayersController,this.focusNode,this.reset,{super.key});
+  CardMatchSettings(this.team1,this.team2,this.errorTextOver,this.errorTextPlayer,this.oversController,this.noplayersController,this.reset,{super.key});
 
   @override
   State<CardMatchSettings> createState() => _state;
@@ -36,7 +35,6 @@ class _CardMatchSettingsState extends State<CardMatchSettings> {
 
   @override
   Widget build(BuildContext context) {
-    FocusNode focus= FocusNode();
     return Padding(
       padding: EdgeInsets.only(top: 15),
       child: Card(
@@ -193,9 +191,6 @@ class _CardMatchSettingsState extends State<CardMatchSettings> {
                       controller: widget.oversController,
                       textAlign: TextAlign.start,
                       maxLength: 3,
-                      onEditingComplete: (){
-                        FocusScope.of(context).requestFocus(focus);
-                      },
                       decoration: InputDecoration(
                           labelText: "Overs",
                           labelStyle: TextStyle(color: Colors.white),
@@ -216,10 +211,6 @@ class _CardMatchSettingsState extends State<CardMatchSettings> {
                       controller: widget.noplayersController,
                       textAlign: TextAlign.start,
                       maxLength: 2,
-                      focusNode: focus,
-                      onEditingComplete: (){
-                        FocusScope.of(context).unfocus();
-                      },
                       decoration: InputDecoration(
                           labelText: "No Of Playes",
                           labelStyle: TextStyle(color: Colors.white),

@@ -1,8 +1,9 @@
-import 'package:cric_scorer/Components/forMatch/CardBatter.dart';
+import 'package:cric_scorer/Components/CardBatter.dart';
 import 'package:cric_scorer/models/Batter.dart';
 import 'package:cric_scorer/models/Match.dart';
-import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';
+
+import 'package:cric_scorer/MatchViewModel.dart';
 
 class GetBatter extends StatefulWidget {
   const GetBatter({super.key});
@@ -12,40 +13,57 @@ class GetBatter extends StatefulWidget {
 }
 
 class _GetBatterState extends State<GetBatter> {
+  final MatchViewModel viewModel = MatchViewModel();
   TextEditingController battercntrl = TextEditingController();
-  List<Batter> retiredBatters =[];
+  List<Batter> retiredBatters = [];
   TheMatch? match;
   String score = "0";
   String wickets = "0";
   String overs = "0.0";
 
-  void onTap(Batter b){
+  void onTap(Batter b) async {
     final match = this.match;
-    if(match != null){
-      b.outBy='Not Out';
+    if (match != null) {
+      b.outBy = 'Not Out';
       match.currentBatters.add(b);
+      await viewModel.updateMatch(match);
+      Navigator.pop(context);
+    }
+  }
+
+  void onPlayBtnClick() async {
+    debugPrint("Lets Play!!");
+    TheMatch? match = viewModel.getCurrentMatch();
+    if (match != null) {
+      match.currentBatters[match.currentBatterIndex].outBy = 'Retired Out';
+      match.currentBatters.removeAt(match.currentBatterIndex);
+      debugPrint(match.currentBatters[0].toString());
+      match.addBatter(Batter(battercntrl.text));
+      match.currentBatters = List.of(match.currentBatters.reversed);
+
+      await viewModel.updateMatch(match);
+
       Navigator.pop(context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    var viewModel =Util.viewModel;
-    if(viewModel != null){
-      match = viewModel.getCurrentMatch();
-      if(match != null){
-        retiredBatters=[];
-        score = match!.score[match!.currentTeam].toString();
-        wickets = match!.wickets[match!.currentTeam].toString();
-        overs = match!.over_count[match!.currentTeam].toStringAsFixed(1);
-        for(Batter b in match!.batters[match!.currentTeam]){
-          if (b.outBy == "Retired Out"){
-            retiredBatters.add(b);
-          }
+    var match = viewModel.getCurrentMatch();
+    if (match != null) {
+      retiredBatters = [];
+      score = match!.score[match!.currentTeam].toString();
+      wickets = match!.wickets[match!.currentTeam].toString();
+      overs = match!.over_count[match!.currentTeam].toStringAsFixed(1);
+      for (Batter b in match!.batters[match!.currentTeam]) {
+        if (b.outBy == "Retired Out") {
+          retiredBatters.add(b);
         }
       }
     }
-    return PopScope(canPop: false,child: Container(
+
+
+    return PopScope(canPop: false, child: Container(
         decoration: BoxDecoration(
           border: null,
           image: DecorationImage(
@@ -62,7 +80,10 @@ class _GetBatterState extends State<GetBatter> {
                     child: Padding(
                       padding: EdgeInsets.all(10.0),
                       child: SizedBox(
-                        width: MediaQuery.of(context).size.width,
+                        width: MediaQuery
+                            .of(context)
+                            .size
+                            .width,
                         height: 120,
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
@@ -70,7 +91,7 @@ class _GetBatterState extends State<GetBatter> {
                             TextField(
                               controller: battercntrl,
                               textAlign: TextAlign.start,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                   labelText: 'New Batter',
                                   labelStyle: TextStyle(color: Colors.white)),
                             ),
@@ -80,10 +101,12 @@ class _GetBatterState extends State<GetBatter> {
                                   text: TextSpan(children: [
                                     TextSpan(text: 'Socre : '),
                                     TextSpan(
-                                        text: score+"-"+wickets, style: TextStyle(color: Colors.red)),
+                                        text: score + "-" + wickets,
+                                        style: TextStyle(color: Colors.red)),
                                     TextSpan(
-                                        text: overs+' OVERS',
-                                        style: TextStyle(color: Colors.blueGrey))
+                                        text: overs + ' OVERS',
+                                        style: TextStyle(
+                                            color: Colors.blueGrey))
                                   ])),
                             )
                           ],
@@ -92,32 +115,20 @@ class _GetBatterState extends State<GetBatter> {
                     ),
                   ),
                     CardBatter(retiredBatters, false, onTap)
-                    ,Padding(
+                    , Padding(
                       padding: EdgeInsets.only(top: 20, bottom: 20),
                       child: Center(
                         child: ElevatedButton(
-                          onPressed: () {
-                            debugPrint("Lets Play!!");
-                            var viewModel = Util.viewModel;
-                            if(viewModel != null){
-                              TheMatch? match = viewModel.getCurrentMatch();
-                              if(match != null){
-                                match.currentBatters[match.currentBatterIndex].outBy = 'Retired Out';
-                                match.currentBatters.removeAt(match.currentBatterIndex);
-                                debugPrint(match.currentBatters[0].toString());
-                                match.addBatter(Batter(battercntrl.text));
-                                match.currentBatters = List.of(match.currentBatters.reversed);
-                                Navigator.pop(context);
-                              }
-                            }
+                          onPressed: () async {
+                            onPlayBtnClick();
                           },
-                          child: Text(
-                            "Let's Play!!",
-                            style: TextStyle(color: Colors.white),
-                          ),
                           style: ButtonStyle(
                               backgroundColor:
                               MaterialStateProperty.all(Color(0x42A4E190))),
+                          child: const Text(
+                            "Let's Play!!",
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     ),
@@ -127,4 +138,5 @@ class _GetBatterState extends State<GetBatter> {
             )
         )),);
   }
+
 }

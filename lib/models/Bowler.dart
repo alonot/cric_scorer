@@ -1,5 +1,7 @@
 
 
+import 'package:flutter/cupertino.dart';
+
 class Bowler{
   late String name;
   late int runs=0;
@@ -19,11 +21,13 @@ class Bowler{
 
   @override
   String toString(){
-    return "$name#$wickets#$overs#$maidens#$economy";
+    return "$name#$runs#$wickets#$overs#$maidens#$economy";
   }
 
   Bowler.fromString(String bowlerString){
+    debugPrint(bowlerString);
     List<String> arrayOfDatas = bowlerString.split("#");
+    debugPrint(arrayOfDatas.toString());
     name = arrayOfDatas[0];
     runs = int.parse(arrayOfDatas[1]);
     wickets = int.parse(arrayOfDatas[2]);

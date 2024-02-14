@@ -6,6 +6,8 @@ import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:cric_scorer/MatchViewModel.dart';
+
 class GetBowler extends StatefulWidget {
   const GetBowler({super.key});
 
@@ -14,16 +16,14 @@ class GetBowler extends StatefulWidget {
 }
 
 class _GetBowlerState extends State<GetBowler> {
+  final MatchViewModel viewModel = MatchViewModel();
   TextEditingController bowlercntrl = TextEditingController();
   List<Bowler> bowlers = [];
   TheMatch? match;
 
-  void selectBowler(Bowler? bowler) {
+  void selectBowler(Bowler? bowler) async {
     if (match == null) {
-      var viewModel = Util.viewModel;
-      if (viewModel != null) {
         match = viewModel.getCurrentMatch();
-      }
     }
     if (bowler != null) {
       if (match!.currentBowler!.name == bowler.name) {
@@ -38,28 +38,50 @@ class _GetBowlerState extends State<GetBowler> {
           bowler.name,
           [match!.currentBatters[match!.currentBatterIndex].name],
         ));
-        Navigator.pop(context);
+
       });
+      await viewModel.updateMatch(match!);
+        Navigator.pop(context);
     }
+  }
+
+  void onPlayBtnClicked() async {
+    // TODO : check for same name
+    if (bowlercntrl.text.isEmpty) {
+      debugPrint("her");
+      ScaffoldMessenger.of(context).showSnackBar(
+          Util.getsnackbar('Name Cannot be Empty.'));
+      return;
+    }
+    Bowler bowler =
+    Bowler(bowlercntrl.text); // Adding the new Bowler
+    setState(() {
+      match!.addBowler(bowler);
+      // Adding a new Over
+      match!.Overs[match!.currentTeam].add(Over(
+        match!.over_count[match!.currentTeam].toInt(),
+        bowler.name,
+        [match!.currentBatters[match!.currentBatterIndex].name],
+      ));
+    });
+    await viewModel.updateMatch(match!);
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    var viewModel = Util.viewModel;
-    if (viewModel != null) {
       match = viewModel.getCurrentMatch();
       if (match != null) {
         setState(() {
           bowlers = match!.bowlers[match!.currentTeam];
         });
-      }
     }
 
     return Scaffold(
       key: Key("GetBowler"),
       backgroundColor: Colors.transparent,
       body: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             border: null,
             image: DecorationImage(
                 image: AssetImage('assests/background.jpg'), fit: BoxFit.cover),
@@ -88,7 +110,7 @@ class _GetBowlerState extends State<GetBowler> {
                                   FilteringTextInputFormatter.singleLineFormatter
                                 ],
                                 enableSuggestions: true,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                     labelText: 'Next Bowler',
                                     labelStyle: TextStyle(color: Colors.white)),
                               ),
@@ -105,26 +127,8 @@ class _GetBowlerState extends State<GetBowler> {
                       padding: EdgeInsets.only(top: 20, bottom: 20),
                       child: Center(
                         child: ElevatedButton(
-                          onPressed: () {
-                            // TODO : check for same name
-                            if (bowlercntrl.text.isEmpty) {
-                              debugPrint("her");
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  Util.getsnackbar('Name Cannot be Empty.'));
-                              return;
-                            }
-                            Bowler bowler =
-                            Bowler(bowlercntrl.text); // Adding the new Bowler
-                            setState(() {
-                              match!.addBowler(bowler);
-                              // Adding a new Over
-                              match!.Overs[match!.currentTeam].add(Over(
-                                match!.over_count[match!.currentTeam].toInt(),
-                                bowler.name,
-                                [match!.currentBatters[match!.currentBatterIndex].name],
-                              ));
-                            });
-                            Navigator.pop(context);
+                          onPressed: ()  {
+                            onPlayBtnClicked();
                           },
                           style: ButtonStyle(
                               backgroundColor:

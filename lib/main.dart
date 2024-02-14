@@ -45,6 +45,10 @@ class MyApp extends StatelessWidget {
           bodyLarge: TextStyle(
             fontFamily: 'Roboto',
             color: Colors.white
+          ),
+          displayMedium: TextStyle(
+              fontFamily: 'Roboto',
+              color: Colors.white
           )
         )
       ),

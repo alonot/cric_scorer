@@ -25,7 +25,7 @@ class TheMatch {
   late List<int> wickets;
   late List<double> over_count;
   late List<Batter> currentBatters;
-  late List<Batter> wicketOrder;
+  late List<List<List<dynamic>>> wicketOrder;
   late List<List<Batter>> batters;
   late List<List<Bowler>> bowlers;
   late List<List<Over>> Overs;
@@ -40,7 +40,7 @@ class TheMatch {
     this.bowlers = List.of([[], []]);
     currentBatters = List.of([]);
     currentBowler = null;
-    wicketOrder = [];
+    wicketOrder = [[],[]];
     currentBatterIndex = 0;
     Overs = List.of([[], []]);
     inning = 1;
@@ -175,7 +175,7 @@ class TheMatch {
       //  Handle Wicket
       if (result[0].length != 1){
         wickets[currentTeam]-=1;
-        var batter = wicketOrder.removeLast();
+        var batter = wicketOrder.removeLast()[currentTeam][0];
         currentBatters.remove(batters[currentTeam].removeLast());
         currentBatters.add(batter);
         currentBatters = List.of(currentBatters.reversed);
@@ -247,12 +247,33 @@ class TheMatch {
     theMatchMap['wickets'] = wickets.join('#');
     theMatchMap['over_count'] = over_count.join('#');
     theMatchMap['currentBatters'] = currentBatters.join("*");
-    theMatchMap['wicketOrder'] = wicketOrder.join("*");
     theMatchMap['date'] = date;
+
+    String allWicketOrders="";
+    int len = wicketOrder[0].length;
+    int count =0;
+    for (List<dynamic> lst in wicketOrder[0]){
+      allWicketOrders += lst.join("^");
+      if (count ++ != len -1){
+      allWicketOrders +="%";
+      }
+    }
+    allWicketOrders +="*";
+    count = 0;
+    len = wicketOrder[1].length;
+    for (List<dynamic> lst in wicketOrder[1]){
+      allWicketOrders += lst.join("^");
+      if (count ++ != len -1){
+        allWicketOrders +="%";
+      }
+    }
+    // debugPrint("$allWicketOrders");
+    // debugPrint("${wicketOrder.toString()}");
+    theMatchMap['wicketOrder'] = allWicketOrders;
 
     // storing batters
     String allBattersString = "";
-    int count = 0;
+    count = 0;
     for (List<Batter> lst in batters){
       count++;
       allBattersString += lst.join("*");
@@ -294,6 +315,7 @@ class TheMatch {
 
   Map<String,dynamic> tolesserMap () {
     Map<String,dynamic> theMatchMap = Map();
+    theMatchMap['hasWon'] = hasWon.toString();
     theMatchMap['currentBatterIndex'] = currentBatterIndex;
     theMatchMap['currentTeam'] = currentTeam;
     theMatchMap['currentBowler'] = currentBowler.toString();
@@ -302,11 +324,33 @@ class TheMatch {
     theMatchMap['wickets'] = wickets.join('#');
     theMatchMap['over_count'] = over_count.join('#');
     theMatchMap['currentBatters'] = currentBatters.join("*");
-    theMatchMap['wicketOrder'] = wicketOrder.join("*");
+
+
+    String allWicketOrders="";
+    int len = wicketOrder[0].length;
+    int count =0;
+    for (List<dynamic> lst in wicketOrder[0]){
+      allWicketOrders += lst.join("^");
+      if (count ++ != len -1){
+        allWicketOrders +="%";
+      }
+    }
+    allWicketOrders +="*";
+    count = 0;
+    len = wicketOrder[1].length;
+    for (List<dynamic> lst in wicketOrder[1]){
+      allWicketOrders += lst.join("^");
+      if (count ++ != len -1){
+        allWicketOrders +="%";
+      }
+    }
+    // debugPrint("$allWicketOrders");
+    // debugPrint("wicket${wicketOrder.toString()}");
+    theMatchMap['wicketOrder'] = allWicketOrders;
 
     // storing batters
     String allBattersString = "";
-    int count = 0;
+    count = 0;
     for (List<Batter> lst in batters){
       count++;
       allBattersString += lst.join("*");
@@ -396,17 +440,27 @@ class TheMatch {
     }
 
     //getting wicketOrder
-    wicketOrder = [];
+    wicketOrder = [[],[]];
+    int count = 0;
     for (String s in arrayOfWicketOrder){
-      if (s != "")
-      wicketOrder.add(Batter.fromString(s));
+      if (s != ""){
+        List<String> arrayOfEachOrder = s.split('%');
+        // debugPrint("lst${arrayOfEachOrder}");
+        for (String each in arrayOfEachOrder){
+          var eachLst = each.split('^');
+          // debugPrint("${eachLst}");
+          wicketOrder[count].add([Batter.fromString(eachLst[0]),eachLst[1]]);
+        }
+        count ++;
+
+    }
     }
 
     List<String> arrayOfArrayOfbatters = map['batters'].split('%');
     List<String> arrayOfArrayOfbowlers = map['bowlers'].split('%');
     List<String> arrayOfArrayOfOvers = map['Overs'].split('%');
 
-    int count = 0;
+    count = 0;
     // getting batters
     batters = [[],[]];
     for (String s in arrayOfArrayOfbatters){

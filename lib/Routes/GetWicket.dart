@@ -66,7 +66,8 @@ class _GetWicketState extends State<GetWicket> {
       if (wicketType != "Run Out") {
         batter!.outBy += 'b ${match!.currentBowler}';
       }
-      match!.wicketOrder.add(batter!);
+      match!.wicketOrder[match!.currentTeam].add([batter!,"$overs\t\t $score-$wickets"]);
+      debugPrint("GetWicket: ${match!.wicketOrder[match!.currentTeam]}");
       debugPrint(match!.currentBatters[0].name);
       match!.currentBatters.remove(batter);
       debugPrint(match!.currentBatters[0].name);

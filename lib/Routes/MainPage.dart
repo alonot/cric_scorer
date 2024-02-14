@@ -45,7 +45,18 @@ class _MainPageState extends State<MainPage> {
               itemBuilder: (context, index) {
                 debugPrint(index.toString());
                 debugPrint(matches![index].id.toString());
-                return Padding(
+                if (matches![index].currentBowler == null){
+                  viewModel.deleteMatch(matches![index].id!);
+                  count -=1;
+                  matches?.removeAt(index);
+                }else{
+                return Dismissible(key: Key(matches![index].id.toString()),
+                    direction: DismissDirection.horizontal,
+                    onDismissed: (direction){
+                    viewModel.deleteMatch(matches![index].id!);
+                      matches!.removeAt(index);
+                    },
+                    child: Padding(
                   padding: EdgeInsets.all(5),
                   child: Container(
                     height: 180 ,
@@ -55,7 +66,7 @@ class _MainPageState extends State<MainPage> {
                       match: matches![index],
                     ),
                   ),
-                );
+                ));}
               },
             )));
   }

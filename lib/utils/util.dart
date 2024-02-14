@@ -40,13 +40,13 @@ int timeNowMinutes(DateTime dt){
 //  : To fetch stats/players from the backend.
 //  : backend checking
 //  : Remove concept of focus node
-// TODO : delete match functionality
+// : delete match functionality
 //  : ScoreCard
 //  : Load previous match
-// TODO : a winner trophy in the scoreCard.
-// TODO : Fall Of wickets
+//  : a winner trophy in the scoreCard.
+//  : Fall Of wickets
 // TODO : Check for Available batter in
-// TODO : in openers, in batters, in bowlers page.
+// TODO : in openers, in batters, // in bowlers page.
 //  : Inetgrate the winner page.
 // TODO : Same name check.
 

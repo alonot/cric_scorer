@@ -53,37 +53,24 @@ class _MatchPageState extends State<MatchPage> {
   }
 
   void updateScore(String s, String run) async {
+    /**
+     * Updates the score and calls other pages if needed.
+     */
     bool needABowler = false;
     isLoading = true;
     setState(() {
       needABowler = match!.addScore(s, run);
     });
-    if (run.contains("OUT")) {
-      match!.wickets[match!.currentTeam] += 1;
-    }
-    if (match!.inning == 2) {
-      var cur = match!.currentTeam;
-      if (match!.score[cur] >= match!.score[(cur + 1) % 2]) {
-        match!.hasWon = true;
-        Util.team = cur == 0 ? match!.team1 : match!.team2;
-        Util.wonBy =
-            (match!.no_of_players - 1 - match!.wickets[cur]).toString();
-        Navigator.pushNamed(context, Util.winnerPageRoute);
-      } else if (match!.wickets[match!.currentTeam] ==
-          match!.no_of_players - 1) {
-        Util.team = cur == 0 ? match!.team2 : match!.team1;
-        match!.hasWon = true;
-        Util.wonBy =
-            (match!.score[(cur + 1) % 2] - match!.score[cur] + 1).toString();
-        Navigator.pushNamed(context, Util.winnerPageRoute);
-      }
-    }
 
     if (run.contains("OUT")) {
+      match!.wickets[match!.currentTeam] += 1;
       await Navigator.pushNamed(context, Util.wicketRoute)
           .then((value) => {setState(() {})});
     }
 
+    /**
+     * Check for end of innings
+     */
     if (match!.over_count[match!.currentTeam] >= match!.totalOvers ||
         match!.wickets[match!.currentTeam] == match!.no_of_players - 1) {
       // Call the openers . change the current Team index;
@@ -97,6 +84,7 @@ class _MatchPageState extends State<MatchPage> {
           return false;
         }).then((value) => setState(() {}));
       } else {
+        // Match is Finished...
         var cur = match!.currentTeam;
         if (match!.score[cur] >= match!.score[(cur + 1) % 2]) {
           Util.team = cur == 0 ? match!.team1 : match!.team2;
@@ -108,10 +96,14 @@ class _MatchPageState extends State<MatchPage> {
               (match!.score[(cur + 1) % 2] - match!.score[cur] + 1).toString();
         }
         match!.hasWon = true;
+        viewModel.updateMatch(match!);
         Navigator.pushNamed(context, Util.winnerPageRoute);
       }
     }
 
+    /**
+     * Calls the bowler page to get a new bowler
+     */
     if (needABowler) {
       await Navigator.pushNamed(context, Util.getBowlerRoute)
           .then((value) => {setState(() {})});
@@ -123,7 +115,6 @@ class _MatchPageState extends State<MatchPage> {
     }
 
     setState(() {
-
       isLoading = false;
     });
   }

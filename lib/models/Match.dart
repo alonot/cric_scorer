@@ -52,7 +52,7 @@ class TheMatch {
         : optTo == "Bat"
             ? 1
             : 0;
-    debugPrint(currentTeam.toString() + toss + optTo);
+    // debugPrint(currentTeam.toString() + toss + optTo);
 
     if (over_count != null) {
       this.over_count = over_count;
@@ -316,6 +316,7 @@ class TheMatch {
   Map<String,dynamic> tolesserMap () {
     Map<String,dynamic> theMatchMap = Map();
     theMatchMap['hasWon'] = hasWon.toString();
+    theMatchMap['inning'] = inning;
     theMatchMap['currentBatterIndex'] = currentBatterIndex;
     theMatchMap['currentTeam'] = currentTeam;
     theMatchMap['currentBowler'] = currentBowler.toString();
@@ -480,7 +481,7 @@ class TheMatch {
     for (String s in arrayOfArrayOfbowlers){
       if (s != "") {
         List<String> arrayOfBowlers = s.split('*');
-          bowlers.add([]);
+          // bowlers.add([]);
           for (String s in arrayOfBowlers) {
             bowlers[count].add(Bowler.fromString(s));
           }
@@ -494,13 +495,16 @@ class TheMatch {
     for (String s in arrayOfArrayOfOvers){
       if (s != "") {
         List<String> arrayOfOvers = s.split('*');
-          Overs.add([]);
+          // Overs.add([]);
           for (String s in arrayOfOvers) {
             Overs[count].add(Over.fromString(s));
           }
           count ++;
       }
     }
+
+    // debugPrint("Overs : ${Overs}");
+
 
   }
 

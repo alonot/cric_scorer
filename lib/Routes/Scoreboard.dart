@@ -111,7 +111,7 @@ class _ScoreboardState extends State<Scoreboard> {
                     title: Text(score1,style: TextStyle(color: Colors.white),),
                     trailing: Text(overs1,style: TextStyle(color: Colors.white),),
                   ),
-                  isSelected == 0 ? CardBatter(battersTeam1, false, (p0) => null):SizedBox(width: 0 ,height: 0,),
+                  isSelected == 0 ? CardBatter(battersTeam1, false, (p0) => null,true):SizedBox(width: 0 ,height: 0,),
                   isSelected == 0 ? CardBowler(bowlersTeam1):SizedBox(width: 0 ,height: 0,),
                   isSelected == 0 ? FallOfWickets(wicketOrder1, (wicketOrder1.length)):SizedBox(width: 0 ,height: 0,),
                 ],
@@ -135,7 +135,7 @@ class _ScoreboardState extends State<Scoreboard> {
                     trailing: Text(overs2,style: TextStyle(color: Colors.white),),
                   ),
                   isSelected == 1 ?
-                  CardBatter(battersTeam2, false, (p0) => null):SizedBox(width: 0,height: 0,),
+                  CardBatter(battersTeam2, false, (p0) => null,true):SizedBox(width: 0,height: 0,),
                   isSelected == 1 ? CardBowler(bowlersTeam2):SizedBox(width: 0,height: 0,),
                   isSelected == 1 ? FallOfWickets(wicketOrder2, wicketOrder2.length):SizedBox(width: 0 ,height: 0,),
                 ],

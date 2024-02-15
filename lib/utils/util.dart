@@ -32,6 +32,20 @@ int timeNowMinutes(DateTime dt){
 
 }
 
+Future<bool?> displayDialog(String text,BuildContext context) async {
+  return showDialog<bool>( context: context, builder:(context) {
+    return AlertDialog(
+
+      title: Text(text),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context,true), child: const Text("OK")),
+        TextButton(onPressed: () => Navigator.pop(context,false), child: const Text("Cancel")),
+      ],
+
+    );
+  });
+}
+
 //  : add new page that contains all the previous matches and a floating button
 //  : Fetch matches from backend for Main Page
 //  : Connect the database.
@@ -49,6 +63,7 @@ int timeNowMinutes(DateTime dt){
 // TODO : in openers, in batters, // in bowlers page.
 //  : Inetgrate the winner page.
 // TODO : Same name check.
+//  : add how got out in scoreCard
 
 
 // TODO : stats Page

@@ -37,7 +37,7 @@ class MatchViewModel{
   }
 
   Future<int> updateMatch(TheMatch match) async {
-    debugPrint(match.id.toString()+"ID");
+    debugPrint(match.inning.toString()+"IDini"+match.id.toString());
     return await _databaseHelper.updateMatch(match);
   }
 

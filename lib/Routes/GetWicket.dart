@@ -28,9 +28,31 @@ class _GetWicketState extends State<GetWicket> {
   String wickets = "0";
   String overs = "0.0";
 
+  _GetWicketState(){
+    this.match = viewModel.getCurrentMatch();
+    final match = this.match;
+    if (match != null) {
+      batters = [match.currentBatters[0].name, match.currentBatters[1].name];
+      retiredBatters = [];
+      batterOut = batters[0];
+      isMatchOver = match.hasWon;
+      debugPrint("Match:${isMatchOver}");
+      score = match.score[match.currentTeam].toString();
+      wickets = match.wickets[match.currentTeam].toString();
+      overs = match.over_count[match.currentTeam].toStringAsFixed(1);
+      for (Batter b in match.batters[match.currentTeam]) {
+        if (b.outBy == "Retired Out") {
+          retiredBatters.add(b);
+        }
+      }
+    }
+  }
+
+
+
   void HandleWicket() async {
     if (showhelper) {
-      print("Yes" + helpercntrl.text);
+      // print("Yes" + helpercntrl.text);
       if (helpercntrl.text.isEmpty) {
         ScaffoldMessenger.of(context)
             .showSnackBar(Util.getsnackbar('Fields must not be empty'));
@@ -38,7 +60,7 @@ class _GetWicketState extends State<GetWicket> {
       }
     }
     if (match != null) {
-      print("yes");
+      // print("yes");
       Batter? batter;
       for (Batter b in match!.currentBatters) {
         if (b.name == batterOut) {
@@ -46,6 +68,7 @@ class _GetWicketState extends State<GetWicket> {
           break;
         }
       }
+      batter!.outBy = '';
       switch (wicketType) {
         case "Hit Wicket":
           batter!.outBy = 'Hit Wicket';
@@ -68,9 +91,9 @@ class _GetWicketState extends State<GetWicket> {
       }
       match!.wicketOrder[match!.currentTeam].add([batter!,"$overs\t\t $score-$wickets"]);
       debugPrint("GetWicket: ${match!.wicketOrder[match!.currentTeam]}");
-      debugPrint(match!.currentBatters[0].name);
+      debugPrint("${match!.currentBatters[0].outBy} ${batter!.outBy} ${match!.currentBatters[1].outBy}");
       match!.currentBatters.remove(batter);
-      debugPrint(match!.currentBatters[0].name);
+      // debugPrint(match!.currentBatters[0].name);
 
       await viewModel.updateMatch(match!);
     }
@@ -90,22 +113,6 @@ class _GetWicketState extends State<GetWicket> {
 
   @override
   Widget build(BuildContext context) {
-      this.match = viewModel.getCurrentMatch();
-      final match = this.match;
-      if (match != null) {
-        batters = [match.currentBatters[0].name, match.currentBatters[1].name];
-        batterOut = batters[0];
-        retiredBatters = [];
-        isMatchOver = match.hasWon;
-        score = match.score[match.currentTeam].toString();
-        wickets = match.wickets[match.currentTeam].toString();
-        overs = match.over_count[match.currentTeam].toStringAsFixed(1);
-        for (Batter b in match.batters[match.currentTeam]) {
-          if (b.outBy == "Retired Out") {
-            retiredBatters.add(b);
-          }
-        }
-      }
 
 
     return PopScope(
@@ -300,6 +307,7 @@ class _GetWicketState extends State<GetWicket> {
                                         value: batters[1],
                                         onChanged: (val) {
                                           setState(() {
+                                            debugPrint("BatterWicket ${val}");
                                             if (val != null) {
                                               batterOut = batters[1];
                                             }
@@ -342,22 +350,23 @@ class _GetWicketState extends State<GetWicket> {
                         ),
                       ),
                     ),
-                    Container(
+                    !isMatchOver?Container(
                       child: CardBatter(
                         retiredBatters,
                         false,
                         onTap,
+                        false,
                         key: Key("Unique"),
                       ),
-                    ),
-                    Container(
+                    ):SizedBox(width: 0,height: 0,),
+                     Container(
                       child: Padding(
                         padding: EdgeInsets.only(top: 20, bottom: 20),
                         child: Center(
                           child: ElevatedButton(
                             onPressed: () async {
                               debugPrint("Lets Continue > Got Wicket!!");
-                              if (battercntrl.text.isEmpty) {
+                              if (!isMatchOver && battercntrl.text.isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                     Util.getsnackbar(
                                         'Fields must not be empty'));

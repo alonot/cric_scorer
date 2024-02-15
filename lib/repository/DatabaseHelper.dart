@@ -120,6 +120,7 @@ class DatabaseHelper {
     }else{
       Map<String,dynamic> result1 = (await db.query(matchTable,orderBy: "$colId DESC",limit: 1))[0];
       result = result1['id'];
+      debugPrint("${result1['date']} ${result1['id']}");
     }
 
     return result;
@@ -130,7 +131,7 @@ class DatabaseHelper {
     Database db = await this.database;
     var map =match.tolesserMap();
     map.remove('id');
-    debugPrint("Here ${match.id}");
+    debugPrint("Here ${match.id} ");
     var result = await db.update(matchTable, map,where: "$colId = ?",whereArgs: [match.id]);
 
     return result;

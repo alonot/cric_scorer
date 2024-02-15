@@ -32,7 +32,7 @@ class Over{
     for (String s in arrayOfBowls){
       List<String> eachBowl = s.split('&');
       // debugPrint(eachBowl.toString());
-      if (eachBowl != []){
+      if (eachBowl.toString() != "[]"){
         // debugPrint("all");
       bowls.add(eachBowl);
       }

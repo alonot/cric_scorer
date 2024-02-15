@@ -26,7 +26,7 @@ class _CardBallsState extends State<CardBalls> {
       setState(() {
          bowls = match.Overs[match.currentTeam].last.bowls;
          count = bowls.length;
-         debugPrint("$count, $bowls");
+         // debugPrint("$count, $bowls");
       });
         }
     }

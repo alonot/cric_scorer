@@ -114,7 +114,7 @@ class _GetBatterState extends State<GetBatter> {
                       ),
                     ),
                   ),
-                    CardBatter(retiredBatters, false, onTap)
+                    CardBatter(retiredBatters, false, onTap,false)
                     , Padding(
                       padding: EdgeInsets.only(top: 20, bottom: 20),
                       child: Center(

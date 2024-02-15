@@ -18,6 +18,7 @@ class CardMatch extends StatefulWidget {
   bool is2ndinning = false;
   bool hasWon = false;
   String wonBy = "";
+  String teamWon = '';
   int? id;
   final Function(bool,int?) onTap;
 
@@ -37,8 +38,8 @@ class CardMatch extends StatefulWidget {
               match.score[match.currentTeam])
           .toString();
       int overs = (match.over_count[match.currentTeam] * 10).toInt();
-      int overCount = (((overs / 10).toInt() * 6).toInt() + overs % 10);
-      debugPrint("${overs},${overCount}");
+      int overCount =(match.totalOvers * 6) - ((overs ~/ 10 * 6).toInt() + overs % 10);
+      debugPrint("$overs,${overCount}");
       needfrom = overCount.toString();
 
       team1Color = match.currentTeam == 0 ? Colors.white : Color(0xff9b9b9b);
@@ -49,13 +50,11 @@ class CardMatch extends StatefulWidget {
       if (hasWon) {
         int cur = match.currentTeam;
         if (match.score[cur] >= match.score[(cur + 1) % 2]) {
-          var team = cur == 0 ? match.team1 : match.team2;
-          wonBy = team.toString() +
-              (match.no_of_players - 1 - match.wickets[cur]).toString();
+          teamWon= cur == 0 ? match.team1 : match.team2;
+          wonBy = "${match.no_of_players - 1 - match.wickets[cur]} wickets";
         } else {
-          var team = cur == 0 ? match.team2 : match.team1;
-          wonBy = team.toString() +
-              (match.score[(cur + 1) % 2] - match.score[cur] + 1).toString();
+          teamWon= cur == 0 ? match.team2 : match.team1;
+          wonBy = "${match.score[(cur + 1) % 2] - match.score[cur] + 1} runs";
         }
       }
     }
@@ -208,7 +207,8 @@ class CardMatchState extends State<CardMatch> {
                                       color: Colors.white,
                                     ),
                                     children: [
-                                      TextSpan(text: 'Won by'),
+                                      TextSpan(text: widget.teamWon,style: TextStyle(color: Colors.red),),
+                                      TextSpan(text: ' Won by '),
                                       TextSpan(
                                           text: widget.wonBy,
                                           style: TextStyle(color: Colors.red)),

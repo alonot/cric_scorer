@@ -185,6 +185,7 @@ class _HomeState extends State<Home> {
     int result;
     result = await viewModel.insertMatch(match);
     if(result != -1){
+      debugPrint("result${result}");
       match.id = result;
     }
     print(result.toString()+"IDDDD");

@@ -61,6 +61,40 @@ class _MatchPageState extends State<MatchPage> {
     setState(() {
       needABowler = match!.addScore(s, run);
     });
+    bool doesInningChanged = false;
+    /**
+     * Check for end of innings
+     */
+    var cur = match!.currentTeam;
+    if (match!.over_count[cur] >= match!.totalOvers ||
+        match!.wickets[cur] >= match!.no_of_players - 2 ||
+        (match!.inning == 2  && match!.score[cur] >= match!.score[(cur + 1) % 2])) {
+      // Call the openers . change the current Team index;
+      if (match!.inning == 1) {
+        match!.inning = 2;
+        match!.currentTeam++;
+        match!.currentTeam %= 2;
+        doesInningChanged = true;
+      }
+      else {
+        // Match is Finished...
+        if (match!.score[cur] >= match!.score[(cur + 1) % 2]) {
+          Util.team = cur == 0 ? match!.team1 : match!.team2;
+          Util.wonBy =
+              (match!.no_of_players - 1 - match!.wickets[cur]).toString()+ " wickets";
+        }
+        else {
+          Util.team = cur == 0 ? match!.team2 : match!.team1;
+          Util.wonBy =
+              (match!.score[(cur + 1) % 2] - match!.score[cur] + 1).toString() + " runs";
+        }
+        match!.hasWon = true;
+        debugPrint("${match!.inning} oversda");
+      }
+      debugPrint("${match!.inning}awosnd1 ");
+      viewModel.updateMatch(match!);
+    }
+
 
     if (run.contains("OUT")) {
       match!.wickets[match!.currentTeam] += 1;
@@ -68,50 +102,28 @@ class _MatchPageState extends State<MatchPage> {
           .then((value) => {setState(() {})});
     }
 
-    /**
-     * Check for end of innings
-     */
-    if (match!.over_count[match!.currentTeam] >= match!.totalOvers ||
-        match!.wickets[match!.currentTeam] == match!.no_of_players - 1) {
-      // Call the openers . change the current Team index;
-      if (match!.inning == 1) {
-        match!.inning = 2;
-        match!.currentTeam++;
-        match!.currentTeam %= 2;
-        await Navigator.pushNamedAndRemoveUntil(context, Util.getOpenersRoute,
-            (route) {
-          debugPrint(route.settings.name);
-          return false;
-        }).then((value) => setState(() {}));
-      } else {
-        // Match is Finished...
-        var cur = match!.currentTeam;
-        if (match!.score[cur] >= match!.score[(cur + 1) % 2]) {
-          Util.team = cur == 0 ? match!.team1 : match!.team2;
-          Util.wonBy =
-              (match!.no_of_players - 1 - match!.wickets[cur]).toString();
-        } else {
-          Util.team = cur == 0 ? match!.team2 : match!.team1;
-          Util.wonBy =
-              (match!.score[(cur + 1) % 2] - match!.score[cur] + 1).toString();
-        }
-        match!.hasWon = true;
-        viewModel.updateMatch(match!);
-        Navigator.pushNamed(context, Util.winnerPageRoute);
-      }
+    if(match!.hasWon){
+      debugPrint("${match!.inning}awosnd");
+      Navigator.pushNamed(context, Util.winnerPageRoute);
+    }else if (doesInningChanged){
+      await Navigator.pushNamedAndRemoveUntil(context, Util.getOpenersRoute,
+              (route) {
+            // debugPrint(route.settings.name);
+            return false;
+          }).then((value) => setState(() {}));
     }
 
     /**
      * Calls the bowler page to get a new bowler
      */
-    if (needABowler) {
+    if (needABowler && !match!.hasWon) {
       await Navigator.pushNamed(context, Util.getBowlerRoute)
           .then((value) => {setState(() {})});
     }
     if (match != null) {
-      debugPrint("heres");
+      // debugPrint("heres");
       await viewModel.updateMatch(match!);
-      debugPrint("jjsd");
+      // debugPrint("jjsd");
     }
 
     setState(() {
@@ -123,7 +135,7 @@ class _MatchPageState extends State<MatchPage> {
     isLoading = true;
     setState(() {
       bool result = match!.popScore();
-      debugPrint(result.toString());
+      // debugPrint(result.toString());
       if (result) {
         goBack();
       }
@@ -138,7 +150,7 @@ class _MatchPageState extends State<MatchPage> {
 
   void goBack() {
     Navigator.pushNamedAndRemoveUntil(context, Util.homeRoute, (route) {
-      debugPrint(route.settings.name);
+      // debugPrint(route.settings.name);
       return false;
     });
   }
@@ -176,7 +188,7 @@ class _MatchPageState extends State<MatchPage> {
                       key: Key("K2"),
                     ),]
                   ),
-                  CardBatter(match!.currentBatters, true, null,
+                  CardBatter(match!.currentBatters, true, null,false,
                       key: const Key("MatchPageBatter")),
                   CardBowler([match!.currentBowler!],
                       key: const Key("MatchPageBowler")),

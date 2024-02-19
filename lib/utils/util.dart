@@ -35,7 +35,7 @@ int timeNowMinutes(DateTime dt){
 Future<bool?> displayDialog(String text,BuildContext context) async {
   return showDialog<bool>( context: context, builder:(context) {
     return AlertDialog(
-
+        backgroundColor: Color(0x89000000),
       title: Text(text),
       actions: [
         TextButton(onPressed: () => Navigator.pop(context,true), child: const Text("OK")),
@@ -45,6 +45,31 @@ Future<bool?> displayDialog(String text,BuildContext context) async {
     );
   });
 }
+
+Future<String?> AskPassword(String text,BuildContext context) async {
+  return showDialog<String>( context: context, builder:(context) {
+    TextEditingController passwordCntrl = TextEditingController();
+    return AlertDialog(
+      backgroundColor: Color(0x89000000),
+
+      title: Text(text,style: TextStyle(color: Colors.white),),
+      content: TextField(decoration: InputDecoration(
+        hintText: 'Password'
+      ),
+      keyboardType: TextInputType.visiblePassword,
+      obscureText: true,
+      controller: passwordCntrl,),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context,passwordCntrl.text), child: const Text("OK")),
+        TextButton(onPressed: () => Navigator.pop(context,""), child: const Text("Cancel")),
+      ],
+
+    );
+  });
+}
+
+
+
 
 //  : add new page that contains all the previous matches and a floating button
 //  : Fetch matches from backend for Main Page

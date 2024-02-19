@@ -33,6 +33,7 @@ class DatabaseHelper {
   String colBatters = 'batters';
   String colBowlers = 'bowlers';
   String colOvers = 'Overs';
+  String colUploaded = 'uploaded';
   String colDate = 'date';
 
   factory DatabaseHelper() {
@@ -83,6 +84,7 @@ class DatabaseHelper {
         '$colBatters TEXT,'
         '$colBowlers TEXT,'
         '$colOvers TEXT,'
+        '$colUploaded TEXT,'
         '$colDate TEXT'
         ')');
   }

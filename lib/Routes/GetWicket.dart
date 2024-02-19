@@ -35,7 +35,7 @@ class _GetWicketState extends State<GetWicket> {
       batters = [match.currentBatters[0].name, match.currentBatters[1].name];
       retiredBatters = [];
       batterOut = batters[0];
-      isMatchOver = match.hasWon;
+      isMatchOver = match.hasWon || match.inning == 2;
       debugPrint("Match:${isMatchOver}");
       score = match.score[match.currentTeam].toString();
       wickets = match.wickets[match.currentTeam].toString();
@@ -87,11 +87,11 @@ class _GetWicketState extends State<GetWicket> {
           break;
       }
       if (wicketType != "Run Out") {
-        batter!.outBy += 'b ${match!.currentBowler}';
+        batter!.outBy += 'b ${match!.currentBowler?.name}';
       }
       match!.wicketOrder[match!.currentTeam].add([batter!,"$overs\t\t $score-$wickets"]);
-      debugPrint("GetWicket: ${match!.wicketOrder[match!.currentTeam]}");
-      debugPrint("${match!.currentBatters[0].outBy} ${batter!.outBy} ${match!.currentBatters[1].outBy}");
+      // debugPrint("GetWicket: ${match!.wicketOrder[match!.currentTeam]}");
+      // debugPrint("${match!.currentBatters[0].outBy} ${batter!.outBy} ${match!.currentBatters[1].outBy}");
       match!.currentBatters.remove(batter);
       // debugPrint(match!.currentBatters[0].name);
 

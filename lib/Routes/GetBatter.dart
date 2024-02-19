@@ -24,9 +24,13 @@ class _GetBatterState extends State<GetBatter> {
   void onTap(Batter b) async {
     final match = this.match;
     if (match != null) {
+      match.currentBatters[match.currentBatterIndex].outBy = 'Retired Out';
+      match.wicketOrder[match.currentTeam].add([match.currentBatters[match.currentBatterIndex],"$overs\t\t $score-$wickets"]);
+      match.currentBatters.removeAt(match.currentBatterIndex);
       b.outBy = 'Not Out';
       match.currentBatters.add(b);
       await viewModel.updateMatch(match);
+      match.currentBatters = List.of(match.currentBatters.reversed);
       Navigator.pop(context);
     }
   }
@@ -36,8 +40,9 @@ class _GetBatterState extends State<GetBatter> {
     TheMatch? match = viewModel.getCurrentMatch();
     if (match != null) {
       match.currentBatters[match.currentBatterIndex].outBy = 'Retired Out';
+      match.wicketOrder[match.currentTeam].add([match.currentBatters[match.currentBatterIndex],"$overs\t\t $score-$wickets"]);
       match.currentBatters.removeAt(match.currentBatterIndex);
-      debugPrint(match.currentBatters[0].toString());
+      // debugPrint(match.currentBatters[0].toString());
       match.addBatter(Batter(battercntrl.text));
       match.currentBatters = List.of(match.currentBatters.reversed);
 

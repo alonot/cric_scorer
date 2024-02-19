@@ -441,7 +441,8 @@ class _CardScorerState extends State<CardScorer> {
                                     padding: EdgeInsets.symmetric(
                                         vertical: 3.0, horizontal: 2.0),
                                     child: ElevatedButton(
-                                        onPressed: () {
+                                        onPressed: ()  {
+
                                           widget.popIt();
                                         },
                                         style: ElevatedButton.styleFrom(

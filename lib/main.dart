@@ -10,8 +10,22 @@ import 'package:cric_scorer/Routes/Scoreboard.dart';
 import 'package:cric_scorer/Routes/WinnerPage.dart';
 import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';
+import "package:firebase_core/firebase_core.dart";
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey:
+      "AIzaSyABNonH-Zf7LLr7hkohyU13czg3iioYN9U", // paste your api key here
+      appId:
+      "1:1089318839183:android:cbbd9f89c06f7a627621fa", //paste your app id here
+      messagingSenderId: "1089318839183", //paste your messagingSenderId here
+      projectId: "cricscorer-e4157", //paste your project id here
+    ),
+
+  );
+
   MatchViewModel();
   runApp(const MyApp());
 }

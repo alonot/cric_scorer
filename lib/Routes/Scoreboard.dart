@@ -48,8 +48,8 @@ class _ScoreboardState extends State<Scoreboard> {
     team2 = match.team2;
     score1 = "${match.score[0]}-${match.wickets[0]}";
     score2 = "${match.score[1]}-${match.wickets[1]}";
-    overs1 = "${match.over_count[0]} OVERS";
-    overs2 = "${match.over_count[1]} OVERS";
+    overs1 = "${match.over_count[0].toStringAsFixed(1)} OVERS";
+    overs2 = "${match.over_count[1].toStringAsFixed(1)} OVERS";
     var cur = match.currentTeam;
     if (match.hasWon){
       if (match.score[cur] >= match.score[(cur + 1) % 2]) {
@@ -57,7 +57,7 @@ class _ScoreboardState extends State<Scoreboard> {
         toDisplay ="$team won by ${(match.no_of_players - 1 - match.wickets[cur]).toString()} Wickets";
       } else {
         var team = cur == 0 ? match.team2 : match.team1;
-        toDisplay ="$team won by ${(match.score[(cur + 1) % 2] - match.score[cur] + 1).toString()} runs";
+        toDisplay ="$team won by ${(match.score[(cur + 1) % 2] - match.score[cur] ).toString()} runs";
       }
     }else if(match.inning == 2){
       var team = cur == 0 ? match.team1 : match.team2;

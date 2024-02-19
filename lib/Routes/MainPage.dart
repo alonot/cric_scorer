@@ -32,27 +32,14 @@ class _MainPageState extends State<MainPage> {
         ),
         child: Scaffold(
             backgroundColor: Color(0x89000000),
-            floatingActionButton: !isLoading
-                ? FloatingActionButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, Util.homeRoute);
-                    },
-                    child: Center(
-                      child: Icon(Icons.add),
-                    ),
-                  )
-                : SizedBox(
-                    width: 0,
-                    height: 0,
-                  ),
             body: Stack(
               children: [
                 !isLoading
                     ? ListView.builder(
                         itemCount: count,
                         itemBuilder: (context, index) {
-                          debugPrint(index.toString());
-                          debugPrint(matches![index].id.toString());
+                          // debugPrint(index.toString());
+                          // debugPrint(matches![index].id.toString());
                           if (matches![index].currentBowler == null) {
                             viewModel.deleteMatch(matches![index].id!);
                             count -= 1;
@@ -84,11 +71,44 @@ class _MainPageState extends State<MainPage> {
                         width: 0,
                         height: 0,
                       ),
-                !isLoading ? FloatingActionButton(onPressed: (){
+                !isLoading ?
 
-                },
-                child: Icon(Icons.sports_cricket),
-                ):SizedBox(width: 0,height: 0,),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      FloatingActionButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, Util.homeRoute);
+                        },
+                        child: Center(
+                          child: Icon(Icons.add),
+                        ),
+                      ),
+                      SizedBox(width: 0,height: 5,),
+                      Container(
+                        width: 50,
+                        child: Center(
+                          child: MaterialButton(
+                            elevation: 20,
+                            height: 50,
+                            color: Colors.pink.shade50,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)
+                            ),
+
+                            onPressed: (){
+                              Navigator.pushNamed(context, Util.statsRoute);
+                            },
+                            child: Icon(Icons.sports_cricket),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+                    :SizedBox(width: 0,height: 0,),
                 isLoading
                     ? Center(
                         child: CircularProgressIndicator(),

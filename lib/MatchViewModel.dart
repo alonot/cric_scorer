@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cric_scorer/models/Batter.dart';
+import 'package:cric_scorer/models/BatterStat.dart';
 import 'package:cric_scorer/models/Bowler.dart';
+import 'package:cric_scorer/models/BowlerStat.dart';
 import 'package:cric_scorer/models/Match.dart';
 import 'package:cric_scorer/repository/DatabaseHelper.dart';
 import 'package:cric_scorer/repository/MatchRepository.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 class MatchViewModel {
   MatchRepository _repository;
@@ -18,7 +21,39 @@ class MatchViewModel {
     var databaseHelper = DatabaseHelper();
     // final Future<Database> dbFuture = databaseHelper.initializeDatabase();
     _viewModel ??= MatchViewModel._createInstance(repository, databaseHelper);
+
+
     return _viewModel!;
+  }
+
+  Future<List<BatterStat>> getStat() async{
+    List<BatterStat> batters = [];
+    FirebaseFirestore.instance.collection("batters").get().then(
+          (querySnapshot) {
+        print("Successfully completed "+querySnapshot.docs.length.toString());
+        for (var docSnapshot in querySnapshot.docs) {
+          print('${docSnapshot.id} => ${docSnapshot.data()}');
+          batters.add(BatterStat.fromMap(docSnapshot.data(), docSnapshot.id));
+        }
+      },
+      onError: (e) => print("Error completing: $e"),
+    );
+    return batters;
+  }
+
+  Future<List<BowlerStat>> getBowlers() async{
+    List<BowlerStat> bowlers = [];
+    await FirebaseFirestore.instance.collection("bowlers").get().then(
+          (querySnapshot) {
+        print("Successfully completed "+querySnapshot.docs.length.toString());
+        for (var docSnapshot in querySnapshot.docs) {
+          print('${docSnapshot.id} => ${docSnapshot.data()}');
+          bowlers.add(BowlerStat.fromMap(docSnapshot.data(), docSnapshot.id));
+        }
+      },
+      onError: (e) => print("Error completing: $e"),
+    );
+    return bowlers;
   }
 
   TheMatch? getCurrentMatch() => this._repository.currentMatch;
@@ -52,6 +87,13 @@ class MatchViewModel {
     _repository.currentMatch = match;
     return true;
   }
+
+  Stream<List<BatterStat>> getBatterStat() => FirebaseFirestore.instance.
+  collection('batters')
+        .snapshots()
+        .map((snapshot) =>
+        snapshot.docs.map((doc) =>
+          BatterStat.fromMap(doc.data(),doc.id)).toList());
 
   Future uploadMatch(TheMatch match) async {
     String id = FirebaseFirestore.instance.collection('matches').doc().id;
@@ -136,13 +178,21 @@ class MatchViewModel {
           newStats['I'] = data['I'] + 1;
           newStats['R'] = data['R'] + b.runs;
           newStats['Avg'] = (newStats['R']! / newStats['I']!);
+
           if (data['H'] > b.runs) {
             newStats['H'] = b.runs.toDouble();
           } else {
             newStats['H'] = data['H'];
           }
+
           newStats['Sk.R'] =
               ((data['Sk.R'] * newStats['I']) + b.strikeRate) / newStats['I'];
+
+          newStats['thirties'] =
+              data['thirties'] + b.runs >= 30 && b.runs < 50 ? 1 : 0;
+          newStats['fifties'] =
+              data['fifties'] + b.runs >= 50 && b.runs < 99 ? 1 : 0;
+          newStats['hundreds'] = data['hundreds'] + b.runs >= 100 ? 1 : 0;
         }
         await docPlayer.update(newStats);
       } else {
@@ -151,6 +201,10 @@ class MatchViewModel {
         newStats['Avg'] = b.runs.toDouble();
         newStats['H'] = b.runs.toDouble();
         newStats['Sk.R'] = b.strikeRate;
+        newStats['thirties'] = b.runs >= 30 && b.runs < 50 ? 1 : 0;
+        newStats['fifties'] = b.runs >= 50 && b.runs < 99 ? 1 : 0;
+        newStats['hundreds'] = b.runs >= 100 ? 1 : 0;
+
         final player = batterCol.doc(b.name);
         await player.set(newStats);
       }
@@ -168,12 +222,12 @@ class MatchViewModel {
           newStats['W'] = data['W'] + b.wickets;
           newStats['R'] = data['R'] + b.runs.toDouble();
 
-          if(newStats['W'] != 0) {
+          if (newStats['W'] != 0) {
             newStats['Avg'] = (newStats['R']! / newStats['W']!);
-          }else{
+          } else {
             newStats['Avg'] = newStats['R']!;
-
           }
+
           newStats['Eco'] =
               ((data['Eco'] * data['M']) + b.economy) / newStats['M'];
         }
@@ -182,11 +236,13 @@ class MatchViewModel {
         newStats['M'] = 1;
         newStats['W'] = b.wickets.toDouble();
         newStats['R'] = b.runs.toDouble();
+
         if (b.wickets != 0) {
           newStats['Avg'] = b.runs / b.wickets;
-        }else {
+        } else {
           newStats['Avg'] = b.runs.toDouble();
         }
+
         newStats['Eco'] = b.economy;
         final player = bowlerCol.doc(b.name);
         await player.set(newStats);

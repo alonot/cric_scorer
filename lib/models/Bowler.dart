@@ -10,15 +10,6 @@ class Bowler{
   late int maidens=0;
   late double economy=0;
 
-
-  void getReadyForNewMatch(){
-     runs=0;
-     wickets=0;
-     overs=0.0;
-     maidens=0;
-     economy=0;
-  }
-
   @override
   String toString(){
     return "$name#$runs#$wickets#$overs#$maidens#$economy";

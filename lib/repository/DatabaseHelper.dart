@@ -100,7 +100,7 @@ class DatabaseHelper {
 
   Future<TheMatch?> getMatch(int id) async {
     Database db = await this.database;
-    debugPrint("here ${id}");
+    // debugPrint("here ${id}");
     var result = await db.rawQuery("SELECT * FROM match_table WHERE id = $id");
     if (result != []){
       var result1 = TheMatch.fromMap(result[0]);

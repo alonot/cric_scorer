@@ -31,42 +31,36 @@ class _CardInfoScorerState extends State<CardInfoScorer> {
   Widget build(BuildContext context) {
     setState(() {
       var randomError = "";
-      if (viewModel != null) {
-        TheMatch? match = viewModel.getCurrentMatch();
-        if (match == null) {
-          Navigator.pop(context);
-        } else {
-          debugPrint(match.currentTeam.toString());
-          loading = true;
-          _team2Url = match.team2url;
-          _team1Url = match.team1url;
-          _team1 = match.team1;
-          _team2 = match.team2;
-          _score1 = "${match.score[0]}-${match.wickets[0]}";
-          _score2 = "${match.score[1]}-${match.wickets[1]}";
-          _overs1 = match.over_count[0].toStringAsFixed(1);
-          _overs2 = match.over_count[1].toStringAsFixed(1);
-          _team1Color =
-              match.currentTeam == 0 ? Colors.white : Color(0xff9b9b9b);
-          _team2Color =
-              match.currentTeam == 1 ? Colors.white : Color(0xff9b9b9b);
-          _is2ndinning = match.inning == 2;
-          loading = false;
-
-          if (_is2ndinning) {
-            int cur = match.currentTeam;
-            _needrun =
-                (match.score[(cur + 1) % 2] - match.score[cur] + 1).toString();
-            int curBalls =
-                (((match.over_count[cur] * 10).toInt() / 10).toInt() * 6) +
-                    ((match.over_count[cur] * 10).toInt() % 10).toInt();
-            int totalBalls =
-                (((match.totalOvers * 10).toInt() / 10).toInt() * 6);
-            _needfrom = (totalBalls - curBalls).toString();
-          }
-        }
+      TheMatch? match = viewModel.getCurrentMatch();
+      if (match == null) {
+        Navigator.pop(context);
       } else {
-        randomError = "View Model Not Found. I need A restart~~";
+        debugPrint(match.currentTeam.toString());
+        loading = true;
+        _team2Url = match.team2url;
+        _team1Url = match.team1url;
+        _team1 = match.team1;
+        _team2 = match.team2;
+        _score1 = "${match.score[0]}-${match.wickets[0]}";
+        _score2 = "${match.score[1]}-${match.wickets[1]}";
+        _overs1 = match.over_count[0].toStringAsFixed(1);
+        _overs2 = match.over_count[1].toStringAsFixed(1);
+        _team1Color =
+            match.currentTeam == 0 ? Colors.white : const Color(0xff9b9b9b);
+        _team2Color =
+            match.currentTeam == 1 ? Colors.white : const Color(0xff9b9b9b);
+        _is2ndinning = match.inning == 2;
+        loading = false;
+
+        if (_is2ndinning) {
+          int cur = match.currentTeam;
+          _needrun =
+              (match.score[(cur + 1) % 2] - match.score[cur] + 1).toString();
+          int curBalls = ((match.over_count[cur] * 10).toInt() ~/ 10 * 6) +
+              ((match.over_count[cur] * 10).toInt() % 10).toInt();
+          int totalBalls = ((match.totalOvers * 10).toInt() ~/ 10 * 6);
+          _needfrom = (totalBalls - curBalls).toString();
+        }
       }
       if (randomError.isNotEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -98,8 +92,8 @@ class _CardInfoScorerState extends State<CardInfoScorer> {
                                       child: ElevatedButton(
                                     onPressed: null,
                                     style: ElevatedButton.styleFrom(
-                                      shape: CircleBorder(),
-                                      padding: EdgeInsets.only(right: 0),
+                                      shape: const CircleBorder(),
+                                      padding: const EdgeInsets.only(right: 0),
                                     ),
                                     child: Container(
                                       width: 70,
@@ -116,16 +110,16 @@ class _CardInfoScorerState extends State<CardInfoScorer> {
                                       child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Container(
+                                      SizedBox(
+                                        width: double.infinity,
                                         child: Text(
                                           _team1,
                                           style: TextStyle(
                                               color: _team1Color, fontSize: 12),
                                           textAlign: TextAlign.start,
                                         ),
-                                        width: double.infinity,
                                       ),
-                                      Container(
+                                      SizedBox(
                                         width: double.infinity,
                                         child: Text(
                                           _score1,
@@ -135,10 +129,10 @@ class _CardInfoScorerState extends State<CardInfoScorer> {
                                               fontWeight: FontWeight.bold),
                                         ),
                                       ),
-                                      Container(
+                                      SizedBox(
                                         width: double.infinity,
                                         child: Text(
-                                          _overs1 + ' OVERS',
+                                          '$_overs1 OVERS',
                                           style: TextStyle(
                                               color: _team1Color, fontSize: 12),
                                         ),
@@ -157,7 +151,8 @@ class _CardInfoScorerState extends State<CardInfoScorer> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.end,
                                       children: [
-                                        Container(
+                                        SizedBox(
+                                          width: double.infinity,
                                           child: Text(
                                             _team2,
                                             style: TextStyle(
@@ -165,9 +160,8 @@ class _CardInfoScorerState extends State<CardInfoScorer> {
                                                 fontSize: 12),
                                             textAlign: TextAlign.end,
                                           ),
-                                          width: double.infinity,
                                         ),
-                                        Container(
+                                        SizedBox(
                                           width: double.infinity,
                                           child: Text(_score2,
                                               style: TextStyle(
@@ -176,9 +170,9 @@ class _CardInfoScorerState extends State<CardInfoScorer> {
                                                   fontWeight: FontWeight.bold),
                                               textAlign: TextAlign.end),
                                         ),
-                                        Container(
+                                        SizedBox(
                                           width: double.infinity,
-                                          child: Text(_overs2 + ' OVERS',
+                                          child: Text('$_overs2 OVERS',
                                               style: TextStyle(
                                                   color: _team2Color,
                                                   fontSize: 12),
@@ -191,8 +185,9 @@ class _CardInfoScorerState extends State<CardInfoScorer> {
                                     child: ElevatedButton(
                                       onPressed: null,
                                       style: ElevatedButton.styleFrom(
-                                        shape: CircleBorder(),
-                                        padding: EdgeInsets.only(right: 0),
+                                        shape: const CircleBorder(),
+                                        padding:
+                                            const EdgeInsets.only(right: 0),
                                       ),
                                       child: Container(
                                         width: 70,
@@ -214,27 +209,28 @@ class _CardInfoScorerState extends State<CardInfoScorer> {
                           ? Flexible(
                               flex: 3,
                               child: Padding(
-                                padding: EdgeInsets.only(top: 10, bottom: 10),
+                                padding:
+                                    const EdgeInsets.only(top: 10, bottom: 10),
                                 child: RichText(
                                   text: TextSpan(
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         color: Colors.white,
                                       ),
                                       children: [
-                                        TextSpan(text: 'Need '),
+                                        const TextSpan(text: 'Need '),
                                         TextSpan(
-                                            text: _needrun + ' runs ',
-                                            style:
-                                                TextStyle(color: Colors.red)),
-                                        TextSpan(text: 'from '),
+                                            text: '$_needrun runs ',
+                                            style: const TextStyle(
+                                                color: Colors.red)),
+                                        const TextSpan(text: 'from '),
                                         TextSpan(
-                                            text: _needfrom + ' balls',
-                                            style:
-                                                TextStyle(color: Colors.red)),
+                                            text: '$_needfrom balls',
+                                            style: const TextStyle(
+                                                color: Colors.red)),
                                       ]),
                                 ),
                               ))
-                          : new SizedBox(
+                          : const SizedBox(
                               width: 0,
                               height: 0,
                             ),
@@ -242,10 +238,10 @@ class _CardInfoScorerState extends State<CardInfoScorer> {
                   )),
                 )),
             onTap: () {
-                Navigator.pushNamed(context, Util.scoreCardRoute);
+              Navigator.pushNamed(context, Util.scoreCardRoute);
             },
           )
-        : SizedBox(
+        : const SizedBox(
             width: 0,
             height: 0,
           );

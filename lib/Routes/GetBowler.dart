@@ -1,12 +1,11 @@
+import 'package:cric_scorer/Components/AutoCompleteIt.dart';
 import 'package:cric_scorer/Components/CardBowler.dart';
+import 'package:cric_scorer/MatchViewModel.dart';
 import 'package:cric_scorer/models/Bowler.dart';
 import 'package:cric_scorer/models/Match.dart';
 import 'package:cric_scorer/models/Over.dart';
 import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-import 'package:cric_scorer/MatchViewModel.dart';
 
 class GetBowler extends StatefulWidget {
   const GetBowler({super.key});
@@ -17,14 +16,12 @@ class GetBowler extends StatefulWidget {
 
 class _GetBowlerState extends State<GetBowler> {
   final MatchViewModel viewModel = MatchViewModel();
-  TextEditingController bowlercntrl = TextEditingController();
+  String bowlerName = "";
   List<Bowler> bowlers = [];
   TheMatch? match;
 
   void selectBowler(Bowler? bowler) async {
-    if (match == null) {
-        match = viewModel.getCurrentMatch();
-    }
+    match ??= viewModel.getCurrentMatch();
     if (bowler != null) {
       if (match!.currentBowler!.name == bowler.name) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -38,23 +35,28 @@ class _GetBowlerState extends State<GetBowler> {
           bowler.name,
           [match!.currentBatters[match!.currentBatterIndex].name],
         ));
-
       });
-      await viewModel.updateMatch(match!);
-        Navigator.pop(context);
+      // await viewModel.updateMatch(match!);
+      Navigator.pop(context);
     }
   }
 
   void onPlayBtnClicked() async {
-    // TODO : check for same name
-    if (bowlercntrl.text.isEmpty) {
-      debugPrint("her");
-      ScaffoldMessenger.of(context).showSnackBar(
-          Util.getsnackbar('Name Cannot be Empty.'));
+    if (bowlerName.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(Util.getsnackbar('Name Cannot be Empty.'));
       return;
     }
-    Bowler bowler =
-    Bowler(bowlercntrl.text); // Adding the new Bowler
+
+    // Check for same bowler
+    for (Bowler b in match!.bowlers[match!.currentTeam]) {
+      if (b.name == bowlerName) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(Util.getsnackbar('Duplicate Bowler'));
+      }
+    }
+
+    Bowler bowler = Bowler(bowlerName); // Adding the new Bowler
     setState(() {
       match!.addBowler(bowler);
       // Adding a new Over
@@ -64,21 +66,22 @@ class _GetBowlerState extends State<GetBowler> {
         [match!.currentBatters[match!.currentBatterIndex].name],
       ));
     });
-    await viewModel.updateMatch(match!);
     Navigator.pop(context);
   }
 
+  void setBowlerName(String val) => bowlerName = val;
+
   @override
   Widget build(BuildContext context) {
-      match = viewModel.getCurrentMatch();
-      if (match != null) {
-        setState(() {
-          bowlers = match!.bowlers[match!.currentTeam];
-        });
+    match = viewModel.getCurrentMatch();
+    if (match != null) {
+      setState(() {
+        bowlers = match!.bowlers[match!.currentTeam];
+      });
     }
 
     return Scaffold(
-      key: Key("GetBowler"),
+      key: const Key("GetBowler"),
       backgroundColor: Colors.transparent,
       body: Container(
           decoration: const BoxDecoration(
@@ -87,61 +90,61 @@ class _GetBowlerState extends State<GetBowler> {
                 image: AssetImage('assests/background.jpg'), fit: BoxFit.cover),
           ),
           child: Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(15.0),
             child: Center(
                 child: Column(
-                  children: [
-                    Card(
-                      elevation: 20,
-                      color: Colors.transparent,
-                      shadowColor: Colors.black,
-                      child: Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          height: 80,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              TextField(
-                                controller: bowlercntrl,
-                                textAlign: TextAlign.start,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.singleLineFormatter
-                                ],
-                                enableSuggestions: true,
-                                decoration: const InputDecoration(
-                                    labelText: 'Next Bowler',
-                                    labelStyle: TextStyle(color: Colors.white)),
-                              ),
-                            ],
+              children: [
+                Card(
+                  elevation: 20,
+                  color: Colors.transparent,
+                  shadowColor: Colors.black,
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      height: 80,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          const Text('Next Bowler',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontFamily: 'Roboto'),
+                              textAlign: TextAlign.start),
+                          AutoCompleteIt(
+                            Util.bowlerNames,
+                            setBowlerName,
+                            key: const Key("Get Bowler Auto"),
                           ),
-                        ),
+                        ],
                       ),
                     ),
-                    CardBowler(
-                      bowlers,
-                      OnTap: selectBowler,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 20, bottom: 20),
-                      child: Center(
-                        child: ElevatedButton(
-                          onPressed: ()  {
-                            onPlayBtnClicked();
-                          },
-                          style: ButtonStyle(
-                              backgroundColor:
-                              MaterialStateProperty.all(Color(0x42A4E190))),
-                          child: const Text(
-                            "Let's Play!!",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
+                  ),
+                ),
+                CardBowler(
+                  bowlers,
+                  onTap: selectBowler,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20, bottom: 20),
+                  child: Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        onPlayBtnClicked();
+                      },
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                              const Color(0x42A4E190))),
+                      child: const Text(
+                        "Let's Play!!",
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
-                  ],
-                )),
+                  ),
+                ),
+              ],
+            )),
           )),
     );
   }

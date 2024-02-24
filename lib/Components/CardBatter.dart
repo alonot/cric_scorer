@@ -99,7 +99,8 @@ class _CardBatterState extends State<CardBatter> {
                       return TableRow(children: <Widget>[
                         GestureDetector(
                           child: Padding(
-                            padding: EdgeInsets.fromLTRB(10, 10.0, 0, 10.0),
+                            padding:
+                                const EdgeInsets.fromLTRB(10, 10.0, 0, 10.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -108,7 +109,7 @@ class _CardBatterState extends State<CardBatter> {
                                       (index == 1 && widget.isOnMatchPage
                                           ? "*"
                                           : ""),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       color: Colors.white,
                                       fontFamily: 'Roboto',
                                       fontSize: 13),
@@ -116,12 +117,12 @@ class _CardBatterState extends State<CardBatter> {
                                 widget.showOutStatus
                                     ? Text(
                                         batter.outBy,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             color: Colors.white,
                                             fontFamily: 'Roboto',
                                             fontSize: 11),
                                       )
-                                    : SizedBox(
+                                    : const SizedBox(
                                         width: 0,
                                         height: 0,
                                       ),
@@ -136,10 +137,10 @@ class _CardBatterState extends State<CardBatter> {
                         ),
                         GestureDetector(
                           child: Padding(
-                            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                             child: Text(
                               batter.runs.toString(),
-                              style: TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
                           onTap: () {
@@ -150,10 +151,10 @@ class _CardBatterState extends State<CardBatter> {
                         ),
                         GestureDetector(
                           child: Padding(
-                            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                             child: Text(
                               batter.balls.toString(),
-                              style: TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
                           onTap: () {
@@ -164,10 +165,10 @@ class _CardBatterState extends State<CardBatter> {
                         ),
                         GestureDetector(
                           child: Padding(
-                            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                             child: Text(
                               batter.fours.toString(),
-                              style: TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
                           onTap: () {
@@ -178,10 +179,10 @@ class _CardBatterState extends State<CardBatter> {
                         ),
                         GestureDetector(
                           child: Padding(
-                            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                             child: Text(
                               batter.sixes.toString(),
-                              style: TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
                           onTap: () {
@@ -192,11 +193,11 @@ class _CardBatterState extends State<CardBatter> {
                         ),
                         GestureDetector(
                           child: Padding(
-                            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                             child: Text(
                               batter.strikeRate.toStringAsFixed(2),
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 10),
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 10),
                             ),
                           ),
                           onTap: () {
@@ -210,7 +211,7 @@ class _CardBatterState extends State<CardBatter> {
                   },
                 ),
               )
-            : SizedBox(
+            : const SizedBox(
                 width: 0,
                 height: 0,
               ),

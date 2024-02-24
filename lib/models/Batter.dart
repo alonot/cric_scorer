@@ -20,7 +20,7 @@ class Batter{
 
   @override
   String toString() {
-    return "$name#$runs#$balls#$fours#$sixes#${strikeRate.toStringAsFixed(2)}#${outBy}";
+    return "$name#$runs#$balls#$fours#$sixes#${strikeRate.toStringAsFixed(2)}#$outBy";
   }
 
   Batter.fromString(String batterString){
@@ -49,8 +49,11 @@ class Batter{
     runs -= run;
     fours -= run ==4? 1 : 0;
     sixes -= run == 6? 1:0;
-    if (balls != 0)    strikeRate = runs /balls *100;
-    else strikeRate = 0.0;
+    if (balls != 0) {
+      strikeRate = runs /balls *100;
+    } else {
+      strikeRate = 0.0;
+    }
   }
 
 }

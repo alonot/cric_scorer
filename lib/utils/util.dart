@@ -19,6 +19,8 @@ class Util {
 
   static String team = "";
   static String wonBy = "";
+  static List<String> batterNames = [];
+  static List<String> bowlerNames = [];
 }
 
 int timeNowMinutes(DateTime dt) {
@@ -35,15 +37,15 @@ Future<bool?> displayDialog(String text, BuildContext context) async {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: Color(0x89000000),
-          title: Text(text),
+          backgroundColor: const Color(0x89000000),
+          title: Text(text,style: const TextStyle(color: Colors.white),),
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text("OK")),
+                child: const Text("OK",style: TextStyle(color: Colors.white),)),
             TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text("Cancel")),
+                child: const Text("Cancel",style: TextStyle(color: Colors.white),)),
           ],
         );
       });
@@ -55,13 +57,13 @@ Future<String?> AskPassword(String text, BuildContext context) async {
       builder: (context) {
         TextEditingController passwordCntrl = TextEditingController();
         return AlertDialog(
-          backgroundColor: Color(0x89000000),
+          backgroundColor: const Color(0xCA000000),
           title: Text(
             text,
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
           ),
           content: TextField(
-            decoration: InputDecoration(hintText: 'Password'),
+            decoration: const InputDecoration(hintText: 'Password'),
             keyboardType: TextInputType.visiblePassword,
             obscureText: true,
             controller: passwordCntrl,
@@ -69,10 +71,10 @@ Future<String?> AskPassword(String text, BuildContext context) async {
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(context, passwordCntrl.text),
-                child: const Text("OK")),
+                child: const Text("OK",style: TextStyle(color: Colors.white),)),
             TextButton(
                 onPressed: () => Navigator.pop(context, ""),
-                child: const Text("Cancel")),
+                child: const Text("Cancel",style: TextStyle(color: Colors.white),)),
           ],
         );
       });
@@ -91,10 +93,12 @@ Future<String?> AskPassword(String text, BuildContext context) async {
 //  : Load previous match
 //  : a winner trophy in the scoreCard.
 //  : Fall Of wickets
-// TODO : Check for Available batter in
-// TODO : in openers, in batters, // in bowlers page.
+//  : Check for Available batter in
+//  : in openers, in batters, // in bowlers page.
 //  : Inetgrate the winner page.
-// TODO : Same name check.
+//  : Same name check.
+// TODO : Pdf generation
+// TODO : DLS if possible
 //  : add how got out in scoreCard
 
 //  : stats Page

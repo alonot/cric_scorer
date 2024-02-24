@@ -1,10 +1,10 @@
-
 import 'package:flutter/material.dart';
 
 class CardInfo extends StatefulWidget {
-  final _CardInfoState _state=_CardInfoState();
+  final _CardInfoState _state = _CardInfoState();
   final void Function(String t1, String t2) update;
-  CardInfo(this.update,{super.key});
+
+  CardInfo(this.update, {super.key});
 
   @override
   State<CardInfo> createState() => _state;
@@ -18,12 +18,10 @@ class _CardInfoState extends State<CardInfo> {
   String _team1Url = "assests/csk.jpg";
   String _team2Url = "assests/rcb.jpg";
 
-  _CardInfoState(){
-    team1cntrl.text="Team 1";
-    team2cntrl.text="Team 2";
+  _CardInfoState() {
+    team1cntrl.text = "Team 1";
+    team2cntrl.text = "Team 2";
   }
-
-
 
   Map<String, String> getRequiredInfo() => Map.of({
         "team1": team1cntrl.text,
@@ -49,8 +47,8 @@ class _CardInfoState extends State<CardInfo> {
                       debugPrint("helo");
                     },
                     style: ElevatedButton.styleFrom(
-                        shape: CircleBorder(),
-                        padding: EdgeInsets.only(right: 0)),
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.only(right: 0)),
                     child: Container(
                       width: 90,
                       height: 90,
@@ -64,12 +62,12 @@ class _CardInfoState extends State<CardInfo> {
                 ),
                 Expanded(
                     flex: 3,
-                    child:  EditableText(
-                      onChanged: (val){
-                        widget.update(team1cntrl.text,team2cntrl.text);
+                    child: EditableText(
+                      onChanged: (val) {
+                        widget.update(team1cntrl.text, team2cntrl.text);
                       },
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.white,
                           fontSize: 22,
                           fontFamily: 'Roboto'),
@@ -80,7 +78,7 @@ class _CardInfoState extends State<CardInfo> {
                     ))
               ],
             )),
-            Text(
+            const Text(
               'V/S',
               style: TextStyle(
                   color: Colors.white,
@@ -97,8 +95,8 @@ class _CardInfoState extends State<CardInfo> {
                       debugPrint("helo");
                     },
                     style: ElevatedButton.styleFrom(
-                        shape: CircleBorder(),
-                        padding: EdgeInsets.only(right: 0)),
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.only(right: 0)),
                     child: Container(
                       width: 90,
                       height: 90,
@@ -112,12 +110,12 @@ class _CardInfoState extends State<CardInfo> {
                 ),
                 Expanded(
                     flex: 3,
-                    child:  EditableText(
-                      onChanged: (val){
-                        widget.update(team1cntrl.text,team2cntrl.text);
+                    child: EditableText(
+                      onChanged: (val) {
+                        widget.update(team1cntrl.text, team2cntrl.text);
                       },
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.white,
                           fontSize: 22,
                           fontFamily: 'Roboto'),

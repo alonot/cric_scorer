@@ -1,3 +1,5 @@
+
+
 import 'package:cric_scorer/MatchViewModel.dart';
 import 'package:cric_scorer/Routes/GetBatter.dart';
 import 'package:cric_scorer/Routes/GetBowler.dart';
@@ -26,8 +28,16 @@ void main() async {
     ),
   );
 
-  MatchViewModel();
-  runApp(const MyApp());
+  var viewModel = MatchViewModel();
+  Util.batterNames = (await viewModel.getStat()).map((batter) => batter.name).toList();
+  Util.bowlerNames = (await viewModel.getBowlers()).map((bowler) => bowler.name).toList();
+
+  try {
+    runApp(const MyApp());
+  }
+  on Exception{
+    debugPrint('exception :$Exception');
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -40,16 +50,16 @@ class MyApp extends StatelessWidget {
       title: 'CricScorer',
       initialRoute: Util.mainPageRoute,
       routes: {
-        Util.homeRoute: (context) => Home(),
-        Util.getOpenersRoute: (context) => GetOpeners(),
-        Util.getBowlerRoute: (context) => GetBowler(),
-        Util.getBatterRoute: (context) => GetBatter(),
-        Util.wicketRoute: (context) => GetWicket(),
-        Util.matchPageRoute: (context) => MatchPage(),
-        Util.mainPageRoute: (context) => MainPage(),
-        Util.winnerPageRoute: (context) => WinnerPage(),
-        Util.scoreCardRoute: (context) => Scoreboard(),
-        Util.statsRoute: (context) => Stats(),
+        Util.homeRoute: (context) => const Home(),
+        Util.getOpenersRoute: (context) => const GetOpeners(),
+        Util.getBowlerRoute: (context) => const GetBowler(),
+        Util.getBatterRoute: (context) => const GetBatter(),
+        Util.wicketRoute: (context) => const GetWicket(),
+        Util.matchPageRoute: (context) => const MatchPage(),
+        Util.mainPageRoute: (context) => const MainPage(),
+        Util.winnerPageRoute: (context) => const WinnerPage(),
+        Util.scoreCardRoute: (context) => const Scoreboard(),
+        Util.statsRoute: (context) => const Stats(),
       },
       theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.transparent),

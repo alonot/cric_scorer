@@ -41,13 +41,13 @@ class _HomeState extends State<Home> {
   bool validate() {
     var allGood = true;
     if (oversController.text.isEmpty) {
-      print("yes");
+      // print("yes");
       allGood = false;
       setState(() {
         errorTextOver = 'Required';
       });
     } else {
-      print("No ${oversController.text}");
+      // print("No ${oversController.text}");
       if (int.parse(oversController.text) > 450 ||
           int.parse(oversController.text) < 1) {
         allGood = false;
@@ -105,20 +105,20 @@ class _HomeState extends State<Home> {
       oversController,
       noplayersController,
       resetError,
-      key: Key("supreb"),
+      key: const Key("supreb"),
     );
     return Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           border: null,
           image: DecorationImage(
               image: AssetImage('assests/background.jpg'), fit: BoxFit.cover),
         ),
         child: Scaffold(
-          backgroundColor: Color(0x89000000),
+          backgroundColor: const Color(0x89000000),
           body: SingleChildScrollView(
             child: Padding(
               padding:
-                  EdgeInsets.only(top: 50, left: 10, right: 10, bottom: 15),
+                  const EdgeInsets.only(top: 50, left: 10, right: 10, bottom: 15),
               child: Column(
                 children: <Widget>[
                   Container(
@@ -134,7 +134,7 @@ class _HomeState extends State<Home> {
                     child: matchsetting,
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: 20, bottom: 20),
+                    padding: const EdgeInsets.only(top: 20, bottom: 20),
                     child: Center(
                       child: ElevatedButton(
                         onPressed: () {
@@ -155,7 +155,7 @@ class _HomeState extends State<Home> {
                                 int.parse(noplayersController.text),
                                 int.parse(oversController.text),
                               );
-                              viewModel!.setCurrentMatch(match);
+                              viewModel.setCurrentMatch(match);
                               _save(match);
                               Navigator.pushNamed(context, "Get Openers");
                             }
@@ -164,13 +164,13 @@ class _HomeState extends State<Home> {
                                 .showSnackBar(Util.getsnackbar(randomError));
                           }
                         },
-                        child: Text(
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(const Color(0x42A4E190))),
+                        child: const Text(
                           "Let's Play!!",
                           style: TextStyle(color: Colors.white),
                         ),
-                        style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(Color(0x42A4E190))),
                       ),
                     ),
                   ),
@@ -185,9 +185,9 @@ class _HomeState extends State<Home> {
     int result;
     result = await viewModel.insertMatch(match);
     if(result != -1){
-      debugPrint("result${result}");
+      // debugPrint("result${result}");
       match.id = result;
     }
-    print(result.toString()+"IDDDD");
+    // print(result.toString()+"IDDDD");
   }
 }

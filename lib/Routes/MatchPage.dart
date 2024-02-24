@@ -72,28 +72,28 @@ class _MatchPageState extends State<MatchPage> {
         match!.inning = 2;
         match!.currentTeam++;
         match!.currentTeam %= 2;
+        Util.batterNames = (await viewModel.getStat()).map((batter) => batter.name).toList();
+        Util.bowlerNames = (await viewModel.getBowlers()).map((bowler) => bowler.name).toList();
         doesInningChanged = true;
       } else {
         // Match is Finished...
         if (match!.score[cur] >= match!.score[(cur + 1) % 2]+1) {
           Util.team = cur == 0 ? match!.team1 : match!.team2;
           Util.wonBy =
-              (match!.no_of_players - 1 - match!.wickets[cur]).toString() +
-                  " wickets";
+              "${match!.no_of_players - 1 - match!.wickets[cur]} wickets";
         } else if(match!.score[cur] != match!.score[(cur + 1) % 2]) {
           Util.team = cur == 0 ? match!.team2 : match!.team1;
           Util.wonBy =
-              (match!.score[(cur + 1) % 2] - match!.score[cur] + 1).toString() +
-                  " runs";
+              "${match!.score[(cur + 1) % 2] - match!.score[cur]} runs";
         }else{
           Util.team = "";
           Util.wonBy = "Nobody";
         }
         match!.hasWon = true;
-        debugPrint("${match!.inning} oversda");
+        // debugPrint("${match!.inning} oversda");
       }
-      debugPrint("${match!.inning}awosnd1 ");
-      viewModel.updateMatch(match!);
+      // debugPrint("${match!.inning}awosnd1 ");
+      // viewModel.updateMatch(match!);
     }
 
     if (run.contains("OUT")) {
@@ -184,25 +184,27 @@ class _MatchPageState extends State<MatchPage> {
         child:Stack(
           children: [
             Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 border: null,
                 image: DecorationImage(
                     image: AssetImage('assests/background.jpg'), fit: BoxFit.cover),
               ),
               child: Scaffold(
-                key: Key("MatchPage"),
-                backgroundColor: Color(0x89000000),
+                key: const Key("MatchPage"),
+                backgroundColor: const Color(0x89000000),
                 body: Padding(
-                  padding: EdgeInsets.only(top: 0, left: 10, right: 10, bottom: 15),
+                  padding: const EdgeInsets.only(top: 0, left: 10, right: 10, bottom: 15),
                   child: ListView(
                     children: <Widget>[
-                      Flex(
+                       Flex( // Cannot add constant to this otherwise this will not reload on ball change
                         direction: Axis.vertical,
                         children: [
                           CardInfoScorer(key: Key("K1")),
                         ],
                       ),
-                      Flex(direction: Axis.vertical, children: [
+                       Flex(
+                         // Cannot add constant to this otherwise this will not reload on ball change
+                           direction: Axis.vertical, children: [
                         CardBalls(
                           key: Key("K2"),
                         ),
@@ -212,13 +214,13 @@ class _MatchPageState extends State<MatchPage> {
                       CardBowler([match!.currentBowler!],
                           key: const Key("MatchPageBowler")),
                       CardScorer(updateScore, popScore, swap, retire, endInning,
-                          key: Key("Score1")),
+                          key: const Key("Score1")),
                     ],
                   ),
                 ),
               ),
             ),
-            isLoading? CircularProgressIndicator() : SizedBox(width: 0,height: 0,)
+            isLoading? const CircularProgressIndicator() : const SizedBox(width: 0,height: 0,)
           ],
         ),
       ),

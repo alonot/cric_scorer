@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 
 class CardBowler extends StatefulWidget {
   final List<Bowler> bowlers;
-  final Function(Bowler?)? OnTap;
+  final Function(Bowler?)? onTap;
 
-  CardBowler(this.bowlers, {this.OnTap, super.key});
+  const CardBowler(this.bowlers, {this.onTap, super.key});
 
   @override
   State<CardBowler> createState() => _CardBowlerState();
@@ -21,7 +21,7 @@ class _CardBowlerState extends State<CardBowler> {
         elevation: 20,
         color: Colors.transparent,
         child: Padding(
-          padding: EdgeInsets.all(0.0),
+          padding: const EdgeInsets.all(0.0),
           child: widget.bowlers.isNotEmpty
               ? Table(
                   columnWidths: const <int, TableColumnWidth>{
@@ -91,95 +91,96 @@ class _CardBowlerState extends State<CardBowler> {
                       return TableRow(children: <Widget>[
                         GestureDetector(
                           child: Padding(
-                            padding: EdgeInsets.fromLTRB(10, 10.0, 0, 10.0),
+                            padding:
+                                const EdgeInsets.fromLTRB(10, 10.0, 0, 10.0),
                             child: Text(
                               bowler.name,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   color: Colors.white,
                                   fontFamily: 'Roboto',
                                   fontSize: 13),
                             ),
                           ),
                           onTap: () {
-                            if (widget.OnTap != null) {
-                              widget.OnTap!(bowler);
+                            if (widget.onTap != null) {
+                              widget.onTap!(bowler);
                             }
                           },
                         ),
                         GestureDetector(
                           child: Padding(
-                            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                             child: Text(
                               bowler.overs.toStringAsFixed(1),
-                              style: TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
                           onTap: () {
-                            if (widget.OnTap != null) {
-                              widget.OnTap!(bowler);
+                            if (widget.onTap != null) {
+                              widget.onTap!(bowler);
                             }
                           },
                         ),
                         GestureDetector(
                           child: Padding(
-                            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                             child: Text(
                               bowler.maidens.toString(),
-                              style: TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
                           onTap: () {
-                            if (widget.OnTap != null) {
-                              widget.OnTap!(bowler);
+                            if (widget.onTap != null) {
+                              widget.onTap!(bowler);
                             }
                           },
                         ),
                         GestureDetector(
                           child: Padding(
-                            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                             child: Text(
                               bowler.wickets.toString(),
-                              style: TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
                           onTap: () {
-                            if (widget.OnTap != null) {
-                              widget.OnTap!(bowler);
+                            if (widget.onTap != null) {
+                              widget.onTap!(bowler);
                             }
                           },
                         ),
                         GestureDetector(
                           child: Padding(
-                            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                             child: Text(
                               bowler.runs.toString(),
-                              style: TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
                           onTap: () {
-                            if (widget.OnTap != null) {
-                              widget.OnTap!(bowler);
+                            if (widget.onTap != null) {
+                              widget.onTap!(bowler);
                             }
                           },
                         ),
                         GestureDetector(
                           child: Padding(
-                            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                             child: Text(
                               bowler.economy.toStringAsFixed(2),
-                              style: TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
                           onTap: () {
-                            if (widget.OnTap != null) {
-                              widget.OnTap!(bowler);
+                            if (widget.onTap != null) {
+                              widget.onTap!(bowler);
                             }
                           },
                         ),
                       ]);
                     }
                   }))
-              : SizedBox(
+              : const SizedBox(
                   width: 0,
                   height: 0,
                 ),

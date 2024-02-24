@@ -1,18 +1,24 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class CardMatchSettings extends StatefulWidget {
   final _CardMatchSettingsState _state = _CardMatchSettingsState();
-  final String team1,team2;
+  final String team1, team2;
   final String? errorTextOver;
   final String? errorTextPlayer;
   final TextEditingController oversController;
   final TextEditingController noplayersController;
   final Function() reset;
 
-  CardMatchSettings(this.team1,this.team2,this.errorTextOver,this.errorTextPlayer,this.oversController,this.noplayersController,this.reset,{super.key});
+  CardMatchSettings(
+      this.team1,
+      this.team2,
+      this.errorTextOver,
+      this.errorTextPlayer,
+      this.oversController,
+      this.noplayersController,
+      this.reset,
+      {super.key});
 
   @override
   State<CardMatchSettings> createState() => _state;
@@ -25,9 +31,6 @@ class _CardMatchSettingsState extends State<CardMatchSettings> {
   String tossWonBy = "Team 1";
   String chooseto = "Bat";
 
-
-
-
   Map<String, String> getRequiredInfo() => Map.of({
         "toss": tossWonBy,
         "optTo": chooseto,
@@ -36,22 +39,22 @@ class _CardMatchSettingsState extends State<CardMatchSettings> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 15),
+      padding: const EdgeInsets.only(top: 15),
       child: Card(
         elevation: 20,
         color: Colors.transparent,
         child: Padding(
-          padding:
-              EdgeInsets.only(left: 5.0, right: 5.0, top: 20.0, bottom: 20.0),
+          padding: const EdgeInsets.only(
+              left: 5.0, right: 5.0, top: 20.0, bottom: 20.0),
           child: Column(
             children: <Widget>[
               Expanded(
                 child: Padding(
-                  padding:
-                      EdgeInsets.only(left: 2.5, right: 2.5, top: 5, bottom: 5),
+                  padding: const EdgeInsets.only(
+                      left: 2.5, right: 2.5, top: 5, bottom: 5),
                   child: Column(
                     children: [
-                      Container(
+                      const SizedBox(
                         width: double.infinity,
                         child: Padding(
                           padding: EdgeInsets.all(0.0),
@@ -64,15 +67,16 @@ class _CardMatchSettingsState extends State<CardMatchSettings> {
                       ),
                       Expanded(
                         child: Padding(
-                          padding: EdgeInsets.all(0.0),
+                          padding: const EdgeInsets.all(0.0),
                           child: Row(
                             children: [
                               Expanded(
                                 child: ListTile(
-                                  visualDensity: VisualDensity(vertical: -4),
+                                  visualDensity:
+                                      const VisualDensity(vertical: -4),
                                   title: Text(
                                     widget.team1,
-                                    style: TextStyle(color: Colors.white),
+                                    style: const TextStyle(color: Colors.white),
                                     textAlign: TextAlign.start,
                                   ),
                                   leading: Radio<String>(
@@ -88,10 +92,11 @@ class _CardMatchSettingsState extends State<CardMatchSettings> {
                               ),
                               Expanded(
                                 child: ListTile(
-                                  visualDensity: VisualDensity(vertical: -4),
+                                  visualDensity:
+                                      const VisualDensity(vertical: -4),
                                   title: Text(
                                     widget.team2,
-                                    style: TextStyle(color: Colors.white),
+                                    style: const TextStyle(color: Colors.white),
                                   ),
                                   leading: Radio<String>(
                                     value: teems[1],
@@ -114,11 +119,11 @@ class _CardMatchSettingsState extends State<CardMatchSettings> {
               ),
               Expanded(
                 child: Padding(
-                  padding:
-                      EdgeInsets.only(left: 2.5, right: 2.5, top: 5, bottom: 5),
+                  padding: const EdgeInsets.only(
+                      left: 2.5, right: 2.5, top: 5, bottom: 5),
                   child: Column(
                     children: [
-                      Container(
+                      const SizedBox(
                         width: double.infinity,
                         child: Padding(
                           padding: EdgeInsets.all(0.0),
@@ -131,13 +136,14 @@ class _CardMatchSettingsState extends State<CardMatchSettings> {
                       ),
                       Expanded(
                         child: Padding(
-                          padding: EdgeInsets.all(0.0),
+                          padding: const EdgeInsets.all(0.0),
                           child: Row(
                             children: [
                               Expanded(
                                 child: ListTile(
-                                  visualDensity: VisualDensity(vertical: -4),
-                                  title: Text(
+                                  visualDensity:
+                                      const VisualDensity(vertical: -4),
+                                  title: const Text(
                                     "Bat",
                                     style: TextStyle(color: Colors.white),
                                     textAlign: TextAlign.start,
@@ -155,8 +161,9 @@ class _CardMatchSettingsState extends State<CardMatchSettings> {
                               ),
                               Expanded(
                                 child: ListTile(
-                                  visualDensity: VisualDensity(vertical: -4),
-                                  title: Text(
+                                  visualDensity:
+                                      const VisualDensity(vertical: -4),
+                                  title: const Text(
                                     "Ball",
                                     style: TextStyle(color: Colors.white),
                                   ),
@@ -181,7 +188,7 @@ class _CardMatchSettingsState extends State<CardMatchSettings> {
               ),
               Expanded(
                 child: Padding(
-                    padding: EdgeInsets.only(left: 5.0, right: 5.0),
+                    padding: const EdgeInsets.only(left: 5.0, right: 5.0),
                     child: TextField(
                       onTap: () {
                         widget.reset();
@@ -193,13 +200,13 @@ class _CardMatchSettingsState extends State<CardMatchSettings> {
                       maxLength: 3,
                       decoration: InputDecoration(
                           labelText: "Overs",
-                          labelStyle: TextStyle(color: Colors.white),
+                          labelStyle: const TextStyle(color: Colors.white),
                           errorText: widget.errorTextOver),
                     )),
               ),
               Expanded(
                 child: Padding(
-                    padding: EdgeInsets.only(left: 5.0, right: 5.0),
+                    padding: const EdgeInsets.only(left: 5.0, right: 5.0),
                     child: TextField(
                       onTap: () {
                         widget.reset();
@@ -213,7 +220,7 @@ class _CardMatchSettingsState extends State<CardMatchSettings> {
                       maxLength: 2,
                       decoration: InputDecoration(
                           labelText: "No Of Playes",
-                          labelStyle: TextStyle(color: Colors.white),
+                          labelStyle: const TextStyle(color: Colors.white),
                           errorText: widget.errorTextPlayer),
                     )),
               ),

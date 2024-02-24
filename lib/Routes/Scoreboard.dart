@@ -64,39 +64,39 @@ class _ScoreboardState extends State<Scoreboard> {
       String needrun =
           (match.score[(cur + 1) % 2] - match.score[cur] + 1).toString();
       int curBalls =
-          (((match.over_count[cur] * 10).toInt() / 10).toInt() * 6) +
+          ((match.over_count[cur] * 10).toInt() ~/ 10 * 6) +
               ((match.over_count[cur] * 10).toInt() % 10).toInt();
       int totalBalls =
-      (((match.totalOvers * 10).toInt() / 10).toInt() * 6);
+      ((match.totalOvers * 10).toInt() ~/ 10 * 6);
       String needfrom = (totalBalls - curBalls).toString();
-      toDisplay = "$team needs ${needrun} runs from ${needfrom} balls";
+      toDisplay = "$team needs $needrun runs from $needfrom balls";
     }
 
 
     return SafeArea(
         top: true,
-        minimum: EdgeInsets.symmetric(vertical: 20),
+        minimum: const EdgeInsets.symmetric(vertical: 20),
         child: Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         border: null,
         image: DecorationImage(
             image: AssetImage('assests/background.jpg'), fit: BoxFit.cover),
       ),
       child: Scaffold(
-        backgroundColor: Color(0x89000000),
+        backgroundColor: const Color(0x89000000),
         body: Padding(
-          padding: EdgeInsets.only(top:50 ),
+          padding: const EdgeInsets.only(top:50 ),
           child: ListView(
             children: [
               ListTile(
-                title: Text("ScoreCard",style: TextStyle(color: Colors.blueGrey,fontSize: 22,),textAlign: TextAlign.center,),
+                title: const Text("ScoreCard",style: TextStyle(color: Colors.blueGrey,fontSize: 22,),textAlign: TextAlign.center,),
                 titleAlignment: ListTileTitleAlignment.center,
-                subtitle: Text(toDisplay,style: TextStyle(color: Colors.redAccent,),textAlign: TextAlign.center,),
+                subtitle: Text(toDisplay,style: const TextStyle(color: Colors.redAccent,),textAlign: TextAlign.center,),
               ),
               Column(
                 children: [
                   ListTile(
-                    shape: RoundedRectangleBorder(
+                    shape: const RoundedRectangleBorder(
                       side: BorderSide(
                         color: Colors.grey
                       )
@@ -107,19 +107,19 @@ class _ScoreboardState extends State<Scoreboard> {
                       });
                     },
                     tileColor: isSelected == 1 ? Colors.transparent :Colors.grey,
-                    leading: Text(team1,style: TextStyle(color: Colors.white,fontSize: 15),),
-                    title: Text(score1,style: TextStyle(color: Colors.white),),
-                    trailing: Text(overs1,style: TextStyle(color: Colors.white),),
+                    leading: Text(team1,style: const TextStyle(color: Colors.white,fontSize: 15),),
+                    title: Text(score1,style: const TextStyle(color: Colors.white),),
+                    trailing: Text(overs1,style: const TextStyle(color: Colors.white),),
                   ),
-                  isSelected == 0 ? CardBatter(battersTeam1, false, (p0) => null,true):SizedBox(width: 0 ,height: 0,),
-                  isSelected == 0 ? CardBowler(bowlersTeam1):SizedBox(width: 0 ,height: 0,),
-                  isSelected == 0 ? FallOfWickets(wicketOrder1, (wicketOrder1.length)):SizedBox(width: 0 ,height: 0,),
+                  isSelected == 0 ? CardBatter(battersTeam1, false, (p0) => null,true):const SizedBox(width: 0 ,height: 0,),
+                  isSelected == 0 ? CardBowler(bowlersTeam1):const SizedBox(width: 0 ,height: 0,),
+                  isSelected == 0 ? FallOfWickets(wicketOrder1, (wicketOrder1.length)):const SizedBox(width: 0 ,height: 0,),
                 ],
               ),
               Column(
                 children: [
                   ListTile(
-                    shape: RoundedRectangleBorder(
+                    shape: const RoundedRectangleBorder(
                         side: BorderSide(
                             color: Colors.grey
                         )
@@ -130,14 +130,14 @@ class _ScoreboardState extends State<Scoreboard> {
                       });
                     },
                     tileColor: isSelected == 0 ? Colors.transparent :Colors.grey,
-                    leading: Text(team2,style: TextStyle(color: Colors.white,fontSize: 15),),
-                    title: Text(score2,style: TextStyle(color: Colors.white),),
-                    trailing: Text(overs2,style: TextStyle(color: Colors.white),),
+                    leading: Text(team2,style: const TextStyle(color: Colors.white,fontSize: 15),),
+                    title: Text(score2,style: const TextStyle(color: Colors.white),),
+                    trailing: Text(overs2,style: const TextStyle(color: Colors.white),),
                   ),
                   isSelected == 1 ?
-                  CardBatter(battersTeam2, false, (p0) => null,true):SizedBox(width: 0,height: 0,),
-                  isSelected == 1 ? CardBowler(bowlersTeam2):SizedBox(width: 0,height: 0,),
-                  isSelected == 1 ? FallOfWickets(wicketOrder2, wicketOrder2.length):SizedBox(width: 0 ,height: 0,),
+                  CardBatter(battersTeam2, false, (p0) => null,true):const SizedBox(width: 0,height: 0,),
+                  isSelected == 1 ? CardBowler(bowlersTeam2):const SizedBox(width: 0,height: 0,),
+                  isSelected == 1 ? FallOfWickets(wicketOrder2, wicketOrder2.length):const SizedBox(width: 0 ,height: 0,),
                 ],
               ),
             ],

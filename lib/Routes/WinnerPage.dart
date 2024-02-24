@@ -13,15 +13,18 @@ class WinnerPage extends StatefulWidget {
 class _WinnerPageState extends State<WinnerPage> {
   @override
   Widget build(BuildContext context) {
-    return PopScope(child:Center(
+    return PopScope(canPop: false,
+    onPopInvoked: (val){
+      Navigator.pushNamedAndRemoveUntil(context, Util.mainPageRoute,(route) => false);
+    },child:Center(
       child:  Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             border: null,
             image: DecorationImage(
                 image: AssetImage('assests/background.jpg'), fit: BoxFit.cover),
           ),
           child: Scaffold(
-            backgroundColor: Color(0x89000000),
+            backgroundColor: const Color(0x89000000),
             body: Center(
               child: Column(
                 children: [
@@ -29,9 +32,9 @@ class _WinnerPageState extends State<WinnerPage> {
                   RichText(
                     text: TextSpan(
                         children: [
-                          TextSpan(text: Util.team,style: TextStyle(color: Colors.red)),
-                          TextSpan(text: " won by ",style: TextStyle(color: Colors.white)),
-                          TextSpan(text: Util.wonBy,style: TextStyle(color: Colors.red)),
+                          TextSpan(text: Util.team,style: const TextStyle(color: Colors.red)),
+                          const TextSpan(text: " won by ",style: TextStyle(color: Colors.white)),
+                          TextSpan(text: Util.wonBy,style: const TextStyle(color: Colors.red)),
                         ]
                     ),
                   ),
@@ -39,9 +42,6 @@ class _WinnerPageState extends State<WinnerPage> {
               ),
             ),
           )),
-    ),canPop: false,
-    onPopInvoked: (val){
-      Navigator.pushNamedAndRemoveUntil(context, Util.mainPageRoute,(route) => false);
-    },);
+    ),);
   }
 }

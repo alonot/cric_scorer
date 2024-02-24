@@ -1,10 +1,10 @@
+import 'package:cric_scorer/Components/AutoCompleteIt.dart';
 import 'package:cric_scorer/Components/CardBatter.dart';
+import 'package:cric_scorer/MatchViewModel.dart';
 import 'package:cric_scorer/models/Batter.dart';
 import 'package:cric_scorer/models/Match.dart';
 import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';
-
-import 'package:cric_scorer/MatchViewModel.dart';
 
 class GetWicket extends StatefulWidget {
   const GetWicket({super.key});
@@ -15,8 +15,8 @@ class GetWicket extends StatefulWidget {
 
 class _GetWicketState extends State<GetWicket> {
   final MatchViewModel viewModel = MatchViewModel();
-  TextEditingController battercntrl = TextEditingController();
-  TextEditingController helpercntrl = TextEditingController();
+  String batterName = "";
+  TextEditingController helperName = TextEditingController();
   List<String> batters = [];
   List<Batter> retiredBatters = [];
   late TheMatch? match;
@@ -28,15 +28,17 @@ class _GetWicketState extends State<GetWicket> {
   String wickets = "0";
   String overs = "0.0";
 
-  _GetWicketState(){
+  _GetWicketState() {
     this.match = viewModel.getCurrentMatch();
     final match = this.match;
     if (match != null) {
       batters = [match.currentBatters[0].name, match.currentBatters[1].name];
       retiredBatters = [];
       batterOut = batters[0];
-      isMatchOver = match.hasWon || match.inning == 2;
-      debugPrint("Match:${isMatchOver}");
+      isMatchOver = match.hasWon
+          || match.over_count[match.currentTeam] == match.totalOvers
+      || match.wickets[match.currentTeam] == match.no_of_players - 1;
+      debugPrint("Match:$isMatchOver");
       score = match.score[match.currentTeam].toString();
       wickets = match.wickets[match.currentTeam].toString();
       overs = match.over_count[match.currentTeam].toStringAsFixed(1);
@@ -48,12 +50,10 @@ class _GetWicketState extends State<GetWicket> {
     }
   }
 
-
-
-  void HandleWicket() async {
+  void handleWicket() async {
     if (showhelper) {
-      // print("Yes" + helpercntrl.text);
-      if (helpercntrl.text.isEmpty) {
+      // print("Yes" + helperName.text);
+      if (helperName.text.isEmpty) {
         ScaffoldMessenger.of(context)
             .showSnackBar(Util.getsnackbar('Fields must not be empty'));
         return;
@@ -61,6 +61,7 @@ class _GetWicketState extends State<GetWicket> {
     }
     if (match != null) {
       // print("yes");
+      // Batter Already present or not
       Batter? batter;
       for (Batter b in match!.currentBatters) {
         if (b.name == batterOut) {
@@ -71,54 +72,50 @@ class _GetWicketState extends State<GetWicket> {
       batter!.outBy = '';
       switch (wicketType) {
         case "Hit Wicket":
-          batter!.outBy = 'Hit Wicket';
+          batter.outBy = 'Hit Wicket';
           break;
         case "LBW":
-          batter!.outBy = 'LBW ';
+          batter.outBy = 'LBW ';
           break;
         case "Stumping":
-          batter!.outBy = 'St ${helpercntrl.text} ';
+          batter.outBy = 'St ${helperName.text} ';
           break;
         case "Catch Out":
-          batter!.outBy = 'c ${helpercntrl.text}';
+          batter.outBy = 'c ${helperName.text}';
           break;
         case 'Run out':
-          batter!.outBy = 'run out (${helpercntrl.text})';
+          batter.outBy = 'run out (${helperName.text})';
           break;
       }
       if (wicketType != "Run Out") {
-        batter!.outBy += 'b ${match!.currentBowler?.name}';
+        batter.outBy += 'b ${match!.currentBowler?.name}';
       }
-      match!.wicketOrder[match!.currentTeam].add([batter!,"$overs\t\t $score-$wickets"]);
-      // debugPrint("GetWicket: ${match!.wicketOrder[match!.currentTeam]}");
-      // debugPrint("${match!.currentBatters[0].outBy} ${batter!.outBy} ${match!.currentBatters[1].outBy}");
+      match!.wicketOrder[match!.currentTeam]
+          .add([batter, "$overs\t\t $score-$wickets"]);
       match!.currentBatters.remove(batter);
-      // debugPrint(match!.currentBatters[0].name);
-
-      await viewModel.updateMatch(match!);
     }
   }
 
   void onTap(Batter b) async {
     final match = this.match;
     if (match != null) {
-      HandleWicket();
+      handleWicket();
       b.outBy = 'Not Out';
       match.currentBatters.add(b);
       match.currentBatters = List.of(match.currentBatters.reversed);
-      await viewModel.updateMatch(match);
+      // await viewModel.updateMatch(match);
       Navigator.pop(context);
     }
   }
 
+  void setBatterName(String val) => batterName = val;
+
   @override
   Widget build(BuildContext context) {
-
-
     return PopScope(
       canPop: false,
       child: Scaffold(
-        key: Key("Get Wicket Scaffold"),
+        key: const Key("Get Wicket Scaffold"),
         backgroundColor: Colors.transparent,
         body: Container(
             decoration: const BoxDecoration(
@@ -128,14 +125,14 @@ class _GetWicketState extends State<GetWicket> {
                   fit: BoxFit.cover),
             ),
             child: Padding(
-              padding: EdgeInsets.all(15.0),
+              padding: const EdgeInsets.all(15.0),
               child: Center(
                   child: SingleChildScrollView(
-                child: Container(
+                child: SizedBox(
                   width: MediaQuery.of(context).size.width,
                   child: Column(children: [
                     Container(
-                      key: Key("popo"),
+                      key: const Key("pop"),
                       child: Card(
                         elevation: 20,
                         color: Colors.transparent,
@@ -143,23 +140,24 @@ class _GetWicketState extends State<GetWicket> {
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
                           children: [
-                            Container(
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                                    child: RichText(
-                                        text: TextSpan(children: [
-                                          const TextSpan(text: 'Socre : '),
-                                          TextSpan(
-                                              text: score + "-" + wickets,
-                                              style: const TextStyle(color: Colors.red)),
-                                          TextSpan(
-                                              text: " : " + overs + ' OVERS',
-                                              style:
-                                              const TextStyle(color: Colors.blueGrey))
-                                        ])),
-                                  ),
-                                )),
+                            Center(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10.0),
+                                child: RichText(
+                                    text: TextSpan(children: [
+                                  const TextSpan(text: 'Score : '),
+                                  TextSpan(
+                                      text: "$score-$wickets",
+                                      style:
+                                          const TextStyle(color: Colors.red)),
+                                  TextSpan(
+                                      text: " : $overs OVERS",
+                                      style: const TextStyle(
+                                          color: Colors.blueGrey))
+                                ])),
+                              ),
+                            ),
                             Container(
                               key: const Key("0"),
                               child: Table(
@@ -182,7 +180,7 @@ class _GetWicketState extends State<GetWicket> {
                                       ),
                                     ),
                                     ListTile(
-                                      title: Text(
+                                      title: const Text(
                                         'Hit Wicket',
                                         style: TextStyle(color: Colors.white),
                                       ),
@@ -200,7 +198,7 @@ class _GetWicketState extends State<GetWicket> {
                                   ]),
                                   TableRow(children: [
                                     ListTile(
-                                      title: Text(
+                                      title: const Text(
                                         'Run out',
                                         style: TextStyle(color: Colors.white),
                                       ),
@@ -216,7 +214,7 @@ class _GetWicketState extends State<GetWicket> {
                                       ),
                                     ),
                                     ListTile(
-                                      title: Text(
+                                      title: const Text(
                                         'Catch Out',
                                         style: TextStyle(color: Colors.white),
                                       ),
@@ -234,7 +232,7 @@ class _GetWicketState extends State<GetWicket> {
                                   ]),
                                   TableRow(children: [
                                     ListTile(
-                                      title: Text(
+                                      title: const Text(
                                         'LBW',
                                         style: TextStyle(color: Colors.white),
                                       ),
@@ -250,7 +248,7 @@ class _GetWicketState extends State<GetWicket> {
                                       ),
                                     ),
                                     ListTile(
-                                      title: Text(
+                                      title: const Text(
                                         'Stumping',
                                         style: TextStyle(color: Colors.white),
                                       ),
@@ -269,125 +267,128 @@ class _GetWicketState extends State<GetWicket> {
                                 ],
                               ),
                             ),
-                            Container(
-                              child: Text(
-                                'Who Got Out?',
-                                style: TextStyle(color: Colors.white),
-                              ),
+                            const Text(
+                              'Who Got Out?',
+                              style: TextStyle(color: Colors.white),
                             ),
-                            Container(
-                              child: Column(
-                                children: [
-                                  Container(
-                                      child: ListTile(
-                                        title: Text(
-                                          batters[0],
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        leading: Radio<String>(
-                                          groupValue: batterOut,
-                                          value: batters[0],
-                                          onChanged: (val) {
-                                            setState(() {
-                                              if (val != null) {
-                                                batterOut = batters[0];
-                                              }
-                                            });
-                                          },
-                                        ),
-                                      )),
-                                  Container(
-                                    child: ListTile(
-                                      title: Text(
-                                        batters[1],
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      leading: Radio<String>(
-                                        groupValue: batterOut,
-                                        value: batters[1],
-                                        onChanged: (val) {
-                                          setState(() {
-                                            debugPrint("BatterWicket ${val}");
-                                            if (val != null) {
-                                              batterOut = batters[1];
-                                            }
-                                          });
-                                        },
-                                      ),
-                                    ),
+                            Column(
+                              children: [
+                                ListTile(
+                                                                    title: Text(
+                                batters[0],
+                                style: const TextStyle(color: Colors.white),
+                                                                    ),
+                                                                    leading: Radio<String>(
+                                groupValue: batterOut,
+                                value: batters[0],
+                                onChanged: (val) {
+                                  setState(() {
+                                    if (val != null) {
+                                      batterOut = batters[0];
+                                    }
+                                  });
+                                },
+                                                                    ),
+                                                                  ),
+                                ListTile(
+                                  title: Text(
+                                    batters[1],
+                                    style: const TextStyle(color: Colors.white),
                                   ),
-                                ],
-                              ),
+                                  leading: Radio<String>(
+                                    groupValue: batterOut,
+                                    value: batters[1],
+                                    onChanged: (val) {
+                                      setState(() {
+                                        debugPrint("BatterWicket $val");
+                                        if (val != null) {
+                                          batterOut = batters[1];
+                                        }
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
                             Container(
                               child: showhelper
                                   ? TextField(
-                                controller: helpercntrl,
-                                textAlign: TextAlign.start,
-                                decoration: InputDecoration(
-                                    labelText: 'Who Helped',
-                                    labelStyle:
-                                    TextStyle(color: Colors.white)),
-                              )
-                                  : SizedBox(
-                                width: 0,
-                                height: 0,
-                              ),
+                                      controller: helperName,
+                                      textAlign: TextAlign.start,
+                                      decoration: const InputDecoration(
+                                          labelText: 'Who Helped',
+                                          labelStyle:
+                                              TextStyle(color: Colors.white)),
+                                    )
+                                  : const SizedBox(
+                                      width: 0,
+                                      height: 0,
+                                    ),
                             ),
-                            Container(
-                              child: !isMatchOver
-                                  ? TextField(
-                                controller: battercntrl,
-                                textAlign: TextAlign.start,
-                                decoration: InputDecoration(
-                                    labelText: 'Next Batter',
-                                    labelStyle:
-                                    TextStyle(color: Colors.white)),
-                              )
-                                  : SizedBox(width: 0, height: 0),
-                            )
+                            !isMatchOver
+                                ? Column(children: [
+                                    const Text(
+                                      'Next Batter',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    AutoCompleteIt(
+                                      Util.batterNames,
+                                      setBatterName,
+                                      key: const Key("Next Batter"),
+                                    ),
+                                  ])
+                                : const SizedBox(width: 0, height: 0),
                           ],
                         ),
                       ),
                     ),
-                    !isMatchOver?Container(
-                      child: CardBatter(
-                        retiredBatters,
-                        false,
-                        onTap,
-                        false,
-                        key: Key("Unique"),
-                      ),
-                    ):SizedBox(width: 0,height: 0,),
-                     Container(
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 20, bottom: 20),
-                        child: Center(
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              debugPrint("Lets Continue > Got Wicket!!");
-                              if (!isMatchOver && battercntrl.text.isEmpty) {
+                    !isMatchOver
+                        ? CardBatter(
+                          retiredBatters,
+                          false,
+                          onTap,
+                          false,
+                          key: const Key("Unique"),
+                        )
+                        : const SizedBox(
+                            width: 0,
+                            height: 0,
+                          ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20, bottom: 20),
+                      child: Center(
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            // To check for same name
+                            for (Batter b
+                                in match!.batters[match!.currentTeam]) {
+                              if (b.name == batterName) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                    Util.getsnackbar(
-                                        'Fields must not be empty'));
-                                return;
+                                    Util.getsnackbar('Duplicate Batter'));
                               }
-                              HandleWicket();
-                              Batter? batter;
-                              batter = Batter(battercntrl.text);
-                              match!.addBatter(batter);
-                              match!.currentBatters =
-                                  List.of(match!.currentBatters.reversed);
-                              await viewModel.updateMatch(match!);
-                              Navigator.pop(context);
-                            },
-                            child: Text(
-                              "Let's Play!!",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(
-                                    Color(0x42A4E190))),
+                            }
+                            debugPrint("Lets Continue > Got Wicket!!");
+                            if (!isMatchOver && batterName.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  Util.getsnackbar(
+                                      'Fields must not be empty'));
+                              return;
+                            }
+                            handleWicket();
+                            Batter? batter;
+                            batter = Batter(batterName);
+                            match!.addBatter(batter);
+                            match!.currentBatters =
+                                List.of(match!.currentBatters.reversed);
+                            // await viewModel.updateMatch(match!);
+                            Navigator.pop(context);
+                          },
+                          style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all(
+                                  const Color(0x42A4E190))),
+                          child: const Text(
+                            "Let's Play!!",
+                            style: TextStyle(color: Colors.white),
                           ),
                         ),
                       ),

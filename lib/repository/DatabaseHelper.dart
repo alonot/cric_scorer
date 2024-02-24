@@ -91,7 +91,7 @@ class DatabaseHelper {
 
   // Returns a list of Map of the Database
   Future<List<Map<String, dynamic>>> getMatchesMaplst() async {
-    Database db = await this.database;
+    Database db = await database;
 
     var result = await db.query(matchTable, orderBy: '$colDate ASC');
     debugPrint("Matches ${result.toString()}");
@@ -99,7 +99,7 @@ class DatabaseHelper {
   }
 
   Future<TheMatch?> getMatch(int id) async {
-    Database db = await this.database;
+    Database db = await database;
     // debugPrint("here ${id}");
     var result = await db.rawQuery("SELECT * FROM match_table WHERE id = $id");
     if (result != []){
@@ -113,7 +113,7 @@ class DatabaseHelper {
 
   // Insert a match
   Future<int> insertMatch(TheMatch match) async {
-    Database db = await this.database;
+    Database db = await database;
 
     var result = await db.insert(matchTable, match.toMap());
     
@@ -130,7 +130,7 @@ class DatabaseHelper {
 
   // updates a match
   Future<int> updateMatch(TheMatch match) async {
-    Database db = await this.database;
+    Database db = await database;
     var map =match.tolesserMap();
     map.remove('id');
     debugPrint("Here ${match.id} ");
@@ -141,7 +141,7 @@ class DatabaseHelper {
   
   // deletes a match
   Future<int> deleteMatch(int id) async{
-    Database db = await this.database;
+    Database db = await database;
     
     var result = await db.rawDelete('DELETE FROM $matchTable WHERE $colId = $id');
 

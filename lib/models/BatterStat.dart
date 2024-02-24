@@ -9,16 +9,23 @@ class BatterStat {
   int hundreds = 0;
   int thirtys = 0;
 
-  BatterStat.fromMap(Map<String, dynamic> map,String name) {
-    print(name);
-    this.name = name;
-    innings = map['I']!.toInt();
-    highest = map['H']!.toInt();
-    runs = map['R']!.toInt();
-    fifties = map['fifties']!.toInt();
-    hundreds = map['hundreds']!.toInt();
-    thirtys = map['thirties']!.toInt();
-    strikeRate = map['Sk.R']!;
-    average = map['Avg']!;
+  BatterStat.fromMap(Map<String, dynamic> map,this.name) {
+    if(map['I'] != null) {
+      innings = map['I']?.toInt();
+    }if(map['H'] != null) {
+      highest = map['H']?.toInt();
+    }if(map['R'] != null) {
+      runs = map['R']?.toInt();
+    }if(map['fifties'] != null) {
+      fifties = map['fifties']?.toInt();
+    }if(map['hundreds'] != null) {
+      hundreds = map['hundreds']?.toInt();
+    }if(map['thirties'] != null) {
+      thirtys = map['thirties']?.toInt();
+    }if(map['Sk.R'] != null) {
+      strikeRate = map['Sk.R'];
+    }if(map['Avg'] != null) {
+      average = map['Avg'];
+    }
   }
 }

@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 
 class CardScorer extends StatefulWidget {
-  final void Function(String,String) update;
+  final void Function(String, String) update;
   final void Function() popIt;
   final void Function() swap;
   final void Function() retire;
   final void Function() endInning;
-  const CardScorer(this.update,this.popIt,this.swap,this.retire,this.endInning, {super.key});
+
+  const CardScorer(
+      this.update, this.popIt, this.swap, this.retire, this.endInning,
+      {super.key});
 
   @override
   State<CardScorer> createState() => _CardScorerState();
 }
 
 class _CardScorerState extends State<CardScorer> {
-  String type="";
-  bool wicket =false;
+  String type = "";
+  bool wicket = false;
 
   @override
   Widget build(BuildContext context) {
@@ -22,15 +25,16 @@ class _CardScorerState extends State<CardScorer> {
       children: [
         Container(
             height: 70,
-            padding: EdgeInsets.all(0),
+            padding: const EdgeInsets.all(0),
             child: Center(
               child: Card(
                   elevation: 20,
                   color: Colors.transparent,
                   child: Padding(
+                    // ignore: prefer_const_constructors
                     padding: EdgeInsets.all(0.0),
                     child: Table(
-                      columnWidths: {
+                      columnWidths: const {
                         0: FlexColumnWidth(4),
                         1: FlexColumnWidth(4),
                         2: FlexColumnWidth(3),
@@ -45,20 +49,21 @@ class _CardScorerState extends State<CardScorer> {
                             child: Row(
                               children: [
                                 Flexible(
+                                  fit: FlexFit.loose,
                                   child: Radio<String>(
                                     value: "Wd",
                                     groupValue: type,
                                     onChanged: (val) {
                                       setState(() {
-                                        type="Wd";
+                                        type = "Wd";
                                       });
                                     },
                                   ),
-                                  fit: FlexFit.loose,
                                 ),
-                                Text(
+                                const Text(
                                   'Wide',
-                                  style: TextStyle(color: Colors.white),textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.white),
+                                  textAlign: TextAlign.center,
                                 )
                               ],
                             ),
@@ -73,16 +78,16 @@ class _CardScorerState extends State<CardScorer> {
                                       value: "LB",
                                       onChanged: (val) {
                                         setState(() {
-                                          type="LB";
+                                          type = "LB";
                                         });
                                       },
                                     )),
-                                Flexible(
+                                const Flexible(
+                                  fit: FlexFit.loose,
                                   child: Text(
                                     'Leg Bye',
                                     style: TextStyle(color: Colors.white),
                                   ),
-                                  fit: FlexFit.loose,
                                 )
                               ],
                             ),
@@ -91,6 +96,7 @@ class _CardScorerState extends State<CardScorer> {
                               child: Row(
                             children: [
                               Flexible(
+                                fit: FlexFit.loose,
                                 child: Checkbox(
                                   value: wicket,
                                   onChanged: (bool? val) {
@@ -99,24 +105,28 @@ class _CardScorerState extends State<CardScorer> {
                                     });
                                   },
                                 ),
-                                fit: FlexFit.loose,
                               ),
                               Transform.scale(
-                                scaleY: 4,
-                                scaleX: 2,
-                                child: Center(child: SizedBox(
-                                  width: 10,
-                                  height: 40,
-                                  child: Center(child: Tab(
-                                      icon: Image.asset('assests/wicket.jpg')),),
-                                ),)
-                              )
+                                  scaleY: 4,
+                                  scaleX: 2,
+                                  child: Center(
+                                    child: SizedBox(
+                                      width: 10,
+                                      height: 40,
+                                      child: Center(
+                                        child: Tab(
+                                            icon: Image.asset(
+                                                'assests/wicket.jpg')),
+                                      ),
+                                    ),
+                                  ))
                             ],
                           )),
                           Center(
                               child: Row(
                             children: [
                               Flexible(
+                                fit: FlexFit.loose,
                                 child: Radio<String>(
                                   value: "B",
                                   groupValue: type,
@@ -126,14 +136,13 @@ class _CardScorerState extends State<CardScorer> {
                                     });
                                   },
                                 ),
-                                fit: FlexFit.loose,
                               ),
-                              Flexible(
+                              const Flexible(
+                                fit: FlexFit.loose,
                                 child: Text(
                                   'Bye',
                                   style: TextStyle(color: Colors.white),
                                 ),
-                                fit: FlexFit.loose,
                               )
                             ],
                           )),
@@ -141,6 +150,7 @@ class _CardScorerState extends State<CardScorer> {
                               child: Row(
                             children: [
                               Flexible(
+                                fit: FlexFit.loose,
                                 child: Radio<String>(
                                   value: "Nb",
                                   groupValue: type,
@@ -150,9 +160,8 @@ class _CardScorerState extends State<CardScorer> {
                                     });
                                   },
                                 ),
-                                fit: FlexFit.loose,
                               ),
-                              Padding(
+                              const Padding(
                                 padding: EdgeInsets.all(0),
                                 child: Text(
                                   'No ball',
@@ -167,13 +176,13 @@ class _CardScorerState extends State<CardScorer> {
                     ),
                   )),
             )),
-        Container(
+        SizedBox(
           height: 130,
           child: Card(
               elevation: 20,
               color: Colors.transparent,
               child: Padding(
-                  padding: EdgeInsets.all(0.0),
+                  padding: const EdgeInsets.all(0.0),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -184,31 +193,31 @@ class _CardScorerState extends State<CardScorer> {
                             defaultVerticalAlignment:
                                 TableCellVerticalAlignment.middle,
                             children: <TableRow>[
-                              TableRow(
-                                  children: <Widget>[
+                              TableRow(children: <Widget>[
                                 Center(
                                     child: Transform.scale(
                                   scale: 0.85,
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      widget.update(type,"0"+(wicket? "OUT":""));
+                                      widget.update(
+                                          type, "0${wicket ? "OUT" : ""}");
                                       setState(() {
                                         type = "";
-                                        wicket=false;
+                                        wicket = false;
                                       });
                                     },
                                     style: ElevatedButton.styleFrom(
-                                        side: BorderSide(
+                                        side: const BorderSide(
                                             width: 1.5,
                                             color: Color(0xff01579B)),
-                                        padding: EdgeInsets.all(0.0),
+                                        padding: const EdgeInsets.all(0.0),
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(45),
                                         ),
                                         backgroundColor: Colors.transparent,
-                                        fixedSize: Size(60, 60)),
-                                    child: Text(
+                                        fixedSize: const Size(60, 60)),
+                                    child: const Text(
                                       '0',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
@@ -221,24 +230,25 @@ class _CardScorerState extends State<CardScorer> {
                                   scale: 0.85,
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      widget.update(type,"1"+(wicket? "OUT":""));
+                                      widget.update(
+                                          type, "1${wicket ? "OUT" : ""}");
                                       setState(() {
                                         type = "";
-                                        wicket=false;
+                                        wicket = false;
                                       });
                                     },
                                     style: ElevatedButton.styleFrom(
-                                        side: BorderSide(
+                                        side: const BorderSide(
                                             width: 1.5,
                                             color: Color(0xff01579B)),
-                                        padding: EdgeInsets.all(0.0),
+                                        padding: const EdgeInsets.all(0.0),
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(45),
                                         ),
                                         backgroundColor: Colors.transparent,
-                                        fixedSize: Size(60, 60)),
-                                    child: Text(
+                                        fixedSize: const Size(60, 60)),
+                                    child: const Text(
                                       '1',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
@@ -251,24 +261,25 @@ class _CardScorerState extends State<CardScorer> {
                                   scale: 0.85,
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      widget.update(type,"2"+(wicket? "OUT":""));
+                                      widget.update(
+                                          type, "2${wicket ? "OUT" : ""}");
                                       setState(() {
                                         type = "";
-                                        wicket=false;
+                                        wicket = false;
                                       });
                                     },
                                     style: ElevatedButton.styleFrom(
-                                        side: BorderSide(
+                                        side: const BorderSide(
                                             width: 1.5,
                                             color: Color(0xff01579B)),
-                                        padding: EdgeInsets.all(0.0),
+                                        padding: const EdgeInsets.all(0.0),
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(45),
                                         ),
                                         backgroundColor: Colors.transparent,
-                                        fixedSize: Size(60, 60)),
-                                    child: Text(
+                                        fixedSize: const Size(60, 60)),
+                                    child: const Text(
                                       '2',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
@@ -281,24 +292,25 @@ class _CardScorerState extends State<CardScorer> {
                                   scale: 0.85,
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      widget.update(type,"3"+(wicket? "OUT":""));
+                                      widget.update(
+                                          type, "3${wicket ? "OUT" : ""}");
                                       setState(() {
                                         type = "";
-                                        wicket=false;
+                                        wicket = false;
                                       });
                                     },
                                     style: ElevatedButton.styleFrom(
-                                        side: BorderSide(
+                                        side: const BorderSide(
                                             width: 1.5,
                                             color: Color(0xff01579B)),
-                                        padding: EdgeInsets.all(0.0),
+                                        padding: const EdgeInsets.all(0.0),
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(45),
                                         ),
                                         backgroundColor: Colors.transparent,
-                                        fixedSize: Size(60, 60)),
-                                    child: Text(
+                                        fixedSize: const Size(60, 60)),
+                                    child: const Text(
                                       '3',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
@@ -313,24 +325,25 @@ class _CardScorerState extends State<CardScorer> {
                                   scale: 0.85,
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      widget.update(type,"4"+(wicket? "OUT":""));
+                                      widget.update(
+                                          type, "4${wicket ? "OUT" : ""}");
                                       setState(() {
                                         type = "";
-                                        wicket=false;
+                                        wicket = false;
                                       });
                                     },
                                     style: ElevatedButton.styleFrom(
-                                        side: BorderSide(
+                                        side: const BorderSide(
                                             width: 1.5,
                                             color: Color(0xff01579B)),
-                                        padding: EdgeInsets.all(0.0),
+                                        padding: const EdgeInsets.all(0.0),
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(45),
                                         ),
                                         backgroundColor: Colors.transparent,
-                                        fixedSize: Size(60, 60)),
-                                    child: Text(
+                                        fixedSize: const Size(60, 60)),
+                                    child: const Text(
                                       '4',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
@@ -343,24 +356,25 @@ class _CardScorerState extends State<CardScorer> {
                                     scale: 0.85,
                                     child: ElevatedButton(
                                       onPressed: () {
-                                        widget.update(type,"5"+(wicket? "OUT":""));
+                                        widget.update(
+                                            type, "5${wicket ? "OUT" : ""}");
                                         setState(() {
                                           type = "";
-                                          wicket=false;
+                                          wicket = false;
                                         });
                                       },
                                       style: ElevatedButton.styleFrom(
-                                          side: BorderSide(
+                                          side: const BorderSide(
                                               width: 1.5,
                                               color: Color(0xff01579B)),
-                                          padding: EdgeInsets.all(0.0),
+                                          padding: const EdgeInsets.all(0.0),
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(45),
                                           ),
                                           backgroundColor: Colors.transparent,
-                                          fixedSize: Size(60, 60)),
-                                      child: Text(
+                                          fixedSize: const Size(60, 60)),
+                                      child: const Text(
                                         '5',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
@@ -374,24 +388,25 @@ class _CardScorerState extends State<CardScorer> {
                                     scale: 0.85,
                                     child: ElevatedButton(
                                       onPressed: () {
-                                        widget.update(type,"6"+(wicket? "OUT":""));
+                                        widget.update(
+                                            type, "6${wicket ? "OUT" : ""}");
                                         setState(() {
                                           type = "";
-                                          wicket=false;
+                                          wicket = false;
                                         });
                                       },
                                       style: ElevatedButton.styleFrom(
-                                          side: BorderSide(
+                                          side: const BorderSide(
                                               width: 1.5,
                                               color: Color(0xff01579B)),
-                                          padding: EdgeInsets.all(0.0),
+                                          padding: const EdgeInsets.all(0.0),
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(45),
                                           ),
                                           backgroundColor: Colors.transparent,
-                                          fixedSize: Size(60, 60)),
-                                      child: Text(
+                                          fixedSize: const Size(60, 60)),
+                                      child: const Text(
                                         '6',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
@@ -408,17 +423,17 @@ class _CardScorerState extends State<CardScorer> {
                                         widget.endInning();
                                       },
                                       style: ElevatedButton.styleFrom(
-                                          side: BorderSide(
+                                          side: const BorderSide(
                                               width: 1.5,
                                               color: Color(0xff01579B)),
-                                          padding: EdgeInsets.all(0.0),
+                                          padding: const EdgeInsets.all(0.0),
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(45),
                                           ),
                                           backgroundColor: Colors.transparent,
-                                          fixedSize: Size(60, 60)),
-                                      child: Text(
+                                          fixedSize: const Size(60, 60)),
+                                      child: const Text(
                                         '...',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
@@ -433,16 +448,15 @@ class _CardScorerState extends State<CardScorer> {
                       Flexible(
                           flex: 1,
                           child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10.0),
+                            padding: const EdgeInsets.symmetric(vertical: 10.0),
                             child: Column(
                               children: [
                                 Flexible(
                                   child: Padding(
-                                    padding: EdgeInsets.symmetric(
+                                    padding: const EdgeInsets.symmetric(
                                         vertical: 3.0, horizontal: 2.0),
                                     child: ElevatedButton(
-                                        onPressed: ()  {
-
+                                        onPressed: () {
                                           widget.popIt();
                                         },
                                         style: ElevatedButton.styleFrom(
@@ -451,7 +465,7 @@ class _CardScorerState extends State<CardScorer> {
                                               borderRadius:
                                                   BorderRadius.circular(5.0),
                                             )),
-                                        child: Text('UNDO',
+                                        child: const Text('UNDO',
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 10))),
@@ -459,7 +473,7 @@ class _CardScorerState extends State<CardScorer> {
                                 ),
                                 Flexible(
                                   child: Padding(
-                                    padding: EdgeInsets.symmetric(
+                                    padding: const EdgeInsets.symmetric(
                                         vertical: 3.0, horizontal: 2.0),
                                     child: ElevatedButton(
                                       onPressed: () {
@@ -467,13 +481,13 @@ class _CardScorerState extends State<CardScorer> {
                                       },
                                       style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.red,
-                                          padding: EdgeInsets.symmetric(
+                                          padding: const EdgeInsets.symmetric(
                                               horizontal: 20.0),
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(5.0),
                                           )),
-                                      child: Text(
+                                      child: const Text(
                                         'RETIRE',
                                         style: TextStyle(
                                             color: Colors.white, fontSize: 10),
@@ -483,7 +497,7 @@ class _CardScorerState extends State<CardScorer> {
                                 ),
                                 Flexible(
                                   child: Padding(
-                                    padding: EdgeInsets.symmetric(
+                                    padding: const EdgeInsets.symmetric(
                                         vertical: 3.0, horizontal: 2.0),
                                     child: ElevatedButton(
                                       onPressed: () {
@@ -495,7 +509,7 @@ class _CardScorerState extends State<CardScorer> {
                                             borderRadius:
                                                 BorderRadius.circular(5.0),
                                           )),
-                                      child: Text(
+                                      child: const Text(
                                         'SWAP',
                                         style: TextStyle(
                                             color: Colors.white, fontSize: 10),

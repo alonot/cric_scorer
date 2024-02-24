@@ -1,7 +1,12 @@
+import 'dart:io';
+
+import 'package:cric_scorer/Components/ScorePdfGenerator.dart';
 import 'package:cric_scorer/MatchViewModel.dart';
 import 'package:cric_scorer/models/Match.dart';
-import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:share_plus/share_plus.dart';
 
 class CardMatch extends StatelessWidget {
   String team1Url = "assests/csk.jpg";
@@ -24,8 +29,9 @@ class CardMatch extends StatelessWidget {
   int? id;
   final Function(bool, int?) onTap;
   final Function(bool, int?) onTapUpload;
+  final Function(bool) setLoading;
 
-  CardMatch(this.onTap, this.onTapUpload,{TheMatch? match, super.key}) {
+  CardMatch(this.onTap, this.onTapUpload, this.setLoading,{TheMatch? match, super.key}) {
     if (match != null) {
       id = match.id;
       team1Url = match.team1url;
@@ -39,16 +45,18 @@ class CardMatch extends StatelessWidget {
       uploaded = match.uploaded;
 
       needrun = (match.score[(match.currentTeam + 1) % 2] -
-          match.score[match.currentTeam])
+              match.score[match.currentTeam])
           .toString();
       int overs = (match.over_count[match.currentTeam] * 10).toInt();
       int overCount =
           (match.totalOvers * 6) - ((overs ~/ 10 * 6).toInt() + overs % 10);
-      debugPrint("$overs,${overCount}");
+      debugPrint("$overs,$overCount");
       needfrom = overCount.toString();
 
-      team1Color = match.currentTeam == 0 ? Colors.white : Color(0xff9b9b9b);
-      team2Color = match.currentTeam == 1 ? Colors.white : Color(0xff9b9b9b);
+      team1Color =
+          match.currentTeam == 0 ? Colors.white : const Color(0xff9b9b9b);
+      team2Color =
+          match.currentTeam == 1 ? Colors.white : const Color(0xff9b9b9b);
       is2ndinning = match.inning == 2;
       hasWon = match.hasWon;
       wonBy = '';
@@ -59,7 +67,7 @@ class CardMatch extends StatelessWidget {
           wonBy = "${match.no_of_players - 1 - match.wickets[cur]} wickets";
         } else {
           teamWon = cur == 0 ? match.team2 : match.team1;
-          wonBy = "${match.score[(cur + 1) % 2] - match.score[cur] } runs";
+          wonBy = "${match.score[(cur + 1) % 2] - match.score[cur]} runs";
         }
       }
     }
@@ -74,204 +82,245 @@ class CardMatch extends StatelessWidget {
         color: Colors.transparent,
         child: Center(
             child: Column(
-              children: [
-                !uploaded ? Flexible(
-                    flex: 2,
-                    child: ListTile(
-                        trailing: GestureDetector(
-                          child: Icon(Icons.upload,color: Colors.white,),
-                          onTap: (){
-                            onTapUpload(hasWon,id);
-                          },
-                        ),
-                        visualDensity: VisualDensity(vertical: -4))): SizedBox(width: 0,height: 0,),
-                Flexible(
-                    flex: 8,
-                    child: GestureDetector(
+          children: [
+            Flexible(
+                flex: 2,
+                child: ListTile(
+                    trailing: SizedBox(
+                      width: 100,
+                      height: 50,
                       child: Row(
-                        children: <Widget>[
-                          Flexible(
-                              child: Row(
-                                children: <Widget>[
-                                  Expanded(
-                                    child: ElevatedButton(
-                                      onPressed: null,
-                                      style: ElevatedButton.styleFrom(
-                                        shape: CircleBorder(),
-                                        padding: EdgeInsets.only(right: 0),
-                                      ),
-                                      child: Container(
-                                        width: 70,
-                                        height: 70,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          image: DecorationImage(
-                                              image: AssetImage(
-                                                  team1Url),
-                                              fit: BoxFit.cover),
-                                        ),
-                                      ),
-                                    ),
-                                  ), // Team 1 Avatar
-                                  Expanded(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .center,
-                                        children: [
-                                          Container(
-                                            child: Text(
-                                              team1,
-                                              style: TextStyle(
-                                                  color: team1Color,
-                                                  fontSize: 12),
-                                              textAlign: TextAlign.start,
-                                            ),
-                                            width: double.infinity,
-                                          ),
-                                          Container(
-                                            width: double.infinity,
-                                            child: Text(
-                                              score1,
-                                              style: TextStyle(
-                                                  color: team1Color,
-                                                  fontSize: 25,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          Container(
-                                            width: double.infinity,
-                                            child: Text(
-                                              overs1 + ' OVERS',
-                                              style: TextStyle(
-                                                  color: team1Color,
-                                                  fontSize: 12),
-                                            ),
-                                          ),
-                                        ],
-                                      )), // Team 1 score
-                                ],
-                              )),
-                          Flexible(
-                              child: Row(
-                                children: <Widget>[
-                                  Expanded(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment
-                                          .center,
-                                      crossAxisAlignment: CrossAxisAlignment
-                                          .end,
-                                      children: [
-                                        Container(
-                                          child: Text(
-                                            team2,
-                                            style: TextStyle(
-                                                color: team2Color,
-                                                fontSize: 12),
-                                            textAlign: TextAlign.end,
-                                          ),
-                                          width: double.infinity,
-                                        ),
-                                        Container(
-                                          width: double.infinity,
-                                          child: Text(score2,
-                                              style: TextStyle(
-                                                  color: team2Color,
-                                                  fontSize: 25,
-                                                  fontWeight: FontWeight.bold),
-                                              textAlign: TextAlign.end),
-                                        ),
-                                        Container(
-                                          width: double.infinity,
-                                          child: Text(overs2 + ' OVERS',
-                                              style: TextStyle(
-                                                  color: team2Color,
-                                                  fontSize: 12),
-                                              textAlign: TextAlign.end),
-                                        ),
-                                      ],
-                                    ),
-                                  ), // Team 2 Score
-                                  Expanded(
-                                    child: ElevatedButton(
-                                      onPressed: null,
-                                      style: ElevatedButton.styleFrom(
-                                        shape: CircleBorder(),
-                                        padding: EdgeInsets.only(right: 0),
-                                      ),
-                                      child: Container(
-                                        width: 70,
-                                        height: 70,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          image: DecorationImage(
-                                              image: AssetImage(
-                                                  team2Url),
-                                              fit: BoxFit.cover),
-                                        ),
-                                      ),
-                                    ),
-                                  ), // Team 2 Avatar
-                                ],
-                              )),
+                        children: [
+                          hasWon? IconButton(
+                              onPressed: () async {
+                                debugPrint("Here");
+                                setLoading(true);
+                                viewModel.setCurrentMatch((await viewModel.getMatch(id!))!);
+                                final pdf = pw.Document();
+                                ScorePdfGenerator().generatePdf(pdf);
+                                String path = await savePdf(pdf);
+                                debugPrint("File Path ${path}");
+                                await Share.shareXFiles([XFile(path)],
+                                    text: "ScoreCard",
+                                    subject: "Sharing ScoreCard");
+                                setLoading(false);
+                              },
+                              constraints:
+                                  BoxConstraints(maxHeight: 35, maxWidth: 35),
+                              icon: const Icon(
+                                Icons.share,
+                                color: Colors.white,
+                              )) : SizedBox(),
+                          !uploaded
+                              ? IconButton(
+                                  onPressed: () {
+                                    onTapUpload(hasWon, id);
+                                  },
+                                  constraints: BoxConstraints(
+                                      maxHeight: 35, maxWidth: 35),
+                                  icon: const Icon(
+                                    Icons.upload,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const SizedBox(
+                                  width: 0,
+                                  height: 0,
+                                ),
                         ],
                       ),
-                      onTap: () {
-                        debugPrint("ksadlk");
-                        onTap(hasWon, id);
-                      },
-                    )),
-                is2ndinning
-                    ? Flexible(
+                    ),
+                    visualDensity: const VisualDensity(vertical: -4))),
+
+
+            Flexible(
+                flex: 8,
+                child: GestureDetector(
+                  child: Row(
+                    children: <Widget>[
+                      Flexible(
+                          child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: null,
+                              style: ElevatedButton.styleFrom(
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.only(right: 0),
+                              ),
+                              child: Container(
+                                width: 70,
+                                height: 70,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                      image: AssetImage(team1Url),
+                                      fit: BoxFit.cover),
+                                ),
+                              ),
+                            ),
+                          ), // Team 1 Avatar
+                          Expanded(
+                              child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: double.infinity,
+                                child: Text(
+                                  team1,
+                                  style: TextStyle(
+                                      color: team1Color, fontSize: 12),
+                                  textAlign: TextAlign.start,
+                                ),
+                              ),
+                              SizedBox(
+                                width: double.infinity,
+                                child: Text(
+                                  score1,
+                                  style: TextStyle(
+                                      color: team1Color,
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              SizedBox(
+                                width: double.infinity,
+                                child: Text(
+                                  '$overs1 OVERS',
+                                  style: TextStyle(
+                                      color: team1Color, fontSize: 12),
+                                ),
+                              ),
+                            ],
+                          )), // Team 1 score
+                        ],
+                      )),
+                      Flexible(
+                          child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: Text(
+                                    team2,
+                                    style: TextStyle(
+                                        color: team2Color, fontSize: 12),
+                                    textAlign: TextAlign.end,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: Text(score2,
+                                      style: TextStyle(
+                                          color: team2Color,
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold),
+                                      textAlign: TextAlign.end),
+                                ),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: Text('$overs2 OVERS',
+                                      style: TextStyle(
+                                          color: team2Color, fontSize: 12),
+                                      textAlign: TextAlign.end),
+                                ),
+                              ],
+                            ),
+                          ), // Team 2 Score
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: null,
+                              style: ElevatedButton.styleFrom(
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.only(right: 0),
+                              ),
+                              child: Container(
+                                width: 70,
+                                height: 70,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                      image: AssetImage(team2Url),
+                                      fit: BoxFit.cover),
+                                ),
+                              ),
+                            ),
+                          ), // Team 2 Avatar
+                        ],
+                      )),
+                    ],
+                  ),
+                  onTap: () {
+                    debugPrint("ksadlk");
+                    onTap(hasWon, id);
+                  },
+                )),
+            is2ndinning
+                ? Flexible(
                     flex: 3,
                     child: GestureDetector(
                       child: Padding(
-                        padding: EdgeInsets.only(top: 10, bottom: 10),
+                        padding: const EdgeInsets.only(top: 10, bottom: 10),
                         child: hasWon
                             ? RichText(
-                          text: TextSpan(
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: teamWon,
-                                  style: TextStyle(color: Colors.red),
-                                ),
-                                TextSpan(text: ' Won by '),
-                                TextSpan(
-                                    text: wonBy,
-                                    style: TextStyle(color: Colors.red)),
-                              ]),
-                        )
+                                text: TextSpan(
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: teamWon,
+                                        style:
+                                            const TextStyle(color: Colors.red),
+                                      ),
+                                      const TextSpan(text: ' Won by '),
+                                      TextSpan(
+                                          text: wonBy,
+                                          style: const TextStyle(
+                                              color: Colors.red)),
+                                    ]),
+                              )
                             : RichText(
-                          text: TextSpan(
-                              style: TextStyle(
-                                color: Colors.white,
+                                text: TextSpan(
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                    children: [
+                                      const TextSpan(text: 'Need '),
+                                      TextSpan(
+                                          text: '$needrun runs ',
+                                          style: const TextStyle(
+                                              color: Colors.red)),
+                                      const TextSpan(text: 'from '),
+                                      TextSpan(
+                                          text: '$needfrom balls',
+                                          style: const TextStyle(
+                                              color: Colors.red)),
+                                    ]),
                               ),
-                              children: [
-                                TextSpan(text: 'Need '),
-                                TextSpan(
-                                    text: needrun + ' runs ',
-                                    style: TextStyle(color: Colors.red)),
-                                TextSpan(text: 'from '),
-                                TextSpan(
-                                    text: needfrom + ' balls',
-                                    style: TextStyle(color: Colors.red)),
-                              ]),
-                        ),
                       ),
                       onTap: () {
                         debugPrint("ksadlk");
                         onTap(hasWon, id);
                       },
                     ))
-                    : new SizedBox(
-                  width: 0,
-                  height: 0,
-                ),
-              ],
-            )));
+                : const SizedBox(
+                    width: 0,
+                    height: 0,
+                  ),
+          ],
+        )));
   }
 
-
+  Future<String> savePdf(pw.Document pdf) async {
+    Directory tempDirectory = await getTemporaryDirectory();
+    String tempPath = tempDirectory.path;
+    File file = File("${tempPath}/scoreBoard.pdf");
+    file.writeAsBytesSync(await pdf.save());
+    return "${tempPath}/scoreBoard.pdf";
+  }
 }

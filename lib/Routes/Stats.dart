@@ -43,23 +43,23 @@ class _StatsState extends State<Stats> {
 
     return SafeArea(
         top: true,
-        minimum: EdgeInsets.symmetric(vertical: 20),
+        minimum: const EdgeInsets.symmetric(vertical: 20),
         child: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             border: null,
             image: DecorationImage(
                 image: AssetImage('assests/background.jpg'), fit: BoxFit.cover),
           ),
           child: Scaffold(
-            backgroundColor: Color(0x89000000),
+            backgroundColor: const Color(0x89000000),
             body: Stack(
               children: [
-                isLoading ? Center(child:CircularProgressIndicator()):SizedBox(width:0,height: 0),
+                isLoading ? const Center(child:CircularProgressIndicator()):const SizedBox(width:0,height: 0),
                 !isLoading ?  Padding(
-                  padding: EdgeInsets.only(top: 50),
+                  padding: const EdgeInsets.only(top: 50),
                   child: ListView(
                     children: [
-                      ListTile(
+                      const ListTile(
                         title: Text(
                           "Stats",
                           style: TextStyle(
@@ -73,7 +73,7 @@ class _StatsState extends State<Stats> {
                       Column(
                         children: [
                           ListTile(
-                            shape: RoundedRectangleBorder(
+                            shape: const RoundedRectangleBorder(
                                 side: BorderSide(color: Colors.grey)),
                             onTap: () {
                               setState(() {
@@ -82,14 +82,14 @@ class _StatsState extends State<Stats> {
                             },
                             tileColor:
                             isSelected == 1 ? Colors.transparent : Colors.grey,
-                            title: Text(
+                            title: const Text(
                               "Batters",
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
                           isSelected == 0
                               ? CardBatterStat(batters)
-                              : SizedBox(
+                              : const SizedBox(
                             width: 0,
                             height: 0,
                           ),
@@ -98,7 +98,7 @@ class _StatsState extends State<Stats> {
                       Column(
                         children: [
                           ListTile(
-                            shape: RoundedRectangleBorder(
+                            shape: const RoundedRectangleBorder(
                                 side: BorderSide(color: Colors.grey)),
                             onTap: () {
                               setState(() {
@@ -107,14 +107,14 @@ class _StatsState extends State<Stats> {
                             },
                             tileColor:
                             isSelected == 0 ? Colors.transparent : Colors.grey,
-                            title: Text(
+                            title: const Text(
                               "Bowlers",
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
                           isSelected == 1
                               ? CardBowlerStat(bowlers)
-                              : SizedBox(
+                              : const SizedBox(
                             width: 0,
                             height: 0,
                           ),
@@ -122,7 +122,7 @@ class _StatsState extends State<Stats> {
                       ),
                     ],
                   ),
-                ):SizedBox(width: 0,height: 0,),
+                ):const SizedBox(width: 0,height: 0,),
               ],
             ),
           ),

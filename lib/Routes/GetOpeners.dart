@@ -1,10 +1,10 @@
+import 'package:cric_scorer/Components/AutoCompleteIt.dart';
+import 'package:cric_scorer/MatchViewModel.dart';
 import 'package:cric_scorer/models/Batter.dart';
 import 'package:cric_scorer/models/Bowler.dart';
 import 'package:cric_scorer/models/Over.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-import 'package:cric_scorer/MatchViewModel.dart';
 import '../utils/util.dart';
 
 class GetOpeners extends StatefulWidget {
@@ -16,75 +16,94 @@ class GetOpeners extends StatefulWidget {
 
 class _GetOpenersState extends State<GetOpeners> {
   final MatchViewModel viewModel = MatchViewModel();
-  TextEditingController batter1cntrl = TextEditingController();
-  TextEditingController batter2cntrl = TextEditingController();
-  TextEditingController bowlercntrl = TextEditingController();
-  String? errorBatter1 = null;
-  String? errorBatter2 = null;
-  String? errorBowler = null;
+
+  String batter1Name = "";
+  String batter2Name = "";
+  String bowlerName = "";
+
+  String errorBatter1 = "";
+  String errorBatter2 = "";
+  String errorBowler = "";
 
   bool _validate() {
     bool allGood = true;
-    if (batter1cntrl.text.isEmpty) {
+
+    if (batter1Name == batter2Name ||
+        batter2Name == bowlerName ||
+        batter1Name == bowlerName) {
+      setState(() {
+        errorBowler = 'Duplicate';
+        errorBatter2 = 'Duplicate';
+        errorBatter1 = 'Duplicate';
+      });
+      return false;
+    }
+
+    if (batter1Name.isEmpty) {
       allGood = false;
       setState(() {
         errorBatter1 = "required";
       });
     } else {
       setState(() {
-        errorBatter1 = null;
+        errorBatter1 = "";
       });
     }
 
-    if (batter2cntrl.text.isEmpty) {
+    if (batter2Name.isEmpty) {
       allGood = false;
       setState(() {
         errorBatter2 = "required";
       });
     } else {
       setState(() {
-        errorBatter2 = null;
+        errorBatter2 = "";
       });
     }
 
-    if (bowlercntrl.text.isEmpty) {
+    if (bowlerName.isEmpty) {
       allGood = false;
       setState(() {
         errorBowler = "required";
       });
     } else {
       setState(() {
-        errorBowler = null;
+        errorBowler = "";
       });
     }
     return allGood;
   }
 
+  void setbowlerName(String val) => bowlerName = val;
+
+  void setbatter1Name(String val) => batter1Name = val;
+
+  void setbatter2Name(String val) => batter2Name = val;
+
   void onPlayBtnClicked() async {
     debugPrint("Lets Play!2!");
     var randomError = "";
-      bool result = _validate();
-      print(result);
-      if (result) {
-        var match = viewModel.getCurrentMatch();
-        if (match == null) {
-          Navigator.pop(context);
-        }
-        Bowler bowler = Bowler(bowlercntrl.text);
-        Batter batter1 = Batter(batter1cntrl.text);
-        Batter batter2 = Batter(batter2cntrl.text);
-        match!.addBowler(bowler);
-        match.currentBatters = [];
-        match.addBatter(batter1);
-        match.addBatter(batter2);
-        match.Overs[match.currentTeam]
-            .add(Over(0, bowler.name, [batter1.name]));
-        match.currentBatterIndex = 0;
-        debugPrint(match.team1);
-        await viewModel.updateMatch(match);
-        Navigator.pushNamedAndRemoveUntil(
-            context, Util.matchPageRoute, (route) => false);
+    bool result = _validate();
+    // print(result);
+    if (result) {
+      var match = viewModel.getCurrentMatch();
+      if (match == null) {
+        Navigator.pop(context);
       }
+      Bowler bowler = Bowler(bowlerName);
+      Batter batter1 = Batter(batter1Name);
+      Batter batter2 = Batter(batter2Name);
+      match!.addBowler(bowler);
+      match.currentBatters = [];
+      match.addBatter(batter1);
+      match.addBatter(batter2);
+      match.Overs[match.currentTeam].add(Over(0, bowler.name, [batter1.name]));
+      match.currentBatterIndex = 0;
+      debugPrint(match.team1);
+      // await viewModel.updateMatch(match);
+      Navigator.pushNamedAndRemoveUntil(
+          context, Util.matchPageRoute, (route) => false);
+    }
     if (randomError.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         backgroundColor: Colors.grey,
@@ -95,18 +114,15 @@ class _GetOpenersState extends State<GetOpeners> {
 
   @override
   Widget build(BuildContext context) {
-    var focusBatter2 = FocusNode();
-    var focusBowler = FocusNode();
-
     return Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           border: null,
           image: DecorationImage(
               image: AssetImage('assests/background.jpg'), fit: BoxFit.cover),
         ),
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(15.0),
             child: Center(
               child: Column(children: [
                 Card(
@@ -114,67 +130,85 @@ class _GetOpenersState extends State<GetOpeners> {
                   color: Colors.transparent,
                   shadowColor: Colors.black,
                   child: Padding(
-                    padding: EdgeInsets.all(10.0),
+                    padding: const EdgeInsets.all(10.0),
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width,
-                      height: 200,
+                      height: 250,
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          TextField(
-                            controller: batter1cntrl,
-                            textAlign: TextAlign.start,
-                            onEditingComplete: () {
-                              FocusScope.of(context).requestFocus(focusBatter2);
-                            },
-                            decoration: InputDecoration(
-                                labelText: 'Batter 1',
-                                errorText: errorBatter1,
-                                labelStyle: TextStyle(color: Colors.white)),
+                          const Text('Batter1',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontFamily: 'Roboto'),
+                              textAlign: TextAlign.start),
+                          AutoCompleteIt(
+                            Util.batterNames,
+                            setbatter1Name,
+                            key: const Key("Batter1 Opener"),
                           ),
-                          TextField(
-                            controller: batter2cntrl,
+                          Text(
+                            errorBatter1,
+                            style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 11,
+                                fontFamily: 'Roboto'),
                             textAlign: TextAlign.start,
-                            focusNode: focusBatter2,
-                            onEditingComplete: () {
-                              FocusScope.of(context).requestFocus(focusBowler);
-                            },
-                            decoration: InputDecoration(
-                                labelText: 'Batter 2',
-                                errorText: errorBatter2,
-                                labelStyle: TextStyle(color: Colors.white)),
                           ),
-                          TextField(
-                            controller: bowlercntrl,
-                            textAlign: TextAlign.start,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.singleLineFormatter
-                            ],
-                            focusNode: focusBowler,
-                            decoration: InputDecoration(
-                                labelText: 'Bowler',
-                                errorText: errorBowler,
-                                labelStyle: TextStyle(color: Colors.white)),
+                          const Text('Batter2',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontFamily: 'Roboto'),
+                              textAlign: TextAlign.start),
+                          AutoCompleteIt(
+                            Util.batterNames,
+                            setbatter2Name,
+                            key: const Key("Batter2 Opener"),
                           ),
+                          Text(errorBatter2,
+                              style: const TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 11,
+                                  fontFamily: 'Roboto'),
+                              textAlign: TextAlign.start),
+                          const Text('Bowler',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontFamily: 'Roboto'),
+                              textAlign: TextAlign.start),
+                          AutoCompleteIt(
+                            Util.bowlerNames,
+                            setbowlerName,
+                            key: const Key("Bowler Opener"),
+                          ),
+                          Text(errorBowler,
+                              style: const TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 11,
+                                  fontFamily: 'Roboto'),
+                              textAlign: TextAlign.start),
                         ],
                       ),
                     ),
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(top: 20, bottom: 20),
+                  padding: const EdgeInsets.only(top: 20, bottom: 20),
                   child: Center(
                     child: ElevatedButton(
                       onPressed: () async {
                         onPlayBtnClicked();
                       },
-                      child: Text(
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                              const Color(0x42A4E190))),
+                      child: const Text(
                         "Let's Play!!",
                         style: TextStyle(color: Colors.white),
                       ),
-                      style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Color(0x42A4E190))),
                     ),
                   ),
                 ),

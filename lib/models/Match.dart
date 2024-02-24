@@ -2,7 +2,7 @@ import 'package:cric_scorer/models/Batter.dart';
 import 'package:cric_scorer/models/Bowler.dart';
 import 'package:cric_scorer/models/Over.dart';
 import 'package:cric_scorer/utils/util.dart';
-import 'package:flutter/cupertino.dart';
+
 
 class TheMatch {
   // Have given this name to avoid clashes with dart:core Match class
@@ -33,7 +33,7 @@ class TheMatch {
 
   TheMatch(this.team1, this.team1url, this.team2, this.team2url, this.toss,
       this.optTo, this.no_of_players, this.totalOvers,
-      {this.id = null,
+      {this.id,
       overs,
       batters,
       bowlers,
@@ -135,8 +135,9 @@ class TheMatch {
           if ((count * 10).toInt() % 10 == 5) {
             over_count[currentTeam] += 0.5;
             currentBatters = List.of(currentBatters.reversed);
-            if (over_count[currentTeam] == totalOvers)
+            if (over_count[currentTeam] == totalOvers) {
               return false; // If over limit exeeded . Do not take new bowler.
+            }
 
             return true; // signal to get a new bowler
           } else {
@@ -150,7 +151,7 @@ class TheMatch {
 
   bool popScore() {
     var count = over_count[currentTeam];
-    if (wicketOrder[currentTeam].length != 0) {
+    if (wicketOrder[currentTeam].isNotEmpty) {
       var lastWicket = wicketOrder[currentTeam].last;
       if (double.parse(lastWicket[1].split(' ')[0]).toStringAsFixed(1) ==
           over_count[currentTeam].toStringAsFixed(1)) {
@@ -247,7 +248,7 @@ class TheMatch {
   }
 
   Map<String, dynamic> toMap() {
-    Map<String, dynamic> theMatchMap = Map();
+    Map<String, dynamic> theMatchMap = {};
     if (id != null) {
       theMatchMap['id'] = id;
     }
@@ -336,7 +337,7 @@ class TheMatch {
   }
 
   Map<String, dynamic> tolesserMap() {
-    Map<String, dynamic> theMatchMap = Map();
+    Map<String, dynamic> theMatchMap = {};
     theMatchMap['hasWon'] = hasWon.toString();
     theMatchMap['inning'] = inning;
     theMatchMap['currentBatterIndex'] = currentBatterIndex;

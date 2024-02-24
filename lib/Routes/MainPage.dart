@@ -25,13 +25,13 @@ class _MainPageState extends State<MainPage> {
     }
 
     return Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           border: null,
           image: DecorationImage(
               image: AssetImage('assests/background.jpg'), fit: BoxFit.cover),
         ),
         child: Scaffold(
-            backgroundColor: Color(0x89000000),
+            backgroundColor: const Color(0x89000000),
             body: Stack(
               children: [
                 !isLoading
@@ -53,21 +53,23 @@ class _MainPageState extends State<MainPage> {
                                   matches!.removeAt(index);
                                 },
                                 child: Padding(
-                                  padding: EdgeInsets.all(5),
-                                  child: Container(
+                                  padding: const EdgeInsets.all(5),
+                                  child: SizedBox(
                                     height: 180,
-                                    key: Key("cont"),
+                                    key: const Key("cont"),
                                     child: CardMatch(
                                       onTap,
                                       uploadMatch,
+                                      setLoading,
                                       match: matches![index],
                                     ),
                                   ),
                                 ));
                           }
+                          return null;
                         },
                       )
-                    : SizedBox(
+                    : const SizedBox(
                         width: 0,
                         height: 0,
                       ),
@@ -82,12 +84,12 @@ class _MainPageState extends State<MainPage> {
                         onPressed: () {
                           Navigator.pushNamed(context, Util.homeRoute);
                         },
-                        child: Center(
+                        child: const Center(
                           child: Icon(Icons.add),
                         ),
                       ),
-                      SizedBox(width: 0,height: 5,),
-                      Container(
+                      const SizedBox(width: 0,height: 5,),
+                      SizedBox(
                         width: 50,
                         child: Center(
                           child: MaterialButton(
@@ -101,24 +103,30 @@ class _MainPageState extends State<MainPage> {
                             onPressed: (){
                               Navigator.pushNamed(context, Util.statsRoute);
                             },
-                            child: Icon(Icons.sports_cricket),
+                            child: const Icon(Icons.sports_cricket),
                           ),
                         ),
                       ),
                     ],
                   ),
                 )
-                    :SizedBox(width: 0,height: 0,),
+                    :const SizedBox(width: 0,height: 0,),
                 isLoading
-                    ? Center(
+                    ? const Center(
                         child: CircularProgressIndicator(),
                       )
-                    : SizedBox(
+                    : const SizedBox(
                         width: 0,
                         height: 0,
                       )
               ],
             )));
+  }
+
+  void setLoading(bool value){
+    setState(() {
+      isLoading = value;
+    });
   }
 
   void onTap(bool hasWon, int? id) async {
@@ -127,6 +135,8 @@ class _MainPageState extends State<MainPage> {
       var match = await viewModel.getMatch(id);
       if (match != null) {
         viewModel.setCurrentMatch(match);
+        Util.batterNames = (await viewModel.getStat()).map((batter) => batter.name).toList();
+        Util.bowlerNames = (await viewModel.getBowlers()).map((bowler) => bowler.name).toList();
       }
       if (hasWon) {
         Navigator.pushNamed(context, Util.scoreCardRoute);
@@ -177,7 +187,7 @@ class _MainPageState extends State<MainPage> {
     });
 
     List<TheMatch> matchList = await viewModel.getAllMatches();
-    if (matchList.length == 0) {
+    if (matchList.isEmpty) {
       debugPrint("No Match found");
     } else {
       setState(() {

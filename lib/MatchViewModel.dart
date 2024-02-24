@@ -27,36 +27,50 @@ class MatchViewModel {
   }
 
   Future<List<BatterStat>> getStat() async{
-    List<BatterStat> batters = [];
-    FirebaseFirestore.instance.collection("batters").get().then(
-          (querySnapshot) {
-        print("Successfully completed "+querySnapshot.docs.length.toString());
-        for (var docSnapshot in querySnapshot.docs) {
-          print('${docSnapshot.id} => ${docSnapshot.data()}');
-          batters.add(BatterStat.fromMap(docSnapshot.data(), docSnapshot.id));
-        }
-      },
-      onError: (e) => print("Error completing: $e"),
-    );
-    return batters;
+
+    if (_repository.batters == null || _repository.batters?.length != _repository.battersCount) {
+      List<BatterStat> batters = [];
+      await FirebaseFirestore.instance.collection("batters").get().then(
+            (querySnapshot) {
+          // print("Successfully completed " + querySnapshot.docs.length.toString());
+          for (var docSnapshot in querySnapshot.docs) {
+            // print('${docSnapshot.id} => ${docSnapshot.data()}');
+            batters.add(BatterStat.fromMap(docSnapshot.data(), docSnapshot.id));
+          }
+        },
+        onError: (e) => debugPrint("Error completing: $e"),
+      );
+      _repository.battersCount = batters.length;
+      _repository.batters = batters;
+      return batters;
+    }else{
+      return _repository.batters!;
+    }
   }
 
   Future<List<BowlerStat>> getBowlers() async{
     List<BowlerStat> bowlers = [];
-    await FirebaseFirestore.instance.collection("bowlers").get().then(
-          (querySnapshot) {
-        print("Successfully completed "+querySnapshot.docs.length.toString());
-        for (var docSnapshot in querySnapshot.docs) {
-          print('${docSnapshot.id} => ${docSnapshot.data()}');
-          bowlers.add(BowlerStat.fromMap(docSnapshot.data(), docSnapshot.id));
-        }
-      },
-      onError: (e) => print("Error completing: $e"),
-    );
+
+    if (_repository.bowlers != null || _repository.bowlers?.length != _repository.bowlersCount) {
+      await FirebaseFirestore.instance.collection("bowlers").get().then(
+            (querySnapshot) {
+          debugPrint("Successfully completed ${querySnapshot.docs.length}");
+          for (var docSnapshot in querySnapshot.docs) {
+            debugPrint('${docSnapshot.id} => ${docSnapshot.data()}');
+            bowlers.add(BowlerStat.fromMap(docSnapshot.data(), docSnapshot.id));
+          }
+        },
+        onError: (e) => debugPrint("Error completing: $e"),
+      );
+      _repository.bowlers = bowlers;
+      _repository.bowlersCount = bowlers.length;
+    }else{
+      bowlers = _repository.bowlers!;
+    }
     return bowlers;
   }
 
-  TheMatch? getCurrentMatch() => this._repository.currentMatch;
+  TheMatch? getCurrentMatch() => _repository.currentMatch;
 
   Future<TheMatch?> getMatch(int id) async {
     var result = await _databaseHelper.getMatch(id);
@@ -73,7 +87,7 @@ class MatchViewModel {
   }
 
   Future<int> updateMatch(TheMatch match) async {
-    debugPrint(match.inning.toString() + "IDini" + match.id.toString());
+    debugPrint("${match.inning}IDini${match.id}");
     return await _databaseHelper.updateMatch(match);
   }
 
@@ -88,12 +102,6 @@ class MatchViewModel {
     return true;
   }
 
-  Stream<List<BatterStat>> getBatterStat() => FirebaseFirestore.instance.
-  collection('batters')
-        .snapshots()
-        .map((snapshot) =>
-        snapshot.docs.map((doc) =>
-          BatterStat.fromMap(doc.data(),doc.id)).toList());
 
   Future uploadMatch(TheMatch match) async {
     String id = FirebaseFirestore.instance.collection('matches').doc().id;

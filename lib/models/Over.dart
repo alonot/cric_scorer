@@ -1,7 +1,4 @@
 
-import 'package:cric_scorer/models/Batter.dart';
-import 'package:flutter/cupertino.dart';
-
 class Over{
   late int over_no;
   late bool wasMaiden;
@@ -59,7 +56,7 @@ class Over{
     return resultString;
   }
 
-  Over(this.over_no,this.bowlerName,this.batters,{this.runs=0,bowls = null,this.wasMaiden=false}){
+  Over(this.over_no,this.bowlerName,this.batters,{this.runs=0,bowls,this.wasMaiden=false}){
     if(bowls != null){
       this.bowls = bowls;
     }else{

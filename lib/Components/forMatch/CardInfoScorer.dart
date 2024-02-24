@@ -12,8 +12,8 @@ class CardInfoScorer extends StatefulWidget {
 
 class _CardInfoScorerState extends State<CardInfoScorer> {
   final MatchViewModel viewModel = MatchViewModel();
-  String _team1Url = "assests/csk.jpg";
-  String _team2Url = "assests/rcb.jpg";
+  String _team1Url = "assests/CSK.jpg";
+  String _team2Url = "assests/RCB.jpg";
   String _team1 = "Team 1";
   String _team2 = "Team 2";
   String _score1 = "0-0";

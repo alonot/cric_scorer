@@ -1,26 +1,55 @@
+import 'dart:math';
+
+import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';
 
 class CardInfo extends StatefulWidget {
-  final _CardInfoState _state = _CardInfoState();
+  String val1 = "";
+  String val2 = "";
+  _CardInfoState? _state;
   final void Function(String t1, String t2) update;
 
-  CardInfo(this.update, {super.key});
+  CardInfo(this.update, this.val1, this.val2, {super.key}){
+    // debugPrint("Calse");
+    _state = _CardInfoState(
+      val1,
+      val2
+    );
+  }
 
   @override
-  State<CardInfo> createState() => _state;
+  State<CardInfo> createState() => _state!;
 
-  Map<String, String> getInfo() => _state.getRequiredInfo();
+  Map<String, String> getInfo() => _state!.getRequiredInfo();
 }
 
 class _CardInfoState extends State<CardInfo> {
   TextEditingController team1cntrl = TextEditingController();
   TextEditingController team2cntrl = TextEditingController();
-  String _team1Url = "assests/csk.jpg";
-  String _team2Url = "assests/rcb.jpg";
+  String _team1Url = "assests/CSK.jpg";
+  String _team2Url = "assests/RCB.jpg";
 
-  _CardInfoState() {
-    team1cntrl.text = "Team 1";
-    team2cntrl.text = "Team 2";
+  _CardInfoState(String val1,String val2) {
+    _team1Url = "assests/${val1}.jpg";
+    team1cntrl.text = val1;
+    _team2Url = "assests/${val2}.jpg";
+    team2cntrl.text = val2;
+    // debugPrint("$val1 fd $val2");
+  }
+
+  void changeTeam(bool change1,bool change2) {
+    logos = logos.sublist(1) + [logos[0]];
+    if (change1) {
+      _team1Url = "assests/${logos[0]}.jpg";
+      team1cntrl.text = logos[0];
+    }
+    if (change2) {
+      _team2Url = "assests/${logos[1]}.jpg";
+      team2cntrl.text = logos[1];
+    }
+    widget.val1 = team1cntrl.text;
+    widget.val2 = team2cntrl.text;
+
   }
 
   Map<String, String> getRequiredInfo() => Map.of({
@@ -44,7 +73,10 @@ class _CardInfoState extends State<CardInfo> {
                   flex: 8,
                   child: ElevatedButton(
                     onPressed: () {
-                      debugPrint("helo");
+                      setState(() {
+                        changeTeam(true,false);
+                      });
+                      widget.update(team1cntrl.text,team2cntrl.text);
                     },
                     style: ElevatedButton.styleFrom(
                         shape: const CircleBorder(),
@@ -92,7 +124,10 @@ class _CardInfoState extends State<CardInfo> {
                   flex: 8,
                   child: ElevatedButton(
                     onPressed: () {
-                      debugPrint("helo");
+                      setState(() {
+                        changeTeam(false, true);
+                        widget.update(team1cntrl.text,team2cntrl.text);
+                      });
                     },
                     style: ElevatedButton.styleFrom(
                         shape: const CircleBorder(),
@@ -103,7 +138,7 @@ class _CardInfoState extends State<CardInfo> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
-                            image: AssetImage(_team2Url), fit: BoxFit.cover),
+                            image: AssetImage(_team2Url ), fit: BoxFit.cover),
                       ),
                     ),
                   ),

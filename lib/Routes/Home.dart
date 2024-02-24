@@ -17,11 +17,17 @@ class _HomeState extends State<Home> {
   final MatchViewModel viewModel = MatchViewModel();
   late CardMatchSettings matchsetting;
   late CardInfo infoCard;
-  String _team1 = "Team 1", _team2 = "Team 2";
+  String _team1 = "", _team2 = "";
   String? errorTextOver;
   String? errorTextPlayer;
   final TextEditingController oversController = TextEditingController();
   final TextEditingController noplayersController = TextEditingController();
+
+  _HomeState(){
+    debugPrint("Hereasdasdasdafsdgafga");
+    _team2 = logos[1];
+    _team1 = logos[0];
+  }
 
   void update(String t1, String t2) {
     debugPrint(t1 + t2);
@@ -81,6 +87,7 @@ class _HomeState extends State<Home> {
         });
       }
     }
+    debugPrint("$_team1 ,,, $_team2");
     if (_team1 == _team2) {
       allGood = false;
       ScaffoldMessenger.of(context)
@@ -96,7 +103,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    infoCard = CardInfo(update);
+    infoCard = CardInfo(update, _team1,_team2);
     matchsetting = CardMatchSettings(
       _team1,
       _team2,
@@ -145,6 +152,8 @@ class _HomeState extends State<Home> {
                               Map<String, String> info1 = infoCard.getInfo();
                               Map<String, String> info2 =
                                   matchsetting.getInfo();
+                              // debugPrint("$_team1 ::: $_team2");
+                              // debugPrint("List : : ${logos}");
                               TheMatch match = TheMatch(
                                 info1['team1']!,
                                 info1['team1Url']!,

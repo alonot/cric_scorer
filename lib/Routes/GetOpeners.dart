@@ -81,7 +81,7 @@ class _GetOpenersState extends State<GetOpeners> {
   void setbatter2Name(String val) => batter2Name = val;
 
   void onPlayBtnClicked() async {
-    debugPrint("Lets Play!2!");
+    // debugPrint("Lets Play!2!",);
     var randomError = "";
     bool result = _validate();
     // print(result);
@@ -90,6 +90,7 @@ class _GetOpenersState extends State<GetOpeners> {
       if (match == null) {
         Navigator.pop(context);
       }
+      // debugPrint("get:::: ${match!.team1} ${match!.team2}");
       Bowler bowler = Bowler(bowlerName);
       Batter batter1 = Batter(batter1Name);
       Batter batter2 = Batter(batter2Name);
@@ -99,7 +100,9 @@ class _GetOpenersState extends State<GetOpeners> {
       match.addBatter(batter2);
       match.Overs[match.currentTeam].add(Over(0, bowler.name, [batter1.name]));
       match.currentBatterIndex = 0;
-      debugPrint(match.team1);
+      // debugPrint(match.team1);
+      Util.batterNames.remove(batter1.name);
+      Util.batterNames.remove(batter2.name);
       // await viewModel.updateMatch(match);
       Navigator.pushNamedAndRemoveUntil(
           context, Util.matchPageRoute, (route) => false);

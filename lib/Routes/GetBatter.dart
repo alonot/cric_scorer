@@ -60,6 +60,7 @@ class _GetBatterState extends State<GetBatter> {
       // debugPrint(match.currentBatters[0].toString());
       match.addBatter(Batter(batterName));
       match.currentBatters = List.of(match.currentBatters.reversed);
+      Util.batterNames.remove(batterName);
 
       Navigator.pop(context);
     }

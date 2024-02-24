@@ -23,6 +23,10 @@ class Util {
   static List<String> bowlerNames = [];
 }
 
+List<String> logos = [
+  "RCB","CSK","RR","MI","PK","DC","LSG","GT","SRH","KKR"
+];
+
 int timeNowMinutes(DateTime dt) {
   /**
    * Number of minutes elapsed since 1 Jan 2024 00:00 .
@@ -97,7 +101,7 @@ Future<String?> AskPassword(String text, BuildContext context) async {
 //  : in openers, in batters, // in bowlers page.
 //  : Inetgrate the winner page.
 //  : Same name check.
-// TODO : Pdf generation
+// : Pdf generation
 // TODO : DLS if possible
 //  : add how got out in scoreCard
 

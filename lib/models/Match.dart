@@ -2,6 +2,7 @@ import 'package:cric_scorer/models/Batter.dart';
 import 'package:cric_scorer/models/Bowler.dart';
 import 'package:cric_scorer/models/Over.dart';
 import 'package:cric_scorer/utils/util.dart';
+import 'package:flutter/cupertino.dart';
 
 
 class TheMatch {
@@ -40,6 +41,7 @@ class TheMatch {
       over_count,
       score,
       this.hasWon = false}) {
+    // debugPrint("Match : $team1 , $team2");
     this.over_count = List.of([0.0, 0.0]);
     this.score = List.of([0, 0]);
     this.batters = List.of([[], []]);
@@ -151,11 +153,11 @@ class TheMatch {
 
   bool popScore() {
     var count = over_count[currentTeam];
+    // If batter retires
     if (wicketOrder[currentTeam].isNotEmpty) {
       var lastWicket = wicketOrder[currentTeam].last;
-      if (double.parse(lastWicket[1].split(' ')[0]).toStringAsFixed(1) ==
-          over_count[currentTeam].toStringAsFixed(1)) {
-        // debugPrint("Wicket Order:"+wicketOrder.toString());
+      if (lastWicket[0].outBy == "Retired Out") {
+        // debugPrint("Wicket Order is:"+wicketOrder.toString());
         Batter batter = wicketOrder[currentTeam].removeLast()[0];
         currentBatters.remove(batters[currentTeam].removeLast());
         batter.outBy = 'Not Out';
@@ -233,7 +235,7 @@ class TheMatch {
       //  Handle Wicket
       if (result[0].length != 1) {
         wickets[currentTeam] -= 1;
-        // debugPrint("Wicket Order:"+wicketOrder.toString());
+        // debugPrint("Wicket Order wicket:"+wicketOrder.toString());
         Batter batter = wicketOrder[currentTeam].removeLast()[0];
         currentBatters.remove(batters[currentTeam].removeLast());
         batter.outBy = 'Not Out';

@@ -9,8 +9,8 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
 
 class CardMatch extends StatelessWidget {
-  String team1Url = "assests/csk.jpg";
-  String team2Url = "assests/rcb.jpg";
+  String team1Url = "assests/CSK.jpg";
+  String team2Url = "assests/RCB.jpg";
   String team1 = "Team 1";
   String team2 = "Team 2";
   String score1 = "0-0";
@@ -50,7 +50,7 @@ class CardMatch extends StatelessWidget {
       int overs = (match.over_count[match.currentTeam] * 10).toInt();
       int overCount =
           (match.totalOvers * 6) - ((overs ~/ 10 * 6).toInt() + overs % 10);
-      debugPrint("$overs,$overCount");
+      // debugPrint("$overs,$overCount");
       needfrom = overCount.toString();
 
       team1Color =
@@ -62,12 +62,15 @@ class CardMatch extends StatelessWidget {
       wonBy = '';
       if (hasWon) {
         int cur = match.currentTeam;
-        if (match.score[cur] >= match.score[(cur + 1) % 2]) {
+        if (match.score[cur] > match.score[(cur + 1) % 2]) {
           teamWon = cur == 0 ? match.team1 : match.team2;
           wonBy = "${match.no_of_players - 1 - match.wickets[cur]} wickets";
-        } else {
+        } else if(match.score[cur] != match.score[(cur + 1) % 2]) {
           teamWon = cur == 0 ? match.team2 : match.team1;
           wonBy = "${match.score[(cur + 1) % 2] - match.score[cur]} runs";
+        }else{
+          teamWon  = "";
+          wonBy = "Nobody";
         }
       }
     }
@@ -91,9 +94,9 @@ class CardMatch extends StatelessWidget {
                       height: 50,
                       child: Row(
                         children: [
-                          hasWon? IconButton(
+                          IconButton(
                               onPressed: () async {
-                                debugPrint("Here");
+                                // debugPrint("Here");
                                 setLoading(true);
                                 viewModel.setCurrentMatch((await viewModel.getMatch(id!))!);
                                 final pdf = pw.Document();
@@ -106,11 +109,11 @@ class CardMatch extends StatelessWidget {
                                 setLoading(false);
                               },
                               constraints:
-                                  BoxConstraints(maxHeight: 35, maxWidth: 35),
+                              BoxConstraints(maxHeight: 35, maxWidth: 35),
                               icon: const Icon(
                                 Icons.share,
                                 color: Colors.white,
-                              )) : SizedBox(),
+                              )),
                           !uploaded
                               ? IconButton(
                                   onPressed: () {
@@ -255,7 +258,7 @@ class CardMatch extends StatelessWidget {
                     ],
                   ),
                   onTap: () {
-                    debugPrint("ksadlk");
+                    // debugPrint("ksadlk");
                     onTap(hasWon, id);
                   },
                 )),
@@ -304,7 +307,7 @@ class CardMatch extends StatelessWidget {
                               ),
                       ),
                       onTap: () {
-                        debugPrint("ksadlk");
+                        // debugPrint("ksadlk");
                         onTap(hasWon, id);
                       },
                     ))

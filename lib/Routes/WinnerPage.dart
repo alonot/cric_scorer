@@ -16,8 +16,8 @@ class _WinnerPageState extends State<WinnerPage> {
     return PopScope(canPop: false,
     onPopInvoked: (val){
       Navigator.pushNamedAndRemoveUntil(context, Util.mainPageRoute,(route) => false);
-    },child:Center(
-      child:  Container(
+    }
+    ,child:Container(
           decoration: const BoxDecoration(
             border: null,
             image: DecorationImage(
@@ -27,6 +27,7 @@ class _WinnerPageState extends State<WinnerPage> {
             backgroundColor: const Color(0x89000000),
             body: Center(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Image(image: AssetImage("assests/trophy.jpg")),
                   RichText(
@@ -41,7 +42,6 @@ class _WinnerPageState extends State<WinnerPage> {
                 ],
               ),
             ),
-          )),
-    ),);
+          )),);
   }
 }

@@ -35,9 +35,9 @@ class _GetWicketState extends State<GetWicket> {
       batters = [match.currentBatters[0].name, match.currentBatters[1].name];
       retiredBatters = [];
       batterOut = batters[0];
-      isMatchOver = match.hasWon
-          || match.over_count[match.currentTeam] == match.totalOvers
-      || match.wickets[match.currentTeam] == match.no_of_players - 1;
+      isMatchOver = match.hasWon ||
+          match.over_count[match.currentTeam] == match.totalOvers ||
+          match.wickets[match.currentTeam] == match.no_of_players - 1;
       debugPrint("Match:$isMatchOver");
       score = match.score[match.currentTeam].toString();
       wickets = match.wickets[match.currentTeam].toString();
@@ -274,22 +274,22 @@ class _GetWicketState extends State<GetWicket> {
                             Column(
                               children: [
                                 ListTile(
-                                                                    title: Text(
-                                batters[0],
-                                style: const TextStyle(color: Colors.white),
-                                                                    ),
-                                                                    leading: Radio<String>(
-                                groupValue: batterOut,
-                                value: batters[0],
-                                onChanged: (val) {
-                                  setState(() {
-                                    if (val != null) {
-                                      batterOut = batters[0];
-                                    }
-                                  });
-                                },
-                                                                    ),
-                                                                  ),
+                                  title: Text(
+                                    batters[0],
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                  leading: Radio<String>(
+                                    groupValue: batterOut,
+                                    value: batters[0],
+                                    onChanged: (val) {
+                                      setState(() {
+                                        if (val != null) {
+                                          batterOut = batters[0];
+                                        }
+                                      });
+                                    },
+                                  ),
+                                ),
                                 ListTile(
                                   title: Text(
                                     batters[1],
@@ -344,12 +344,12 @@ class _GetWicketState extends State<GetWicket> {
                     ),
                     !isMatchOver
                         ? CardBatter(
-                          retiredBatters,
-                          false,
-                          onTap,
-                          false,
-                          key: const Key("Unique"),
-                        )
+                            retiredBatters,
+                            false,
+                            onTap,
+                            false,
+                            key: const Key("Unique"),
+                          )
                         : const SizedBox(
                             width: 0,
                             height: 0,
@@ -365,13 +365,13 @@ class _GetWicketState extends State<GetWicket> {
                               if (b.name == batterName) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                     Util.getsnackbar('Duplicate Batter'));
+                                return;
                               }
                             }
                             debugPrint("Lets Continue > Got Wicket!!");
                             if (!isMatchOver && batterName.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                  Util.getsnackbar(
-                                      'Fields must not be empty'));
+                                  Util.getsnackbar('Fields must not be empty'));
                               return;
                             }
                             handleWicket();
@@ -380,6 +380,7 @@ class _GetWicketState extends State<GetWicket> {
                             match!.addBatter(batter);
                             match!.currentBatters =
                                 List.of(match!.currentBatters.reversed);
+                            Util.batterNames.remove(batterName);
                             // await viewModel.updateMatch(match!);
                             Navigator.pop(context);
                           },

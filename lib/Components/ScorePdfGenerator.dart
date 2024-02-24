@@ -26,10 +26,6 @@ class ScorePdfGenerator {
   String extras1 = "0";
   String extras2 = "0";
 
-  // List<List<String>> batterList1 = [<String>["BATTER","R","B","4s","6s","Sk.R"]];
-  // List<List<String>> bowlerList1 = [<String>["BOWLER","O","M","W","Eco"]];
-  // List<List<String>> batterList2 = [<String>["BATTER","R","B","4s","6s","Sk.R"]];
-  // List<List<String>> bowlerList2 = [<String>["BOWLER","O","M","W","Eco"]];
 
   List<pw.TableRow> batterHeader = [
     pw.TableRow(children: <pw.Widget>[
@@ -37,7 +33,7 @@ class ScorePdfGenerator {
         padding: pw.EdgeInsets.fromLTRB(10, 10.0, 0, 10.0),
         child: pw.Text(
           'BATSMAN',
-          style: pw.TextStyle( fontSize: 13),
+          style: pw.TextStyle(fontSize: 13),
         ),
       ),
       pw.Padding(
@@ -83,11 +79,11 @@ class ScorePdfGenerator {
         padding: pw.EdgeInsets.fromLTRB(10, 10.0, 0, 10.0),
         child: pw.Text(
           'Bowler',
-          style: pw.TextStyle( fontSize: 13),
+          style: pw.TextStyle(fontSize: 13),
         ),
       ),
       pw.Padding(
-        padding: pw.EdgeInsets.fromLTRB(0, 10, 0, 10),
+        padding: const pw.EdgeInsets.fromLTRB(0, 10, 0, 10),
         child: pw.Text(
           'O',
           style: pw.TextStyle(),
@@ -101,7 +97,7 @@ class ScorePdfGenerator {
         ),
       ),
       pw.Padding(
-        padding: pw.EdgeInsets.fromLTRB(0, 10, 0, 10),
+        padding: const pw.EdgeInsets.fromLTRB(0, 10, 0, 10),
         child: pw.Text(
           'W',
           style: pw.TextStyle(),
@@ -198,37 +194,7 @@ class ScorePdfGenerator {
 
     extras1 = "($extras1Map) ${total_extra1}";
     extras2 = "($extras1Map) ${total_extra2}";
-    //
-    // batterList1.addAll(
-    //     battersTeam1.map((batter) => <String>[batter.name,
-    //   batter.runs.toString(),
-    //   batter.balls.toString(),
-    //   batter.fours.toString(),
-    //   batter.sixes.toString(),
-    //   batter.strikeRate.toString()
-    // ]));
-    // bowlerList1.addAll(
-    //     bowlersTeam1.map((bowler) => <String>[bowler.name,
-    //   bowler.overs.toStringAsFixed(1),
-    //   bowler.maidens.toString(),
-    //   bowler.wickets.toString(),
-    //   bowler.economy.toStringAsFixed(2),
-    // ]));
-    // batterList2.addAll(
-    //     battersTeam2.map((batter) => <String>[batter.name,
-    //   batter.runs.toString(),
-    //   batter.balls.toString(),
-    //   batter.fours.toString(),
-    //   batter.sixes.toString(),
-    //   batter.strikeRate.toString()
-    // ]));
-    // bowlerList2.addAll(
-    //     bowlersTeam2.map((bowler) => <String>[bowler.name,
-    //   bowler.overs.toStringAsFixed(1),
-    //   bowler.maidens.toString(),
-    //   bowler.wickets.toString(),
-    //   bowler.economy.toStringAsFixed(2),
-    // ]));
+
   }
 
   generatePdf(pw.Document pdf) {
@@ -254,8 +220,7 @@ class ScorePdfGenerator {
                             pw.Text(
                               team1,
                               style: const pw.TextStyle(
-                                color: PdfColors.white
-                                  , fontSize: 15),
+                                  color: PdfColors.white, fontSize: 15),
                             ),
                             pw.Text(score1,
                                 style: const pw.TextStyle(
@@ -268,21 +233,7 @@ class ScorePdfGenerator {
                           ],
                         ),
                       )),
-                  // pw.TableHelper.fromTextArray(context: context,
-                  //     cellAlignment: pw.Alignment.center,
-                  //     rowDecoration: pw.BoxDecoration(
-                  //         color: PdfColor(232, 245, 233),
-                  //         border: pw.Border.all()
-                  //     ),
-                  //     columnWidths: const {
-                  //       0: pw.FlexColumnWidth(4),
-                  //       1: pw.FlexColumnWidth(1),
-                  //       2: pw.FlexColumnWidth(1),
-                  //       3: pw.FlexColumnWidth(1),
-                  //       4: pw.FlexColumnWidth(1),
-                  //       5: pw.FlexColumnWidth(1),
-                  //     },
-                  // data: batterList1),
+                  pw.Padding(padding: const pw.EdgeInsets.all(10)),
                   pw.Table(
                       columnWidths: const <int, pw.TableColumnWidth>{
                         0: pw.FlexColumnWidth(4),
@@ -292,80 +243,77 @@ class ScorePdfGenerator {
                         4: pw.FlexColumnWidth(1),
                         5: pw.FlexColumnWidth(1),
                       },
+
                       children: batterHeader +
                           battersTeam1
-                              .map((batter) =>
-                                  pw.TableRow(
+                              .map((batter) => pw.TableRow(
                                       decoration: pw.BoxDecoration(
                                         color: PdfColors.green50,
                                       ),
                                       children: <pw.Widget>[
-                                    pw.Padding(
-                                      padding: const pw.EdgeInsets.fromLTRB(
-                                          10, 5.0, 0, 5.0),
-                                      child: pw.Column(
-                                        crossAxisAlignment:
-                                            pw.CrossAxisAlignment.start,
-                                        children: [
-                                          pw.Text(
-                                            batter.name,
-                                            style: const pw.TextStyle(
-                                                fontSize: 13),
+                                        pw.Padding(
+                                          padding: const pw.EdgeInsets.fromLTRB(
+                                              10, 5.0, 0, 5.0),
+                                          child: pw.Column(
+                                            crossAxisAlignment:
+                                                pw.CrossAxisAlignment.start,
+                                            children: [
+                                              pw.Text(
+                                                batter.name,
+                                                style: const pw.TextStyle(
+                                                    fontSize: 13),
+                                              ),
+                                              pw.Text(
+                                                batter.outBy,
+                                                style: const pw.TextStyle(
+                                                    fontSize: 11),
+                                              ),
+                                            ],
                                           ),
-                                          pw.Text(
-                                            batter.outBy,
-                                            style: const pw.TextStyle(
-                                                fontSize: 11),
+                                        ),
+                                        pw.Padding(
+                                          padding: const pw.EdgeInsets.fromLTRB(
+                                              0, 5, 0, 5),
+                                          child: pw.Text(
+                                            batter.runs.toString(),
+                                            style: const pw.TextStyle(),
                                           ),
-                                        ],
-                                      ),
-                                    ),
-                                    pw.Padding(
-                                      padding: const pw.EdgeInsets.fromLTRB(
-                                          0, 5, 0, 5),
-                                      child: pw.Text(
-                                        batter.runs.toString(),
-                                        style: const pw.TextStyle(
-                                            ),
-                                      ),
-                                    ),
-                                    pw.Padding(
-                                      padding: const pw.EdgeInsets.fromLTRB(
-                                          0, 5, 0, 5),
-                                      child: pw.Text(
-                                        batter.balls.toString(),
-                                        style: const pw.TextStyle(
-                                            ),
-                                      ),
-                                    ),
-                                    pw.Padding(
-                                      padding: const pw.EdgeInsets.fromLTRB(
-                                          0, 5, 0, 5),
-                                      child: pw.Text(
-                                        batter.fours.toString(),
-                                        style: const pw.TextStyle(
-                                            ),
-                                      ),
-                                    ),
-                                    pw.Padding(
-                                      padding: const pw.EdgeInsets.fromLTRB(
-                                          0, 5, 0, 5),
-                                      child: pw.Text(
-                                        batter.sixes.toString(),
-                                        style: const pw.TextStyle(
-                                            ),
-                                      ),
-                                    ),
-                                    pw.Padding(
-                                      padding: const pw.EdgeInsets.fromLTRB(
-                                          0, 5, 0, 5),
-                                      child: pw.Text(
-                                        batter.strikeRate.toStringAsFixed(2),
-                                        style: const pw.TextStyle(
-                                            fontSize: 10),
-                                      ),
-                                    ),
-                                  ]))
+                                        ),
+                                        pw.Padding(
+                                          padding: const pw.EdgeInsets.fromLTRB(
+                                              0, 5, 0, 5),
+                                          child: pw.Text(
+                                            batter.balls.toString(),
+                                            style: const pw.TextStyle(),
+                                          ),
+                                        ),
+                                        pw.Padding(
+                                          padding: const pw.EdgeInsets.fromLTRB(
+                                              0, 5, 0, 5),
+                                          child: pw.Text(
+                                            batter.fours.toString(),
+                                            style: const pw.TextStyle(),
+                                          ),
+                                        ),
+                                        pw.Padding(
+                                          padding: const pw.EdgeInsets.fromLTRB(
+                                              0, 5, 0, 5),
+                                          child: pw.Text(
+                                            batter.sixes.toString(),
+                                            style: const pw.TextStyle(),
+                                          ),
+                                        ),
+                                        pw.Padding(
+                                          padding: const pw.EdgeInsets.fromLTRB(
+                                              0, 5, 0, 5),
+                                          child: pw.Text(
+                                            batter.strikeRate
+                                                .toStringAsFixed(2),
+                                            style: const pw.TextStyle(
+                                                fontSize: 10),
+                                          ),
+                                        ),
+                                      ]))
                               .toList()),
                   pw.Padding(padding: const pw.EdgeInsets.all(2)),
                   pw.Row(
@@ -376,307 +324,257 @@ class ScorePdfGenerator {
                         pw.Text("   Run  Rate : " + runRate1)
                       ]),
                   pw.Padding(padding: const pw.EdgeInsets.all(5)),
-                  //
-                  // // pw.TableHelper.fromTextArray(context: context,
-                  // //     cellAlignment: pw.Alignment.center,
-                  // //     rowDecoration: pw.BoxDecoration(
-                  // //         color: PdfColors.green300,
-                  // //       border: pw.Border.all()
-                  // //     ),
-                  // //     columnWidths:const <int, pw.TableColumnWidth>{
-                  // //       0: pw.FlexColumnWidth(4),
-                  // //       1: pw.FlexColumnWidth(1),
-                  // //       2: pw.FlexColumnWidth(1),
-                  // //       3: pw.FlexColumnWidth(1),
-                  // //       4: pw.FlexColumnWidth(1),
-                  // //       5: pw.FlexColumnWidth(1),
-                  // //     },
-                  // //     data: bowlerList1),
-                  // pw.Table(
-                  //     columnWidths: const <int, pw.TableColumnWidth>{
-                  //       0: pw.FlexColumnWidth(4),
-                  //       1: pw.FlexColumnWidth(1),
-                  //       2: pw.FlexColumnWidth(1),
-                  //       3: pw.FlexColumnWidth(1),
-                  //       4: pw.FlexColumnWidth(1),
-                  //       5: pw.FlexColumnWidth(1),
-                  //     },
-                  //     children: bowlerHeader +
-                  //         bowlersTeam1
-                  //             .map((bowler) => pw.TableRow(children: <pw.Widget>[
-                  //                   pw.Padding(
-                  //                     padding: const pw.EdgeInsets.fromLTRB(
-                  //                         10, 10.0, 0, 10.0),
-                  //                     child: pw.Text(
-                  //                       bowler.name,
-                  //                       style: const pw.TextStyle(
-                  //                           ,
-                  //                           fontSize: 13),
-                  //                     ),
-                  //                   ),
-                  //                   pw.Padding(
-                  //                     padding: const pw.EdgeInsets.fromLTRB(
-                  //                         0, 10, 0, 10),
-                  //                     child: pw.Text(
-                  //                       bowler.overs.toStringAsFixed(1),
-                  //                       style: const pw.TextStyle(
-                  //                           ),
-                  //                     ),
-                  //                   ),
-                  //                   pw.Padding(
-                  //                     padding: const pw.EdgeInsets.fromLTRB(
-                  //                         0, 10, 0, 10),
-                  //                     child: pw.Text(
-                  //                       bowler.maidens.toString(),
-                  //                       style: const pw.TextStyle(
-                  //                           ),
-                  //                     ),
-                  //                   ),
-                  //                   pw.Padding(
-                  //                     padding: const pw.EdgeInsets.fromLTRB(
-                  //                         0, 10, 0, 10),
-                  //                     child: pw.Text(
-                  //                       bowler.wickets.toString(),
-                  //                       style: const pw.TextStyle(
-                  //                           ),
-                  //                     ),
-                  //                   ),
-                  //                   pw.Padding(
-                  //                     padding: const pw.EdgeInsets.fromLTRB(
-                  //                         0, 10, 0, 10),
-                  //                     child: pw.Text(
-                  //                       bowler.runs.toString(),
-                  //                       style: const pw.TextStyle(
-                  //                           ),
-                  //                     ),
-                  //                   ),
-                  //                   pw.Padding(
-                  //                     padding: const pw.EdgeInsets.fromLTRB(
-                  //                         0, 10, 0, 10),
-                  //                     child: pw.Text(
-                  //                       bowler.economy.toStringAsFixed(2),
-                  //                       style: const pw.TextStyle(
-                  //                           ),
-                  //                     ),
-                  //                   ),
-                  //                 ]))
-                  //             .toList()),
-                  // pw.Padding(padding: const pw.EdgeInsets.all(10)),
-                  // pw.Container(
-                  //     color: PdfColors.green,
-                  //     child: pw.Padding(
-                  //       padding: const pw.EdgeInsets.symmetric(
-                  //           horizontal: 10, vertical: 5),
-                  //       child: pw.Row(
-                  //         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  //         children: <pw.Widget>[
-                  //           pw.Text(
-                  //             team2,
-                  //             style: const pw.TextStyle(
-                  //                color: PdfColors.white , fontSize: 15),
-                  //           ),
-                  //           pw.Text(score2,
-                  //               style: const pw.TextStyle(
-                  //               color: PdfColors.white  ,
-                  //               )),
-                  //           pw.Text(overs2,
-                  //               style: const pw.TextStyle(
-                  //               color: PdfColors.white  ,
-                  //               ))
-                  //         ],
-                  //       ),
-                  //     )),
-                  // // pw.TableHelper.fromTextArray(context: context,
-                  // //     cellAlignment: pw.Alignment.center,
-                  // //     rowDecoration: pw.BoxDecoration(
-                  // //       color: PdfColor(232, 245, 233),
-                  // //         border: pw.Border.all()
-                  // //     ),
-                  // //     columnWidths: const {
-                  // //       0: pw.FlexColumnWidth(4),
-                  // //       1: pw.FlexColumnWidth(1),
-                  // //       2: pw.FlexColumnWidth(1),
-                  // //       3: pw.FlexColumnWidth(1),
-                  // //       4: pw.FlexColumnWidth(1),
-                  // //       5: pw.FlexColumnWidth(1),
-                  // //     },
-                  // //     data: batterList2),
-                  // pw.Table(
-                  //     columnWidths: const <int, pw.TableColumnWidth>{
-                  //       0: pw.FlexColumnWidth(4),
-                  //       1: pw.FlexColumnWidth(1),
-                  //       2: pw.FlexColumnWidth(1),
-                  //       3: pw.FlexColumnWidth(1),
-                  //       4: pw.FlexColumnWidth(1),
-                  //       5: pw.FlexColumnWidth(1),
-                  //     },
-                  //     children: batterHeader +
-                  //         battersTeam2
-                  //             .map((batter) =>
-                  //                 pw.TableRow(children: <pw.Widget>[
-                  //                   pw.Padding(
-                  //                     padding: const pw.EdgeInsets.fromLTRB(
-                  //                         10, 10.0, 0, 10.0),
-                  //                     child: pw.Column(
-                  //                       crossAxisAlignment:
-                  //                           pw.CrossAxisAlignment.start,
-                  //                       children: [
-                  //                         pw.Text(
-                  //                           batter.name,
-                  //                           style: const pw.TextStyle(
-                  //                               ,
-                  //                               fontSize: 13),
-                  //                         ),
-                  //                         pw.Text(
-                  //                           batter.outBy,
-                  //                           style: const pw.TextStyle(
-                  //                               ,
-                  //                               fontSize: 11),
-                  //                         ),
-                  //                       ],
-                  //                     ),
-                  //                   ),
-                  //                   pw.Padding(
-                  //                     padding: const pw.EdgeInsets.fromLTRB(
-                  //                         0, 10, 0, 10),
-                  //                     child: pw.Text(
-                  //                       batter.runs.toString(),
-                  //                       style: const pw.TextStyle(
-                  //                           ),
-                  //                     ),
-                  //                   ),
-                  //                   pw.Padding(
-                  //                     padding: const pw.EdgeInsets.fromLTRB(
-                  //                         0, 10, 0, 10),
-                  //                     child: pw.Text(
-                  //                       batter.balls.toString(),
-                  //                       style: const pw.TextStyle(
-                  //                           ),
-                  //                     ),
-                  //                   ),
-                  //                   pw.Padding(
-                  //                     padding: const pw.EdgeInsets.fromLTRB(
-                  //                         0, 10, 0, 10),
-                  //                     child: pw.Text(
-                  //                       batter.fours.toString(),
-                  //                       style: const pw.TextStyle(
-                  //                           ),
-                  //                     ),
-                  //                   ),
-                  //                   pw.Padding(
-                  //                     padding: const pw.EdgeInsets.fromLTRB(
-                  //                         0, 10, 0, 10),
-                  //                     child: pw.Text(
-                  //                       batter.sixes.toString(),
-                  //                       style: const pw.TextStyle(
-                  //                           ),
-                  //                     ),
-                  //                   ),
-                  //                   pw.Padding(
-                  //                     padding: const pw.EdgeInsets.fromLTRB(
-                  //                         0, 10, 0, 10),
-                  //                     child: pw.Text(
-                  //                       batter.strikeRate.toStringAsFixed(2),
-                  //                       style: const pw.TextStyle(
-                  //                           ,
-                  //                           fontSize: 10),
-                  //                     ),
-                  //                   ),
-                  //                 ]))
-                  //             .toList()),
-                  // pw.Padding(padding: const pw.EdgeInsets.all(2)),
-                  // pw.Row(
-                  //     crossAxisAlignment: pw.CrossAxisAlignment.end,
-                  //     mainAxisAlignment: pw.MainAxisAlignment.end,
-                  //     children: <pw.Widget>[
-                  //       pw.Text(extras2),
-                  //       pw.Text("   Run  Rate : " + runRate2)
-                  //     ]),
-                  // pw.Padding(padding: const pw.EdgeInsets.all(5)),
-                  // // pw.TableHelper.fromTextArray(context: context,
-                  // //     cellAlignment: pw.Alignment.center,
-                  // //     rowDecoration: pw.BoxDecoration(
-                  // //         color: PdfColors.green300,
-                  // //         border: pw.Border.all()
-                  // //     ),
-                  // //     columnWidths:const <int, pw.TableColumnWidth>{
-                  // //       0: pw.FlexColumnWidth(4),
-                  // //       1: pw.FlexColumnWidth(1),
-                  // //       2: pw.FlexColumnWidth(1),
-                  // //       3: pw.FlexColumnWidth(1),
-                  // //       4: pw.FlexColumnWidth(1),
-                  // //       5: pw.FlexColumnWidth(1),
-                  // //     },
-                  // //     data: bowlerList2),
-                  // pw.Table(
-                  //     columnWidths: const <int, pw.TableColumnWidth>{
-                  //       0: pw.FlexColumnWidth(4),
-                  //       1: pw.FlexColumnWidth(1),
-                  //       2: pw.FlexColumnWidth(1),
-                  //       3: pw.FlexColumnWidth(1),
-                  //       4: pw.FlexColumnWidth(1),
-                  //       5: pw.FlexColumnWidth(1),
-                  //     },
-                  //     children: bowlerHeader +
-                  //         bowlersTeam2
-                  //             .map((bowler) => pw.TableRow(children: <pw.Widget>[
-                  //           pw.Padding(
-                  //             padding: const pw.EdgeInsets.fromLTRB(
-                  //                 10, 10.0, 0, 10.0),
-                  //             child: pw.Text(
-                  //               bowler.name,
-                  //               style: const pw.TextStyle(
-                  //                   ,
-                  //                   fontSize: 13),
-                  //             ),
-                  //           ),
-                  //           pw.Padding(
-                  //             padding: const pw.EdgeInsets.fromLTRB(
-                  //                 0, 10, 0, 10),
-                  //             child: pw.Text(
-                  //               bowler.overs.toStringAsFixed(1),
-                  //               style: const pw.TextStyle(
-                  //                   ),
-                  //             ),
-                  //           ),
-                  //           pw.Padding(
-                  //             padding: const pw.EdgeInsets.fromLTRB(
-                  //                 0, 10, 0, 10),
-                  //             child: pw.Text(
-                  //               bowler.maidens.toString(),
-                  //               style: const pw.TextStyle(
-                  //                   ),
-                  //             ),
-                  //           ),
-                  //           pw.Padding(
-                  //             padding: const pw.EdgeInsets.fromLTRB(
-                  //                 0, 10, 0, 10),
-                  //             child: pw.Text(
-                  //               bowler.wickets.toString(),
-                  //               style: const pw.TextStyle(
-                  //                   ),
-                  //             ),
-                  //           ),
-                  //           pw.Padding(
-                  //             padding: const pw.EdgeInsets.fromLTRB(
-                  //                 0, 10, 0, 10),
-                  //             child: pw.Text(
-                  //               bowler.runs.toString(),
-                  //               style: const pw.TextStyle(
-                  //                   ),
-                  //             ),
-                  //           ),
-                  //           pw.Padding(
-                  //             padding: const pw.EdgeInsets.fromLTRB(
-                  //                 0, 10, 0, 10),
-                  //             child: pw.Text(
-                  //               bowler.economy.toStringAsFixed(2),
-                  //               style: const pw.TextStyle(
-                  //                   ),
-                  //             ),
-                  //           ),
-                  //         ]))
-                  //             .toList()),
+
+                  pw.Table(
+                      columnWidths: const <int, pw.TableColumnWidth>{
+                        0: pw.FlexColumnWidth(4),
+                        1: pw.FlexColumnWidth(1),
+                        2: pw.FlexColumnWidth(1),
+                        3: pw.FlexColumnWidth(1),
+                        4: pw.FlexColumnWidth(1),
+                        5: pw.FlexColumnWidth(1),
+                      },
+                      children: bowlerHeader +
+                          bowlersTeam1
+                              .map((bowler) => pw.TableRow(
+                                      decoration: pw.BoxDecoration(
+                                        color: PdfColors.green50,
+                                      ),
+                                      children: <pw.Widget>[
+                                        pw.Padding(
+                                          padding: const pw.EdgeInsets.fromLTRB(
+                                              10, 5.0, 0, 5.0),
+                                          child: pw.Text(
+                                            bowler.name,
+                                            style: const pw.TextStyle(
+                                                fontSize: 13),
+                                          ),
+                                        ),
+                                        pw.Padding(
+                                          padding: const pw.EdgeInsets.fromLTRB(
+                                              0, 5, 0, 5),
+                                          child: pw.Text(
+                                            bowler.overs.toStringAsFixed(1),
+                                            style: const pw.TextStyle(),
+                                          ),
+                                        ),
+                                        pw.Padding(
+                                          padding: const pw.EdgeInsets.fromLTRB(
+                                              0, 5, 0, 5),
+                                          child: pw.Text(
+                                            bowler.maidens.toString(),
+                                            style: const pw.TextStyle(),
+                                          ),
+                                        ),
+                                        pw.Padding(
+                                          padding: const pw.EdgeInsets.fromLTRB(
+                                              0, 5, 0, 5),
+                                          child: pw.Text(
+                                            bowler.wickets.toString(),
+                                            style: const pw.TextStyle(),
+                                          ),
+                                        ),
+                                        pw.Padding(
+                                          padding: const pw.EdgeInsets.fromLTRB(
+                                              0, 5, 0, 5),
+                                          child: pw.Text(
+                                            bowler.runs.toString(),
+                                            style: const pw.TextStyle(),
+                                          ),
+                                        ),
+                                        pw.Padding(
+                                          padding: const pw.EdgeInsets.fromLTRB(
+                                              0, 5, 0, 5),
+                                          child: pw.Text(
+                                            bowler.economy.toStringAsFixed(2),
+                                            style: const pw.TextStyle(),
+                                          ),
+                                        ),
+                                      ]))
+                              .toList()),
+                  pw.Padding(padding: const pw.EdgeInsets.all(10)),
+                  pw.Container(
+                      color: PdfColors.green,
+                      child: pw.Padding(
+                        padding: pw.EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        child: pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                          children: <pw.Widget>[
+                            pw.Text(
+                              team2,
+                              style: const pw.TextStyle(
+                                  color: PdfColors.white, fontSize: 15),
+                            ),
+                            pw.Text(score2,
+                                style: const pw.TextStyle(
+                                  color: PdfColors.white,
+                                )),
+                            pw.Text(overs2,
+                                style: const pw.TextStyle(
+                                  color: PdfColors.white,
+                                ))
+                          ],
+                        ),
+                      )),
+
+                  pw.Table(
+                      columnWidths: const <int, pw.TableColumnWidth>{
+                        0: pw.FlexColumnWidth(4),
+                        1: pw.FlexColumnWidth(1),
+                        2: pw.FlexColumnWidth(1),
+                        3: pw.FlexColumnWidth(1),
+                        4: pw.FlexColumnWidth(1),
+                        5: pw.FlexColumnWidth(1),
+                      },
+                      children: batterHeader +
+                          battersTeam2
+                              .map((batter) => pw.TableRow(
+                              decoration: pw.BoxDecoration(
+                                color: PdfColors.green50,
+                              ),
+                              children: <pw.Widget>[
+                                pw.Padding(
+                                  padding: const pw.EdgeInsets.fromLTRB(
+                                      10, 5.0, 0, 5.0),
+                                  child: pw.Column(
+                                    crossAxisAlignment:
+                                    pw.CrossAxisAlignment.start,
+                                    children: [
+                                      pw.Text(
+                                        batter.name,
+                                        style: const pw.TextStyle(
+                                            fontSize: 13),
+                                      ),
+                                      pw.Text(
+                                        batter.outBy,
+                                        style: const pw.TextStyle(
+                                            fontSize: 11),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: const pw.EdgeInsets.fromLTRB(
+                                      0, 5, 0, 5),
+                                  child: pw.Text(
+                                    batter.runs.toString(),
+                                    style: const pw.TextStyle(),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: const pw.EdgeInsets.fromLTRB(
+                                      0, 5, 0, 5),
+                                  child: pw.Text(
+                                    batter.balls.toString(),
+                                    style: const pw.TextStyle(),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: const pw.EdgeInsets.fromLTRB(
+                                      0, 5, 0, 5),
+                                  child: pw.Text(
+                                    batter.fours.toString(),
+                                    style: const pw.TextStyle(),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: const pw.EdgeInsets.fromLTRB(
+                                      0, 5, 0, 5),
+                                  child: pw.Text(
+                                    batter.sixes.toString(),
+                                    style: const pw.TextStyle(),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: const pw.EdgeInsets.fromLTRB(
+                                      0, 5, 0, 5),
+                                  child: pw.Text(
+                                    batter.strikeRate
+                                        .toStringAsFixed(2),
+                                    style: const pw.TextStyle(
+                                        fontSize: 10),
+                                  ),
+                                ),
+                              ]))
+                              .toList()),
+                  pw.Padding(padding: const pw.EdgeInsets.all(2)),
+                  pw.Row(
+                      crossAxisAlignment: pw.CrossAxisAlignment.end,
+                      mainAxisAlignment: pw.MainAxisAlignment.end,
+                      children: <pw.Widget>[
+                        pw.Text(extras2),
+                        pw.Text("   Run  Rate : " + runRate2)
+                      ]),
+                  pw.Padding(padding: const pw.EdgeInsets.all(5)),
+
+                  pw.Table(
+                      columnWidths: const <int, pw.TableColumnWidth>{
+                        0: pw.FlexColumnWidth(4),
+                        1: pw.FlexColumnWidth(1),
+                        2: pw.FlexColumnWidth(1),
+                        3: pw.FlexColumnWidth(1),
+                        4: pw.FlexColumnWidth(1),
+                        5: pw.FlexColumnWidth(1),
+                      },
+                      children: bowlerHeader +
+                          bowlersTeam2
+                              .map((bowler) => pw.TableRow(
+                              decoration: pw.BoxDecoration(
+                                color: PdfColors.green50,
+                              ),
+                              children: <pw.Widget>[
+                                pw.Padding(
+                                  padding: const pw.EdgeInsets.fromLTRB(
+                                      10, 5.0, 0, 5.0),
+                                  child: pw.Text(
+                                    bowler.name,
+                                    style: const pw.TextStyle(
+                                        fontSize: 13),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: const pw.EdgeInsets.fromLTRB(
+                                      0, 5, 0, 5),
+                                  child: pw.Text(
+                                    bowler.overs.toStringAsFixed(1),
+                                    style: const pw.TextStyle(),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: const pw.EdgeInsets.fromLTRB(
+                                      0, 5, 0, 5),
+                                  child: pw.Text(
+                                    bowler.maidens.toString(),
+                                    style: const pw.TextStyle(),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: const pw.EdgeInsets.fromLTRB(
+                                      0, 5, 0, 5),
+                                  child: pw.Text(
+                                    bowler.wickets.toString(),
+                                    style: const pw.TextStyle(),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: const pw.EdgeInsets.fromLTRB(
+                                      0, 5, 0, 5),
+                                  child: pw.Text(
+                                    bowler.runs.toString(),
+                                    style: const pw.TextStyle(),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: const pw.EdgeInsets.fromLTRB(
+                                      0, 5, 0, 5),
+                                  child: pw.Text(
+                                    bowler.economy.toStringAsFixed(2),
+                                    style: const pw.TextStyle(),
+                                  ),
+                                ),
+                              ]))
+                              .toList()),
                 ],
               ),
             ]));

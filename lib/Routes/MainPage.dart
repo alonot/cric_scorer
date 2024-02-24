@@ -50,7 +50,9 @@ class _MainPageState extends State<MainPage> {
                                 direction: DismissDirection.horizontal,
                                 onDismissed: (direction) {
                                   viewModel.deleteMatch(matches![index].id!);
+                                  setState(() {
                                   matches!.removeAt(index);
+                                  });
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.all(5),
@@ -81,7 +83,9 @@ class _MainPageState extends State<MainPage> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       FloatingActionButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          Util.batterNames = (await viewModel.getStat()).map((e) => e.name).toList();
+                          Util.bowlerNames = (await viewModel.getBowlers()).map((e) => e.name).toList();
                           Navigator.pushNamed(context, Util.homeRoute);
                         },
                         child: const Center(
@@ -130,7 +134,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   void onTap(bool hasWon, int? id) async {
-    debugPrint(hasWon.toString());
+    // debugPrint(hasWon.toString());
     if (id != null) {
       var match = await viewModel.getMatch(id);
       if (match != null) {
@@ -141,7 +145,7 @@ class _MainPageState extends State<MainPage> {
       if (hasWon) {
         Navigator.pushNamed(context, Util.scoreCardRoute);
       } else {
-        debugPrint("pushed");
+        // debugPrint("pushed");
         Navigator.pushNamed(context, Util.matchPageRoute);
       }
     }
@@ -193,7 +197,7 @@ class _MainPageState extends State<MainPage> {
       setState(() {
         matches = matchList;
         count = matchList.length;
-        debugPrint("Length:${matchList.length}");
+        // debugPrint("Length:${matchList.length}");
       });
     }
     setState(() {

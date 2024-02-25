@@ -1,16 +1,11 @@
 # cric_scorer
 
-A new Flutter project.
+This is an individual project made using flutter.
+The App comes handy when you go out to play with your friends and need something to keep track of score.
+This app provide special feature over other apps
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+![Screenshot 2024-02-25 231808](https://github.com/alonot/cric_scorer/assets/123316101/f718c14c-b76d-48ad-be35-3c0590a15bdc)
 
-A few resources to get you started if this is your first Flutter project:
+![Screenshot 2024-02-25 231930](https://github.com/alonot/cric_scorer/assets/123316101/1f8a7a87-532c-4cbf-9fad-f8858490054b)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

@@ -35,15 +35,15 @@ void main() async {
   Util.batterNames = (await viewModel.getBatters()).map((batter) => batter.name).toList();
   Util.bowlerNames = (await viewModel.getBowlers()).map((bowler) => bowler.name).toList();
 
-  // FlutterError.onError = (details) {
-  //   FlutterError.presentError(details);
-  //   if (kReleaseMode) exit(0);
-  // };
-  //
-  // PlatformDispatcher.instance.onError = (error, stack) {
-  //   debugPrint(error.toString()+ stack.toString());
-  //   return true;
-  // };
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+    if (kReleaseMode) exit(0);
+  };
+
+  PlatformDispatcher.instance.onError = (error, stack) {
+    debugPrint(error.toString()+ stack.toString());
+    return true;
+  };
 
   try {
     runApp(const MyApp());

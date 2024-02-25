@@ -16,7 +16,7 @@ class BowlerStat {
       matches = map['M']!.toInt();
     }
     if (map['Avg'] != null) {
-      average = map['Avg']!;
+      average = (map['Avg']!).toDouble();
     }
   }
 }

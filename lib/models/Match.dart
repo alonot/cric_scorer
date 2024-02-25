@@ -2,7 +2,6 @@ import 'package:cric_scorer/models/Batter.dart';
 import 'package:cric_scorer/models/Bowler.dart';
 import 'package:cric_scorer/models/Over.dart';
 import 'package:cric_scorer/utils/util.dart';
-import 'package:flutter/cupertino.dart';
 
 
 class TheMatch {

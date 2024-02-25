@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';

@@ -72,7 +72,7 @@ class _MatchPageState extends State<MatchPage> {
         match!.inning = 2;
         match!.currentTeam++;
         match!.currentTeam %= 2;
-        Util.batterNames = (await viewModel.getStat()).map((batter) => batter.name).toList();
+        Util.batterNames = (await viewModel.getBatters()).map((batter) => batter.name).toList();
         Util.bowlerNames = (await viewModel.getBowlers()).map((bowler) => bowler.name).toList();
         doesInningChanged = true;
       } else {

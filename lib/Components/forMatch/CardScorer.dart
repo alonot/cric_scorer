@@ -60,10 +60,17 @@ class _CardScorerState extends State<CardScorer> {
                                     },
                                   ),
                                 ),
-                                const Text(
-                                  'Wide',
-                                  style: TextStyle(color: Colors.white),
-                                  textAlign: TextAlign.center,
+                                GestureDetector(
+                                  onDoubleTap: (){
+                                    setState(() {
+                                      type = "";
+                                    });
+                                  },
+                                  child: const Text(
+                                    'Wide',
+                                    style: TextStyle(color: Colors.white),
+                                    textAlign: TextAlign.center,
+                                  ),
                                 )
                               ],
                             ),
@@ -82,11 +89,18 @@ class _CardScorerState extends State<CardScorer> {
                                         });
                                       },
                                     )),
-                                const Flexible(
+                                 Flexible(
                                   fit: FlexFit.loose,
-                                  child: Text(
-                                    'Leg Bye',
-                                    style: TextStyle(color: Colors.white),
+                                  child: GestureDetector(
+                                    child: Text(
+                                      'Leg Bye',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    onDoubleTap: (){
+                                      setState(() {
+                                        type = "";
+                                      });
+                                    },
                                   ),
                                 )
                               ],
@@ -137,12 +151,19 @@ class _CardScorerState extends State<CardScorer> {
                                   },
                                 ),
                               ),
-                              const Flexible(
+                               Flexible(
                                 fit: FlexFit.loose,
-                                child: Text(
-                                  'Bye',
-                                  style: TextStyle(color: Colors.white),
-                                ),
+                                child: GestureDetector(
+                                  onDoubleTap: (){
+                                    setState(() {
+                                      type = "";
+                                    });
+                                  },
+                                  child: const Text(
+                                    'Bye',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                )
                               )
                             ],
                           )),
@@ -161,12 +182,19 @@ class _CardScorerState extends State<CardScorer> {
                                   },
                                 ),
                               ),
-                              const Padding(
+                              Padding(
                                 padding: EdgeInsets.all(0),
-                                child: Text(
-                                  'No ball',
-                                  style: TextStyle(color: Colors.white),
-                                  textAlign: TextAlign.start,
+                                child: GestureDetector(
+                                  onDoubleTap: (){
+                                    setState(() {
+                                      type = "";
+                                    });
+                                  },
+                                  child: Text(
+                                    'No ball',
+                                    style: TextStyle(color: Colors.white),
+                                    textAlign: TextAlign.start,
+                                  ),
                                 ),
                               )
                             ],

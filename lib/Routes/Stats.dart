@@ -28,7 +28,7 @@ class _StatsState extends State<Stats> {
 
   void getPlayers() async{
       isLoading = true;
-    batters = await viewModel.getStat();
+    batters = await viewModel.getBatters();
     bowlers = await viewModel.getBowlers();
     setState(() {
         isLoading = false;

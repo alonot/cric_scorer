@@ -1,5 +1,7 @@
 
 
+import 'dart:io';
+
 import 'package:cric_scorer/MatchViewModel.dart';
 import 'package:cric_scorer/Routes/GetBatter.dart';
 import 'package:cric_scorer/Routes/GetBowler.dart';
@@ -13,6 +15,7 @@ import 'package:cric_scorer/Routes/Stats.dart';
 import 'package:cric_scorer/Routes/WinnerPage.dart';
 import 'package:cric_scorer/utils/util.dart';
 import "package:firebase_core/firebase_core.dart";
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
@@ -29,8 +32,18 @@ void main() async {
   );
 
   var viewModel = MatchViewModel();
-  Util.batterNames = (await viewModel.getStat()).map((batter) => batter.name).toList();
+  Util.batterNames = (await viewModel.getBatters()).map((batter) => batter.name).toList();
   Util.bowlerNames = (await viewModel.getBowlers()).map((bowler) => bowler.name).toList();
+
+  // FlutterError.onError = (details) {
+  //   FlutterError.presentError(details);
+  //   if (kReleaseMode) exit(0);
+  // };
+  //
+  // PlatformDispatcher.instance.onError = (error, stack) {
+  //   debugPrint(error.toString()+ stack.toString());
+  //   return true;
+  // };
 
   try {
     runApp(const MyApp());

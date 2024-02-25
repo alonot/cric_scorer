@@ -52,6 +52,7 @@ class _MainPageState extends State<MainPage> {
                                   viewModel.deleteMatch(matches![index].id!);
                                   setState(() {
                                   matches!.removeAt(index);
+                                  count = matches!.length;
                                   });
                                 },
                                 child: Padding(
@@ -84,7 +85,7 @@ class _MainPageState extends State<MainPage> {
                     children: [
                       FloatingActionButton(
                         onPressed: () async {
-                          Util.batterNames = (await viewModel.getStat()).map((e) => e.name).toList();
+                          Util.batterNames = (await viewModel.getBatters()).map((e) => e.name).toList();
                           Util.bowlerNames = (await viewModel.getBowlers()).map((e) => e.name).toList();
                           Navigator.pushNamed(context, Util.homeRoute);
                         },
@@ -139,7 +140,7 @@ class _MainPageState extends State<MainPage> {
       var match = await viewModel.getMatch(id);
       if (match != null) {
         viewModel.setCurrentMatch(match);
-        Util.batterNames = (await viewModel.getStat()).map((batter) => batter.name).toList();
+        Util.batterNames = (await viewModel.getBatters()).map((batter) => batter.name).toList();
         Util.bowlerNames = (await viewModel.getBowlers()).map((bowler) => bowler.name).toList();
       }
       if (hasWon) {

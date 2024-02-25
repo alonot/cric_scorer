@@ -6,10 +6,10 @@ class CardInfo extends StatefulWidget {
   String val1 = "";
   String val2 = "";
   _CardInfoState? _state;
-  final void Function(String t1, String t2) update;
+  final void Function(String, String,String, String) update;
 
   CardInfo(this.update, this.val1, this.val2, {super.key}){
-    // debugPrint("Calse");
+    debugPrint("Calse");
     _state = _CardInfoState(
       val1,
       val2
@@ -29,9 +29,7 @@ class _CardInfoState extends State<CardInfo> {
   String _team2Url = "assests/RCB.jpg";
 
   _CardInfoState(String val1,String val2) {
-    _team1Url = "assests/${val1}.jpg";
     team1cntrl.text = val1;
-    _team2Url = "assests/${val2}.jpg";
     team2cntrl.text = val2;
     // debugPrint("$val1 fd $val2");
   }
@@ -75,7 +73,7 @@ class _CardInfoState extends State<CardInfo> {
                       setState(() {
                         changeTeam(true,false);
                       });
-                      widget.update(team1cntrl.text,team2cntrl.text);
+                      widget.update(team1cntrl.text,team2cntrl.text,_team1Url,_team2Url);
                     },
                     style: ElevatedButton.styleFrom(
                         shape: const CircleBorder(),
@@ -95,7 +93,7 @@ class _CardInfoState extends State<CardInfo> {
                     flex: 3,
                     child: EditableText(
                       onChanged: (val) {
-                        widget.update(team1cntrl.text, team2cntrl.text);
+                        widget.update(team1cntrl.text,team2cntrl.text,_team1Url,_team2Url);
                       },
                       textAlign: TextAlign.center,
                       style: const TextStyle(
@@ -125,7 +123,7 @@ class _CardInfoState extends State<CardInfo> {
                     onPressed: () {
                       setState(() {
                         changeTeam(false, true);
-                        widget.update(team1cntrl.text,team2cntrl.text);
+                        widget.update(team1cntrl.text,team2cntrl.text,_team1Url,_team2Url);
                       });
                     },
                     style: ElevatedButton.styleFrom(
@@ -146,7 +144,8 @@ class _CardInfoState extends State<CardInfo> {
                     flex: 3,
                     child: EditableText(
                       onChanged: (val) {
-                        widget.update(team1cntrl.text, team2cntrl.text);
+                        debugPrint("Hello 1}");
+                        widget.update(team1cntrl.text,team2cntrl.text,_team1Url,_team2Url);
                       },
                       textAlign: TextAlign.center,
                       style: const TextStyle(

@@ -17,11 +17,17 @@ class _MainPageState extends State<MainPage> {
   bool isLoading = false;
   int count = 0;
 
+  _MainPageState(){
+    matches = null;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (matches == null) {
       matches = [];
       updateMatches();
+    }else {
+      count = matches!.length;
     }
 
     return Container(

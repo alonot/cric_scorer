@@ -37,7 +37,9 @@ void main() async {
 
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
-    if (kReleaseMode) exit(0);
+    if (kReleaseMode) {
+        exit(0);
+    }
   };
 
   PlatformDispatcher.instance.onError = (error, stack) {

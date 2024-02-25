@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cric_scorer/Components/ScorePdfGenerator.dart';
 import 'package:cric_scorer/MatchViewModel.dart';
 import 'package:cric_scorer/models/Match.dart';
+import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -98,14 +99,19 @@ class CardMatch extends StatelessWidget {
                               onPressed: () async {
                                 // debugPrint("Here");
                                 setLoading(true);
-                                viewModel.setCurrentMatch((await viewModel.getMatch(id!))!);
-                                final pdf = pw.Document();
-                                ScorePdfGenerator().generatePdf(pdf);
-                                String path = await savePdf(pdf);
-                                debugPrint("File Path ${path}");
-                                await Share.shareXFiles([XFile(path)],
-                                    text: "ScoreCard",
-                                    subject: "Sharing ScoreCard");
+                                try {
+                                  viewModel.setCurrentMatch(
+                                      (await viewModel.getMatch(id!))!);
+                                  final pdf = pw.Document();
+                                  ScorePdfGenerator().generatePdf(pdf);
+                                  String path = await savePdf(pdf);
+                                  debugPrint("File Path ${path}");
+                                  await Share.shareXFiles([XFile(path)],
+                                      text: "ScoreCard",
+                                      subject: "Sharing ScoreCard");
+                                }catch (Exception){
+                                  ScaffoldMessenger.of(context).showSnackBar(Util.getsnackbar('Something went Wrong.'));
+                                }
                                 setLoading(false);
                               },
                               constraints:

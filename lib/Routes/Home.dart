@@ -16,24 +16,21 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final MatchViewModel viewModel = MatchViewModel();
   late CardMatchSettings matchsetting;
-  late CardInfo infoCard;
-  String _team1 = "", _team2 = "";
+  String _team1 = logos[0], _team2 = logos[1];
+  String _team1Logo = "assests/${logos[0]}.jpg", _team2Logo = "assests/${logos[1]}.jpg";
   String? errorTextOver;
   String? errorTextPlayer;
   final TextEditingController oversController = TextEditingController();
   final TextEditingController noplayersController = TextEditingController();
 
-  _HomeState(){
-    debugPrint("Hereasdasdasdafsdgafga");
-    _team2 = logos[1];
-    _team1 = logos[0];
-  }
 
-  void update(String t1, String t2) {
-    debugPrint(t1 + t2);
+  void update(String t1, String t2,String t3,String t4) {
+    debugPrint(t1 + t2 + t3 + t4);
     setState(() {
       _team1 = t1;
       _team2 = t2;
+      _team1Logo = t3;
+      _team2Logo = t4;
     });
   }
 
@@ -103,7 +100,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    infoCard = CardInfo(update, _team1,_team2);
+
     matchsetting = CardMatchSettings(
       _team1,
       _team2,
@@ -114,6 +111,7 @@ class _HomeState extends State<Home> {
       resetError,
       key: const Key("supreb"),
     );
+
     return Container(
         decoration: const BoxDecoration(
           border: null,
@@ -132,7 +130,7 @@ class _HomeState extends State<Home> {
                     width: MediaQuery.of(context).size.width,
                     color: Colors.transparent,
                     height: 180,
-                    child: infoCard,
+                    child: CardInfo(update, _team1,_team2),
                   ),
                   Container(
                     width: MediaQuery.of(context).size.width,
@@ -149,16 +147,15 @@ class _HomeState extends State<Home> {
                           var randomError = "";
                             bool result = validate();
                             if (result) {
-                              Map<String, String> info1 = infoCard.getInfo();
                               Map<String, String> info2 =
                                   matchsetting.getInfo();
                               // debugPrint("$_team1 ::: $_team2");
-                              // debugPrint("List : : ${logos}");
+                              debugPrint("List : : ${logos} , ${_team1Logo} ${_team2Logo}");
                               TheMatch match = TheMatch(
-                                info1['team1']!,
-                                info1['team1Url']!,
-                                info1['team2']!,
-                                info1['team2Url']!,
+                                _team1,
+                                _team1Logo,
+                                _team2,
+                                _team2Logo,
                                 info2['toss']!,
                                 info2['optTo']!,
                                 int.parse(noplayersController.text),

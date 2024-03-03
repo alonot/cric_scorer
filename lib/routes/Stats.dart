@@ -1,8 +1,9 @@
-import 'package:cric_scorer/Components/forStat/CardBatterStat.dart';
-import 'package:cric_scorer/Components/forStat/CardBowlerStat.dart';
-import 'package:cric_scorer/MatchViewModel.dart';
-import 'package:cric_scorer/models/BatterStat.dart';
-import 'package:cric_scorer/models/BowlerStat.dart';
+
+import 'package:cric_scorer/Components/stat/CardBatterStat.dart';
+import 'package:cric_scorer/Components/stat/CardBowlerStat.dart';
+import 'package:cric_scorer/match_view_model.dart';
+import 'package:cric_scorer/models/batter_stat.dart';
+import 'package:cric_scorer/models/bowler_stat.dart';
 import 'package:flutter/material.dart';
 
 class Stats extends StatefulWidget {

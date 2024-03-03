@@ -1,8 +1,8 @@
 
 
-import 'package:cric_scorer/models/BatterStat.dart';
-import 'package:cric_scorer/models/BowlerStat.dart';
-import 'package:cric_scorer/models/Match.dart';
+import 'package:cric_scorer/models/batter_stat.dart';
+import 'package:cric_scorer/models/bowler_stat.dart';
+import 'package:cric_scorer/models/match.dart';
 
 
 class MatchRepository{

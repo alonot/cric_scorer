@@ -1,4 +1,4 @@
-import 'package:cric_scorer/models/Batter.dart';
+import 'package:cric_scorer/models/batter.dart';
 import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';
 

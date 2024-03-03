@@ -1,8 +1,8 @@
-import 'package:cric_scorer/Components/AutoCompleteIt.dart';
-import 'package:cric_scorer/MatchViewModel.dart';
-import 'package:cric_scorer/models/Batter.dart';
-import 'package:cric_scorer/models/Bowler.dart';
-import 'package:cric_scorer/models/Over.dart';
+import 'package:cric_scorer/Components/auto_complete_it.dart';
+import 'package:cric_scorer/match_view_model.dart';
+import 'package:cric_scorer/models/batter.dart';
+import 'package:cric_scorer/models/bowler.dart';
+import 'package:cric_scorer/models/over.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/util.dart';

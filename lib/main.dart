@@ -2,17 +2,17 @@
 
 import 'dart:io';
 
-import 'package:cric_scorer/MatchViewModel.dart';
-import 'package:cric_scorer/Routes/GetBatter.dart';
-import 'package:cric_scorer/Routes/GetBowler.dart';
-import 'package:cric_scorer/Routes/GetOpeners.dart';
-import 'package:cric_scorer/Routes/GetWicket.dart';
-import 'package:cric_scorer/Routes/Home.dart';
-import 'package:cric_scorer/Routes/MainPage.dart';
-import 'package:cric_scorer/Routes/MatchPage.dart';
-import 'package:cric_scorer/Routes/Scoreboard.dart';
+import 'package:cric_scorer/match_view_model.dart';
+import 'package:cric_scorer/routes/get_batter.dart';
+import 'package:cric_scorer/routes/get_bowler.dart';
+import 'package:cric_scorer/routes/get_opener.dart';
+import 'package:cric_scorer/routes/get_wicket.dart';
+import 'package:cric_scorer/Routes/home.dart';
+import 'package:cric_scorer/routes/main_page.dart';
+import 'package:cric_scorer/routes/match_page.dart';
+import 'package:cric_scorer/Routes/scoreboard.dart';
 import 'package:cric_scorer/Routes/Stats.dart';
-import 'package:cric_scorer/Routes/WinnerPage.dart';
+import 'package:cric_scorer/routes/winner_page.dart';
 import 'package:cric_scorer/utils/util.dart';
 import "package:firebase_core/firebase_core.dart";
 import 'package:flutter/foundation.dart';
@@ -62,6 +62,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'CricScorer',
       initialRoute: Util.mainPageRoute,
       routes: {

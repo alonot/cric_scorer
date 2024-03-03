@@ -1,10 +1,10 @@
-import 'package:cric_scorer/Components/forHome/CardInfo.dart';
-import 'package:cric_scorer/Components/forHome/CardMatchSettings.dart';
-import 'package:cric_scorer/models/Match.dart';
+
+import 'package:cric_scorer/Components/home/card_info.dart';
+import 'package:cric_scorer/Components/home/card_match_settings.dart';
+import 'package:cric_scorer/models/match.dart';
 import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';
-
-import 'package:cric_scorer/MatchViewModel.dart';
+import 'package:cric_scorer/match_view_model.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -25,7 +25,7 @@ class _HomeState extends State<Home> {
 
 
   void update(String t1, String t2,String t3,String t4) {
-    debugPrint(t1 + t2 + t3 + t4);
+    // debugPrint(t1 + t2 + t3 + t4);
     setState(() {
       _team1 = t1;
       _team2 = t2;

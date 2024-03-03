@@ -1,6 +1,6 @@
-import 'package:cric_scorer/Components/CardMatch.dart';
-import 'package:cric_scorer/MatchViewModel.dart';
-import 'package:cric_scorer/models/Match.dart';
+import 'package:cric_scorer/Components/card_match.dart';
+import 'package:cric_scorer/match_view_model.dart';
+import 'package:cric_scorer/models/match.dart';
 import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';
 

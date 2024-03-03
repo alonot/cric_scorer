@@ -1,10 +1,10 @@
-import 'package:cric_scorer/Components/CardBatter.dart';
-import 'package:cric_scorer/Components/CardBowler.dart';
-import 'package:cric_scorer/Components/forMatch//CardInfoScorer.dart';
-import 'package:cric_scorer/Components/forMatch//CardScorer.dart';
-import 'package:cric_scorer/Components/forMatch/CardBalls.dart';
-import 'package:cric_scorer/MatchViewModel.dart';
-import 'package:cric_scorer/models/Match.dart';
+import 'package:cric_scorer/Components/card_batter.dart';
+import 'package:cric_scorer/Components/card_bowler.dart';
+import 'package:cric_scorer/Components/match/card_balls.dart';
+import 'package:cric_scorer/Components/match/card_info_scorer.dart';
+import 'package:cric_scorer/Components/match/card_scorer.dart';
+import 'package:cric_scorer/match_view_model.dart';
+import 'package:cric_scorer/models/match.dart';
 import 'package:cric_scorer/utils/util.dart';
 import 'package:flutter/material.dart';
 
@@ -64,14 +64,10 @@ class _MatchPageState extends State<MatchPage> {
      */
     var cur = match!.currentTeam;
     if (match!.over_count[cur] >= match!.totalOvers ||
-        match!.wickets[cur] >= match!.no_of_players - 2 ||
+        (match!.wickets[cur] >= match!.no_of_players - 2 && run.contains("OUT")) ||
         (match!.inning == 2 && match!.score[cur] >= match!.score[(cur + 1) % 2]+1)) {
-      doesInningChanged = true;
       // Call the openers . change the current Team index;
       if (match!.inning == 1) {
-        match!.inning = 2;
-        match!.currentTeam++;
-        match!.currentTeam %= 2;
         Util.batterNames = (await viewModel.getBatters()).map((batter) => batter.name).toList();
         Util.bowlerNames = (await viewModel.getBowlers()).map((bowler) => bowler.name).toList();
         doesInningChanged = true;
@@ -97,8 +93,7 @@ class _MatchPageState extends State<MatchPage> {
     }
 
     if (run.contains("OUT")) {
-      var cur = doesInningChanged ? (match!.currentTeam +1)%2 : match!.currentTeam;
-      match!.wickets[cur] += 1;
+      match!.wickets[match!.currentTeam] += 1;
       await Navigator.pushNamed(context, Util.wicketRoute)
           .then((value) => {setState(() {})});
     }
@@ -107,6 +102,9 @@ class _MatchPageState extends State<MatchPage> {
       debugPrint("${match!.inning}awosnd");
       Navigator.pushNamed(context, Util.winnerPageRoute);
     } else if (doesInningChanged) {
+      match!.inning = 2;
+      match!.currentTeam++;
+      match!.currentTeam %= 2;
       await Navigator.pushNamedAndRemoveUntil(context, Util.getOpenersRoute,
           (route) {
         // debugPrint(route.settings.name);

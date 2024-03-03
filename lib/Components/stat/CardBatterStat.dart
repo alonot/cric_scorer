@@ -1,4 +1,4 @@
-import 'package:cric_scorer/models/BatterStat.dart';
+import 'package:cric_scorer/models/batter_stat.dart';
 import 'package:flutter/material.dart';
 
 class CardBatterStat extends StatelessWidget {

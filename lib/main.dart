@@ -2,16 +2,18 @@
 
 import 'dart:io';
 
+import 'package:cric_scorer/routes/home.dart';
 import 'package:cric_scorer/match_view_model.dart';
+import 'package:cric_scorer/routes/create_match.dart';
 import 'package:cric_scorer/routes/get_batter.dart';
 import 'package:cric_scorer/routes/get_bowler.dart';
 import 'package:cric_scorer/routes/get_opener.dart';
 import 'package:cric_scorer/routes/get_wicket.dart';
-import 'package:cric_scorer/Routes/home.dart';
 import 'package:cric_scorer/routes/main_page.dart';
 import 'package:cric_scorer/routes/match_page.dart';
 import 'package:cric_scorer/Routes/scoreboard.dart';
-import 'package:cric_scorer/Routes/Stats.dart';
+import 'package:cric_scorer/Routes/stats.dart';
+import 'package:cric_scorer/routes/sign_in_or_up_page.dart';
 import 'package:cric_scorer/routes/winner_page.dart';
 import 'package:cric_scorer/utils/util.dart';
 import "package:firebase_core/firebase_core.dart";
@@ -32,8 +34,8 @@ void main() async {
   );
 
   var viewModel = MatchViewModel();
-  Util.batterNames = (await viewModel.getBatters()).map((batter) => batter.name).toList();
-  Util.bowlerNames = (await viewModel.getBowlers()).map((bowler) => bowler.name).toList();
+  Util.batterNames = (await viewModel.getBatters(true)).map((batter) => batter.name).toList();
+  Util.bowlerNames = (await viewModel.getBowlers(true)).map((bowler) => bowler.name).toList();
 
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
@@ -64,9 +66,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'CricScorer',
-      initialRoute: Util.mainPageRoute,
+      initialRoute: Util.signInOrUpRoute,
       routes: {
-        Util.homeRoute: (context) => const Home(),
+        Util.homePage : (context) => const Home(),
+        Util.createMatchRoute: (context) => const CreateMatch(),
         Util.getOpenersRoute: (context) => const GetOpeners(),
         Util.getBowlerRoute: (context) => const GetBowler(),
         Util.getBatterRoute: (context) => const GetBatter(),
@@ -76,6 +79,7 @@ class MyApp extends StatelessWidget {
         Util.winnerPageRoute: (context) => const WinnerPage(),
         Util.scoreCardRoute: (context) => const Scoreboard(),
         Util.statsRoute: (context) => const Stats(),
+        Util.signInOrUpRoute: (context) => const SignInPage(),
       },
       theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.transparent),

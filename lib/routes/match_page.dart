@@ -68,8 +68,8 @@ class _MatchPageState extends State<MatchPage> {
         (match!.inning == 2 && match!.score[cur] >= match!.score[(cur + 1) % 2]+1)) {
       // Call the openers . change the current Team index;
       if (match!.inning == 1) {
-        Util.batterNames = (await viewModel.getBatters()).map((batter) => batter.name).toList();
-        Util.bowlerNames = (await viewModel.getBowlers()).map((bowler) => bowler.name).toList();
+        Util.batterNames = (await viewModel.getBatters(false)).map((batter) => batter.name).toList();
+        Util.bowlerNames = (await viewModel.getBowlers(false)).map((bowler) => bowler.name).toList();
         doesInningChanged = true;
       } else {
         // Match is Finished...

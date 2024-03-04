@@ -6,7 +6,8 @@ class Util {
         content: Text(text),
       );
 
-  static String homeRoute = "New Match";
+  static String createMatchRoute = "New Match";
+  static String homePage = "home Match";
   static String getOpenersRoute = "Get Openers";
   static String getBowlerRoute = "Get Bowler";
   static String getBatterRoute = "Get Batter";
@@ -16,12 +17,16 @@ class Util {
   static String winnerPageRoute = "Winner Page";
   static String scoreCardRoute = "ScoreCard";
   static String statsRoute = 'Stats';
+  static String signInOrUpRoute = 'SignInOrUp';
 
   static String team = "";
   static String wonBy = "";
   static List<String> batterNames = [];
   static List<String> bowlerNames = [];
 }
+
+String currentUser="";
+Map<int,bool> playArenaIds = {};
 
 List<String> logos = [
   "RCB","CSK","RR","MI","PK","DC","LSG","GT","SRH","KKR"

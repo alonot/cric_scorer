@@ -30,108 +30,68 @@ class _MainPageState extends State<MainPage> {
       count = matches!.length;
     }
 
-    return Container(
-        decoration: const BoxDecoration(
-          border: null,
-          image: DecorationImage(
-              image: AssetImage('assests/background.jpg'), fit: BoxFit.cover),
+    return Scaffold(
+      floatingActionButton: !isLoading?  FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, Util.createMatchRoute);
+        },
+        child: const Center(
+          child: Icon(Icons.add),
         ),
-        child: Scaffold(
-            backgroundColor: const Color(0x89000000),
-            body: Stack(
-              children: [
-                !isLoading
-                    ? ListView.builder(
-                        itemCount: count,
-                        itemBuilder: (context, index) {
-                          // debugPrint(index.toString());
-                          // debugPrint(matches![index].id.toString());
-                          if (matches![index].currentBowler == null) {
-                            viewModel.deleteMatch(matches![index].id!);
-                            count -= 1;
-                            matches?.removeAt(index);
-                          } else {
-                            return Dismissible(
-                                key: Key(matches![index].id.toString()),
-                                direction: DismissDirection.horizontal,
-                                onDismissed: (direction) {
-                                  viewModel.deleteMatch(matches![index].id!);
-                                  setState(() {
-                                  matches!.removeAt(index);
-                                  count = matches!.length;
-                                  });
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(5),
-                                  child: SizedBox(
-                                    height: 180,
-                                    key: const Key("cont"),
-                                    child: CardMatch(
-                                      onTap,
-                                      uploadMatch,
-                                      setLoading,
-                                      match: matches![index],
-                                    ),
-                                  ),
-                                ));
-                          }
-                          return null;
-                        },
-                      )
-                    : const SizedBox(
-                        width: 0,
-                        height: 0,
-                      ),
-                !isLoading ?
-
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      FloatingActionButton(
-                        onPressed: () async {
-                          Util.batterNames = (await viewModel.getBatters()).map((e) => e.name).toList();
-                          Util.bowlerNames = (await viewModel.getBowlers()).map((e) => e.name).toList();
-                          Navigator.pushNamed(context, Util.homeRoute);
-                        },
-                        child: const Center(
-                          child: Icon(Icons.add),
-                        ),
-                      ),
-                      const SizedBox(width: 0,height: 5,),
-                      SizedBox(
-                        width: 50,
-                        child: Center(
-                          child: MaterialButton(
-                            elevation: 20,
-                            height: 50,
-                            color: Colors.pink.shade50,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)
-                            ),
-
-                            onPressed: (){
-                              Navigator.pushNamed(context, Util.statsRoute);
+      ): const SizedBox(),
+        backgroundColor: const Color(0x89000000),
+        body: Stack(
+          children: [
+            !isLoading
+                ? ListView.builder(
+                    itemCount: count,
+                    itemBuilder: (context, index) {
+                      if (matches![index].currentBowler == null) {
+                        viewModel.deleteMatch(matches![index].id!);
+                        count -= 1;
+                        matches?.removeAt(index);
+                      } else {
+                        return Dismissible(
+                            key: Key(matches![index].id.toString()),
+                            direction: DismissDirection.horizontal,
+                            onDismissed: (direction) {
+                              viewModel.deleteMatch(matches![index].id!);
+                              setState(() {
+                              matches!.removeAt(index);
+                              count = matches!.length;
+                              });
                             },
-                            child: const Icon(Icons.sports_cricket),
-                          ),
-                        ),
-                      ),
-                    ],
+                            child: Padding(
+                              padding: const EdgeInsets.all(5),
+                              child: SizedBox(
+                                height: 180,
+                                key: const Key("cont"),
+                                child: CardMatch(
+                                  onTap,
+                                  uploadMatch,
+                                  setLoading,
+                                  match: matches![index],
+                                ),
+                              ),
+                            ));
+                      }
+                      return null;
+                    },
+                  )
+                : const SizedBox(
+                    width: 0,
+                    height: 0,
                   ),
-                )
-                    :const SizedBox(width: 0,height: 0,),
-                isLoading
-                    ? const Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : const SizedBox(
-                        width: 0,
-                        height: 0,
-                      )
-              ],
-            )));
+            isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : const SizedBox(
+                    width: 0,
+                    height: 0,
+                  )
+          ],
+        ));
   }
 
   void setLoading(bool value){
@@ -146,8 +106,8 @@ class _MainPageState extends State<MainPage> {
       var match = await viewModel.getMatch(id);
       if (match != null) {
         viewModel.setCurrentMatch(match);
-        Util.batterNames = (await viewModel.getBatters()).map((batter) => batter.name).toList();
-        Util.bowlerNames = (await viewModel.getBowlers()).map((bowler) => bowler.name).toList();
+        Util.batterNames = (await viewModel.getBatters(false)).map((batter) => batter.name).toList();
+        Util.bowlerNames = (await viewModel.getBowlers(false)).map((bowler) => bowler.name).toList();
       }
       if (hasWon) {
         Navigator.pushNamed(context, Util.scoreCardRoute);
@@ -163,32 +123,28 @@ class _MainPageState extends State<MainPage> {
       ScaffoldMessenger.of(context).showSnackBar(
           Util.getsnackbar("Can't upload .Match is Not Over Yet!!"));
     } else {
-      if (await AskPassword('Enter the Password', context) == "Pass") {
-        setState(() {
-          isLoading = true;
-        });
-        if (id != null) {
-          var match = await viewModel.getMatch(id);
-          if (match != null) {
-            if (match.uploaded) {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(Util.getsnackbar("Match Already uploaded"));
-              return;
-            }
-
-            match.uploaded = true;
-            await viewModel.uploadMatch(match);
-            await viewModel.updateMatch(match);
-            setState(() {
-              updateMatches();
-            });
+      // if (await AskPassword('Enter the Password', context) == "Pass") {
+      //
+      // }
+      setState(() {
+        isLoading = true;
+      });
+      if (id != null) {
+        var match = await viewModel.getMatch(id);
+        if (match != null) {
+          if (match.uploaded) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(Util.getsnackbar("Match Already uploaded"));
+            return;
           }
+          match.uploaded = true;
+          dialogBeforeUpload(match);
         }
-
-        setState(() {
-          isLoading = false;
-        });
       }
+
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -210,5 +166,86 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       isLoading = false;
     });
+  }
+
+  void dialogBeforeUpload(TheMatch match) async {
+    await showDialog<int?>(
+        context: context,
+        builder: (context) {
+          int? groupValue = playArenaIds.keys.toList()[0];
+          TextEditingController passwordCntrl = TextEditingController();
+          return AlertDialog(
+
+            backgroundColor: const Color(0xC3000000),
+            title: Text('Please Select a playArenaId',style: const TextStyle(color: Colors.white),),
+            content: SizedBox(
+              height: 150,
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: playArenaIds.map<Widget,bool>(
+                          (key, verified) =>
+                      MapEntry(ListTile(
+                        visualDensity:
+                        const VisualDensity(vertical: -4),
+                        title: Text(
+                          key.toString() + (verified ? "" : "(Not verified)") ,
+                          style: const TextStyle(color: Colors.white),
+                          textAlign: TextAlign.start,
+                        ),
+                        leading: Radio<int> (
+                          value: key,
+                          groupValue: groupValue,
+                          onChanged: (val) {
+                            if(verified){
+                              setState(() {
+                                groupValue = val;
+                              });
+                            }
+                          },
+                        ),
+                      ),true)).keys.toList()
+                  +
+                  [
+                    TextField(
+                      decoration: const InputDecoration(hintText: 'Password',hintStyle: TextStyle(color: Colors.white)),
+                      keyboardType: TextInputType.visiblePassword,
+                      obscureText: true,
+                      controller: passwordCntrl,
+                    ),
+                  ]
+              ),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    if (passwordCntrl.text != "pass"){
+                      groupValue = null;
+                    }
+                    return Navigator.pop(context, groupValue);
+                    },
+                  child: const Text("OK",style: TextStyle(color: Colors.white),)),
+              TextButton(
+                  onPressed: () => Navigator.pop(context, null),
+                  child: const Text("Cancel",style: TextStyle(color: Colors.white),)),
+            ],
+          );
+        }).then(
+        (value) async {
+          if ( value != null) {
+            setState(() {
+              isLoading = true;
+            });
+            await viewModel.uploadMatch(match, value);
+            await viewModel.updateMatch(match);
+            setState(() {
+              updateMatches();
+              isLoading = false;
+            });
+          }else {
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Something Went Wrong')));
+          }
+        }
+    );
   }
 }

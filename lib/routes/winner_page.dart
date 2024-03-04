@@ -15,7 +15,7 @@ class _WinnerPageState extends State<WinnerPage> {
   Widget build(BuildContext context) {
     return PopScope(canPop: false,
     onPopInvoked: (val){
-      Navigator.pushNamedAndRemoveUntil(context, Util.mainPageRoute,(route) => false);
+      Navigator.pushNamedAndRemoveUntil(context, Util.homePage,(route) => false);
     }
     ,child:Container(
           decoration: const BoxDecoration(

@@ -9,6 +9,7 @@ import 'package:sqflite/sqflite.dart';
 class DatabaseHelper {
   static DatabaseHelper? _databaseHelper; // singeleton instance
   static Database? _database;
+  static Database? _loginDatabase;
 
   String matchTable = "match_table";
   String colId = 'id';
@@ -35,6 +36,8 @@ class DatabaseHelper {
   String colOvers = 'Overs';
   String colUploaded = 'uploaded';
   String colDate = 'date';
+  String colLogin = 'email';
+  String colPassword = 'password';
 
   factory DatabaseHelper() {
     _databaseHelper ??= DatabaseHelper._createInstance();
@@ -45,7 +48,7 @@ class DatabaseHelper {
 
   Future<Database> initializeDatabase() async {
     // get Directory path for both android and IOS to store the database
-    debugPrint("Instia");
+    // debugPrint("Instia");
     Directory directory = await getApplicationDocumentsDirectory();
     String path = join(directory.path, "match.db");
 
@@ -54,13 +57,30 @@ class DatabaseHelper {
     return matchDatabase;
   }
 
+  Future<Database> initializeLoginDatabase() async {
+    Directory directory = await getApplicationDocumentsDirectory();
+    String path = join(directory.path,"login.db");
+
+    var loginDatabase = openDatabase(path,version: 1,onCreate: _createLoginDb);
+    return loginDatabase;
+  }
+
+  Future<Database> get login_database async {
+    _loginDatabase ??= await initializeLoginDatabase();
+    return _loginDatabase!;
+  }
+
   Future<Database> get database async {
     _database ??= await initializeDatabase();
     return _database!;
   }
 
+  void _createLoginDb(Database db,int newVersion) async{
+    await db.execute('CREATE TABLE login_table($colLogin TEXT,$colPassword TEXT)');
+  }
+
   void _createdb(Database db, int newVersion) async {
-    debugPrint("CreateDB");
+    // debugPrint("CreateDB");
     await db.execute('CREATE TABLE $matchTable('
         '$colId INTEGER PRIMARY KEY AUTOINCREMENT,'
         '$colTeam1 TEXT,'
@@ -87,6 +107,26 @@ class DatabaseHelper {
         '$colUploaded TEXT,'
         '$colDate TEXT'
         ')');
+  }
+
+  Future<Map<String, Object?>?> getCurrentLogin() async{
+    Database db = await login_database;
+    var result = await db.query('login_table').then((value)
+    {
+      debugPrint(value.toString());
+      return value.firstOrNull;});
+    if (result != null) {
+      return result;
+    }else{
+      return null;
+    }
+  }
+
+  Future<int> setCurrentUser(String email,String password) async{
+    Database db = await login_database;
+    debugPrint("updating$email $password");
+    var result = await db.insert('login_table', {colLogin : email,colPassword: password});
+    return result;
   }
 
   // Returns a list of Map of the Database
@@ -133,7 +173,7 @@ class DatabaseHelper {
     Database db = await database;
     var map =match.tolesserMap();
     map.remove('id');
-    debugPrint("Here ${match.id} ");
+    // debugPrint("Here ${match.id} ");
     var result = await db.update(matchTable, map,where: "$colId = ?",whereArgs: [match.id]);
 
     return result;

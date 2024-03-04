@@ -70,7 +70,7 @@ class _MainPageState extends State<MainPage> {
                                   onTap,
                                   uploadMatch,
                                   setLoading,
-                                  match: matches![index],
+                                  matches![index],
                                 ),
                               ),
                             ));
@@ -237,6 +237,10 @@ class _MainPageState extends State<MainPage> {
             });
             await viewModel.uploadMatch(match, value);
             await viewModel.updateMatch(match);
+            Util.batterNames =
+                (await viewModel.getBatters(true)).map((e) => e.name).toList();
+            Util.bowlerNames =
+                (await viewModel.getBowlers(true)).map((e) => e.name).toList();
             setState(() {
               updateMatches();
               isLoading = false;

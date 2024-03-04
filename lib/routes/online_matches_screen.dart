@@ -24,8 +24,19 @@ class _OnlineMatchesScreenState extends State<OnlineMatchesScreen> {
   @override
   void initState() {
     selectedId = associatedIds[0];
-    matches = null ; // We will fetch the matches only
     super.initState();
+    fetchMatches();
+  }
+
+  void fetchMatches() async{
+    setState(() {
+      isLoading = true;
+    });
+    matches = await viewModel.getOnlineMatches(selectedId) ; // We will fetch the matches
+    count = matches!.length;
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -50,13 +61,18 @@ class _OnlineMatchesScreenState extends State<OnlineMatchesScreen> {
                 items: associatedIds
                     .map((id) => DropdownMenuItem(
                   value: id,
-                  child: Text(" $id    ",style: TextStyle(color: Colors.red),),
+                  child: Text(" $id    ",style: const TextStyle(color: Colors.red),),
                 ))
                     .toList(),
                 onChanged: (value) {
-                  setState(() {
-                    selectedId = value!;
-                  });
+                  if(value != null) {
+                    if (playArenaIds[value]!) {
+                      setState(() {
+                        selectedId = value;
+                      });
+                      fetchMatches();
+                    }
+                  }
                 },
               ),
             ),
@@ -73,29 +89,19 @@ class _OnlineMatchesScreenState extends State<OnlineMatchesScreen> {
                     count -= 1;
                     matches?.removeAt(index);
                   } else {
-                    return Dismissible(
-                        key: Key(matches![index].id.toString()),
-                        direction: DismissDirection.horizontal,
-                        onDismissed: (direction) {
-                          viewModel.deleteMatch(matches![index].id!);
-                          setState(() {
-                            matches!.removeAt(index);
-                            count = matches!.length;
-                          });
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(5),
-                          child: SizedBox(
-                            height: 180,
-                            key: const Key("cont"),
-                            child: CardMatch(
-                              onTap,
-                              uploadMatchDummy,
-                              setLoading,
-                              match: matches![index],
-                            ),
-                          ),
-                        ));
+                    return Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: SizedBox(
+                        height: 180,
+                        key: const Key("cont"),
+                        child: CardMatch(
+                          onTap,
+                          uploadMatchDummy,
+                          setLoading,
+                          matches![index],
+                        ),
+                      ),
+                    ) ;
                   }
                   return null;
                 },

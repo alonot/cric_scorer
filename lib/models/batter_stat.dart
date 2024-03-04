@@ -22,8 +22,8 @@ class BatterStat {
       hundreds = map['hundreds']?.toInt();
     }if(map['thirties'] != null) {
       thirtys = map['thirties']?.toInt();
-    }if(map['Sk.R'] != null) {
-      strikeRate = map['Sk.R'].toDouble();
+    }if(map['SkR'] != null) {
+      strikeRate = map['SkR'].toDouble();
     }if(map['Avg'] != null) {
       average = map['Avg'].toDouble();
     }

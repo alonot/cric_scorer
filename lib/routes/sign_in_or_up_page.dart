@@ -33,13 +33,17 @@ class _SignInPageState extends State<SignInPage> {
     if (result != null) {
       try {
         UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-            email: emailController.text, password: passwordController.text);
+            email: result['email'].toString(), password: result['password'].toString());
         // If above line does not throw an error then login successfull
         currentUser = result['email'].toString();
         playArenaIds = await viewModel
             .getPlayArenaIds(currentUser); // getting all the arenaIds
+        Util.batterNames = (await viewModel.getBatters(true)).map((batter) => batter.name).toList();
+        Util.bowlerNames = (await viewModel.getBowlers(true)).map((bowler) => bowler.name).toList();
         Navigator.pushNamed(context, Util.homePage);
-      } catch (e) {}
+      } catch (e) {
+        debugPrint("Errorr : ${e}");
+      }
     }
     setState(() {
       isLoading = false;
@@ -60,7 +64,8 @@ class _SignInPageState extends State<SignInPage> {
       await viewModel.setCurrentUser(
           emailController.text, passwordController.text);
       currentUser = emailController.text;
-
+      Util.batterNames = (await viewModel.getBatters(true)).map((batter) => batter.name).toList();
+      Util.bowlerNames = (await viewModel.getBowlers(true)).map((bowler) => bowler.name).toList();
       Navigator.pushNamedAndRemoveUntil(
           context, Util.homePage, (route) => false);
     } on FirebaseAuthException catch (e) {
@@ -90,6 +95,8 @@ class _SignInPageState extends State<SignInPage> {
           .getPlayArenaIds(emailController.text); // getting all the arenaIds
       viewModel.setCurrentUser(emailController.text, passwordController.text);
       currentUser = emailController.text;
+      Util.batterNames = (await viewModel.getBatters(true)).map((batter) => batter.name).toList();
+      Util.bowlerNames = (await viewModel.getBowlers(true)).map((bowler) => bowler.name).toList();
       Navigator.pushNamedAndRemoveUntil(
           context, Util.homePage, (route) => false);
     }   on FirebaseAuthException catch (e) {

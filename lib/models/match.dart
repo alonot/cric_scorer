@@ -432,7 +432,7 @@ class TheMatch {
     if (map['currentBowler'] != "null") {
       currentBowler = Bowler.fromString(map['currentBowler']);
     }
-    date = int.parse(map['date']);
+    date = int.parse(map['date'].toString());
 
     List<String> arrayOfScore = map['score'].split('#');
     List<String> arrayOfWicket = map['wickets'].split('#');

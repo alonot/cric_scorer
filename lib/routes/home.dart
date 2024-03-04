@@ -22,7 +22,9 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return PopScope(
+        canPop: false,
+        child: Container(
       decoration: const BoxDecoration(
         border: null,
         image: DecorationImage(
@@ -50,6 +52,6 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-    );
+    ));
   }
 }

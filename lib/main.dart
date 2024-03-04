@@ -33,10 +33,6 @@ void main() async {
     ),
   );
 
-  var viewModel = MatchViewModel();
-  Util.batterNames = (await viewModel.getBatters(true)).map((batter) => batter.name).toList();
-  Util.bowlerNames = (await viewModel.getBowlers(true)).map((bowler) => bowler.name).toList();
-
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
     if (kReleaseMode) {

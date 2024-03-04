@@ -73,6 +73,20 @@ class MatchViewModel {
     return true;
   }
 
+  Future<List<TheMatch>> getOnlineMatches(int id) async  {
+    List<TheMatch> matches = [];
+    await FirebaseFirestore.instance.collection('matches').get()
+    .then((querySnapshot) {
+      for(var doc in querySnapshot.docs){
+        if (doc.data()['playArena'] == id){
+          matches.add(TheMatch.fromMap(doc.data()));
+        }
+      }
+    });
+    return matches;
+  }
+
+
   /// To be called when reistering.
   /// This will create a unique PlayArenaId
   /// PlayArena : can be scene as a collection of matches and their stats
@@ -243,20 +257,20 @@ class MatchViewModel {
             newStats['I'] = (data['I'] + 1);
           }
           newStats['R'] = (data['R'] + b.runs);
+          newStats['B'] = (data['B'] + b.balls);
           if(newStats['I'] == 0){
             newStats['Avg'] = newStats['R']!.toDouble();
           }else {
             newStats['Avg'] = (newStats['R']! / newStats['I']!);
           }
 
-          if (data['H'] > b.runs) {
+          if (data['H'] < b.runs) {
             newStats['H'] = b.runs;
           } else {
             newStats['H'] = data['H'];
           }
 
-          newStats['Sk.R'] =
-              ((data['Sk.R'] * newStats['I']) + b.strikeRate) / newStats['I'];
+          newStats['SkR'] =newStats['R'] / newStats['B'];
 
           newStats['thirties'] =
               data['thirties'] + b.runs >= 30 && b.runs < 50 ? 1 : 0;
@@ -273,12 +287,13 @@ class MatchViewModel {
           newStats['I'] = 1;
         }
         newStats['R'] = b.runs;
+        newStats['B'] = b.balls;
         newStats['Avg'] = b.runs.toDouble();
         newStats['H'] = b.runs;
         if (b.balls == 0){
-          newStats['Sk.R'] = 0.0;
+          newStats['SkR'] = 0.0;
         }else {
-          newStats['Sk.R'] = b.strikeRate;
+          newStats['SkR'] = b.strikeRate;
         }
         newStats['thirties'] = b.runs >= 30 && b.runs < 50 ? 1 : 0;
         newStats['fifties'] = b.runs >= 50 && b.runs < 99 ? 1 : 0;
@@ -337,11 +352,10 @@ class MatchViewModel {
       var playArenaId = id?.toString();
       await FirebaseFirestore.instance.collection("batters").get().then(
             (querySnapshot) {
-          print("printin");
           for (var docSnapshot in querySnapshot.docs) {
             var splittedName = docSnapshot.id.split('_');
-            debugPrint(splittedName.toString()  +":${playArenaId}");
-            if ( playArenaId  == null && splittedName[1] == playArenaId) {
+            // debugPrint(splittedName.toString()  +":${playArenaId}");
+            if ( playArenaId  != null && splittedName[1] == playArenaId) {
               batters.add(
                   BatterStat.fromMap(docSnapshot.data(), splittedName[0]));
             }else if (playArenaId == null){

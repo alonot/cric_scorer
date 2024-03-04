@@ -6,7 +6,7 @@ class BowlerStat {
   double average = 0.0;
 
   BowlerStat.fromMap(Map<String, dynamic> map, this.name) {
-    if (map['E'] != null) {
+    if (map['Eco'] != null) {
       economy = map['Eco']!;
     }
     if (map['W'] != null) {

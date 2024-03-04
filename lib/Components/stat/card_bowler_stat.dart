@@ -112,7 +112,7 @@ class CardBowlerStat extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                           child: Text(
-                            bowler.average.toString(),
+                            bowler.average.toStringAsFixed(2),
                             style: const TextStyle(color: Colors.white),
                           ),
                         ),
@@ -122,7 +122,7 @@ class CardBowlerStat extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                           child: Text(
-                            bowler.economy.toString(),
+                            bowler.economy.toStringAsFixed(2),
                             style: const TextStyle(color: Colors.white),
                           ),
                         ),

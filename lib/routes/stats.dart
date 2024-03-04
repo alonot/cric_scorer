@@ -1,5 +1,5 @@
-import 'package:cric_scorer/Components/stat/CardBatterStat.dart';
-import 'package:cric_scorer/Components/stat/CardBowlerStat.dart';
+import 'package:cric_scorer/Components/stat/card_batter_stat.dart';
+import 'package:cric_scorer/Components/stat/card_bowler_stat.dart';
 import 'package:cric_scorer/match_view_model.dart';
 import 'package:cric_scorer/models/batter_stat.dart';
 import 'package:cric_scorer/models/bowler_stat.dart';

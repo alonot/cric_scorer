@@ -134,7 +134,7 @@ class CardBatterStat extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                           child: Text(
-                            batter.average.toString(),
+                            batter.average.toStringAsFixed(2),
                             style: const TextStyle(color: Colors.white),
                           ),
                         ),

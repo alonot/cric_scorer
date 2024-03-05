@@ -31,6 +31,17 @@ class _MainPageState extends State<MainPage> {
     }
 
     return Scaffold(
+      appBar: AppBar(
+          backgroundColor: const Color(0x89000000),
+        actions: [
+          IconButton(
+              onPressed: (){
+            viewModel.logout();
+            currentUser = "";
+            Navigator.pushNamedAndRemoveUntil(context, Util.signInOrUpRoute, (route) => (route.settings.name == Util.signInOrUpRoute) ? true : false);
+          }, icon: const Icon(Icons.power_settings_new))
+        ],
+      ),
       floatingActionButton: !isLoading?  FloatingActionButton(
         onPressed: () {
           Navigator.pushNamed(context, Util.createMatchRoute);
@@ -169,87 +180,107 @@ class _MainPageState extends State<MainPage> {
   }
 
   void dialogBeforeUpload(TheMatch match) async {
-    await showDialog<int?>(
-        context: context,
-        builder: (context) {
-          int? groupValue = playArenaIds.keys.toList()[0];
-          TextEditingController passwordCntrl = TextEditingController();
-          return AlertDialog(
+    if (viewModel.isLoggedIn()) {
+      await showDialog<int?>(
+          context: context,
+          builder: (context) {
+            int? groupValue = playArenaIds.keys.toList()[0];
+            TextEditingController passwordCntrl = TextEditingController();
+            return AlertDialog(
 
-            backgroundColor: const Color(0xC3000000),
-            title: Text('Please Select a playArenaId',style: const TextStyle(color: Colors.white),),
-            content: SizedBox(
-              height: 150,
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: playArenaIds.map<Widget,bool>(
-                          (key, verified) =>
-                      MapEntry(ListTile(
-                        visualDensity:
-                        const VisualDensity(vertical: -4),
-                        title: Text(
-                          key.toString() + (verified ? "" : "(Not verified)") ,
-                          style: const TextStyle(color: Colors.white),
-                          textAlign: TextAlign.start,
-                        ),
-                        leading: Radio<int> (
-                          value: key,
-                          groupValue: groupValue,
-                          onChanged: (val) {
-                            if(verified){
-                              setState(() {
-                                groupValue = val;
-                              });
-                            }
-                          },
-                        ),
-                      ),true)).keys.toList()
-                  +
-                  [
-                    TextField(
-                      decoration: const InputDecoration(hintText: 'Password',hintStyle: TextStyle(color: Colors.white)),
-                      keyboardType: TextInputType.visiblePassword,
-                      obscureText: true,
-                      controller: passwordCntrl,
-                    ),
-                  ]
+              backgroundColor: const Color(0xC3000000),
+              title: const Text('Please Select a playArenaId',
+                style: TextStyle(color: Colors.white),),
+              content: SizedBox(
+                height: 150,
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: playArenaIds
+                        .map<Widget, bool>(
+                            (key, verified) =>
+                            MapEntry(ListTile(
+                              visualDensity:
+                              const VisualDensity(vertical: -4),
+                              title: Text(
+                                key.toString() +
+                                    (verified ? "" : "(Not verified)"),
+                                style: const TextStyle(color: Colors.white),
+                                textAlign: TextAlign.start,
+                              ),
+                              leading: Radio<int>(
+                                value: key,
+                                groupValue: groupValue,
+                                onChanged: (val) {
+                                  if (verified) {
+                                    setState(() {
+                                      groupValue = val;
+                                    });
+                                  }
+                                },
+                              ),
+                            ), true))
+                        .keys
+                        .toList()
+                        +
+                        [
+                          TextField(
+                            decoration: const InputDecoration(
+                                hintText: 'Password',
+                                hintStyle: TextStyle(color: Colors.white)),
+                            keyboardType: TextInputType.visiblePassword,
+                            obscureText: true,
+                            controller: passwordCntrl,
+                          ),
+                        ]
+                ),
               ),
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () {
-                    if (passwordCntrl.text != "pass"){
-                      groupValue = null;
-                    }
-                    return Navigator.pop(context, groupValue);
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      if (passwordCntrl.text != "pass") {
+                        groupValue = null;
+                      }
+                      return Navigator.pop(context, groupValue);
                     },
-                  child: const Text("OK",style: TextStyle(color: Colors.white),)),
-              TextButton(
-                  onPressed: () => Navigator.pop(context, null),
-                  child: const Text("Cancel",style: TextStyle(color: Colors.white),)),
-            ],
-          );
-        }).then(
-        (value) async {
-          if ( value != null) {
-            setState(() {
-              isLoading = true;
-            });
-            await viewModel.uploadMatch(match, value);
-            await viewModel.updateMatch(match);
-            Util.batterNames =
-                (await viewModel.getBatters(true)).map((e) => e.name).toList();
-            Util.bowlerNames =
-                (await viewModel.getBowlers(true)).map((e) => e.name).toList();
-            setState(() {
-              updateMatches();
-              isLoading = false;
-            });
-          }else {
-            ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Something Went Wrong')));
+                    child: const Text(
+                      "OK", style: TextStyle(color: Colors.white),)),
+                TextButton(
+                    onPressed: () => Navigator.pop(context, null),
+                    child: const Text(
+                      "Cancel", style: TextStyle(color: Colors.white),)),
+              ],
+            );
+          }).then(
+              (value) async {
+            if (value != null) {
+              setState(() {
+                isLoading = true;
+              });
+              await viewModel.uploadMatch(match, value);
+              await viewModel.updateMatch(match);
+              Util.batterNames =
+                  (await viewModel.getBatters(true))
+                      .map((e) => e.name)
+                      .toList();
+              Util.bowlerNames =
+                  (await viewModel.getBowlers(true))
+                      .map((e) => e.name)
+                      .toList();
+              setState(() {
+                updateMatches();
+                isLoading = false;
+              });
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Something Went Wrong')));
+            }
           }
-        }
-    );
+      );
+    }else{
+        ScaffoldMessenger.of(context).showSnackBar( SnackBar(content: const Text('You are not logged in.'),
+          action: SnackBarAction(label: "Login", onPressed: () {
+            Navigator.pushNamed(context, Util.signInOrUpRoute);
+          }),));
+    }
   }
 }

@@ -28,6 +28,14 @@ class MatchViewModel {
     return _viewModel!;
   }
 
+  int get getbaseId => _repository.baseId;
+
+  bool isLoggedIn() => _repository.isSignedIn;
+
+  void haveLoggedIn(){
+    _repository.isSignedIn = true;
+  }
+
   Future<Map<String, Object?>?> getCurrentLogin() async{
     var result = await _databaseHelper.getCurrentLogin();
     return result;
@@ -114,24 +122,34 @@ class MatchViewModel {
     await docUser.set({
       "email":email,
       "playArena":maximumId,
-      "verified":true
+      "verified":true,
+      "base":true
     });
     return maximumId;
 
+  }
+
+  Future logout() async {
+    _repository.isSignedIn = false;
+    _repository.baseId = -1;
+    await _databaseHelper.removeCurrentUser(currentUser);
   }
 
   /// This function checks if the given Id exist or not and then
   /// if exits then add it to the user table with verified = false
   /// User have to ask the owner of this playArenaId to verify him
   /// in order to use this playArenaId
-  Future<bool> findnUploadUser(String email,int id) async{
+  Future<bool> findnUploadUser(String email,int Arenaid) async{
     bool found = false;
     await FirebaseFirestore.instance.collection('user').get().then(
         (querySnapshot) {
           for(var doc in querySnapshot.docs){
-            if(doc.data()['playArena'] == id){
+            if(doc.data()['playArena'] == Arenaid){
+              if(doc.data()['email'] == email){
+                found = false;
+                break;
+              }
               found = true;
-              break;
             }
           }
         },
@@ -142,9 +160,11 @@ class MatchViewModel {
       final docUser = FirebaseFirestore.instance.collection('user').doc(id);
       await docUser.set({
         "email" : email,
-        "playArena" : id,
-        "verified": false
+        "playArena" : Arenaid,
+        "verified": false,
+        "base":false
       });
+      playArenaIds = await getPlayArenaIds(email);
     }
     return found;
   }
@@ -158,6 +178,9 @@ class MatchViewModel {
           for(var doc in querySnapshot.docs){
             if(doc.data()['email'] == email){
               ids[doc.data()['playArena']] = (doc.data()['verified']);
+              if (doc.data()['base']){
+                _repository.baseId = doc.data()['playArena'];
+              }
             }
           }
         }
@@ -166,6 +189,99 @@ class MatchViewModel {
 
   }
 
+  /// Returns A Map<String,bool> with key as email and verified as value
+  /// This map contains all those emails which have connected to the baseId
+  /// for this account.
+  Future<Map<String,bool>> getAttachedAccounts() async {
+    Map<String,bool> emails = {};
+    await FirebaseFirestore.instance.collection('user').get()
+    .then(
+        (querySnapshot) {
+          for (var doc in querySnapshot.docs){
+            if (doc.data()['playArena'] == _repository.baseId && doc.data()['email'] != currentUser){
+              emails[doc.data()['email']] = doc.data()['verified'];
+            }
+          }
+        }
+    );
+    return emails;
+  }
+
+  Future<bool> verifyEmail(String email) async {
+    var baseId = _repository.baseId;
+    try {
+      bool found = false;
+      await FirebaseFirestore.instance.collection('user').get()
+          .then((querySnapshot) {
+        for (var doc in querySnapshot.docs) {
+          if (doc.data()['email'] == email &&
+              doc.data()['playArena'] == baseId) {
+            final docUser = FirebaseFirestore.instance.collection('user').doc(
+                doc.id);
+            docUser.update({
+              "verified": true
+            });
+            found =true;
+            return true;
+          }
+        }
+      });
+      return found;
+    }catch (e){
+      debugPrint("Error while verify : $e");
+      return false;
+    }
+  }
+
+  /// unverifies this email
+  Future<bool> unverifyEmail(String email) async {
+    try {
+      var baseId = _repository.baseId;
+      bool found  = false;
+      await FirebaseFirestore.instance.collection('user').get()
+          .then((querySnapshot) {
+        for (var doc in querySnapshot.docs) {
+          if (doc.data()['email'] == email &&
+              doc.data()['playArena'] == baseId) {
+            final docUser = FirebaseFirestore.instance.collection('user').doc(
+                doc.id);
+            docUser.update({
+              "verified": false
+            });
+            found = true;
+            return true;
+          }
+        }
+      });
+      return found;
+    }catch(e){
+      debugPrint("Error while verify : $e");
+      return false;
+    }
+  }
+
+  Future<bool> deleteEmailForThisId(String email,int baseId) async {
+    try {
+      var found  =false;
+      await FirebaseFirestore.instance.collection('user').get()
+          .then((querySnapshot) {
+        for (var doc in querySnapshot.docs) {
+          if (doc.data()['email'] == email &&
+              doc.data()['playArena'] == baseId) {
+            final docUser = FirebaseFirestore.instance.collection('user').doc(
+                doc.id);
+            docUser.delete();
+            found = true;
+            return true;
+          }
+        }
+      });
+      return found;
+    }catch (e){
+      debugPrint("Error while verify : $e");
+      return false;
+    }
+  }
 
   /// Uploads the match online on the given playArenaId
   Future uploadMatch(TheMatch match,int playArenaId) async {

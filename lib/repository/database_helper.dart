@@ -200,5 +200,11 @@ class DatabaseHelper {
     return matches;
   }
 
+  Future removeCurrentUser(String currentUser) async  {
+    var db = await login_database;
+    debugPrint("currentUser : $currentUser");
+    await db.delete("login_table", where : "$colLogin = ? ", whereArgs: [currentUser]);
+  }
+
 
 }

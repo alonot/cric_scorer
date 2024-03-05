@@ -13,6 +13,7 @@ import 'package:cric_scorer/routes/main_page.dart';
 import 'package:cric_scorer/routes/match_page.dart';
 import 'package:cric_scorer/Routes/scoreboard.dart';
 import 'package:cric_scorer/Routes/stats.dart';
+import 'package:cric_scorer/routes/other_arena_screen.dart';
 import 'package:cric_scorer/routes/sign_in_or_up_page.dart';
 import 'package:cric_scorer/routes/winner_page.dart';
 import 'package:cric_scorer/utils/util.dart';
@@ -76,6 +77,7 @@ class MyApp extends StatelessWidget {
         Util.scoreCardRoute: (context) => const Scoreboard(),
         Util.statsRoute: (context) => const Stats(),
         Util.signInOrUpRoute: (context) => const SignInPage(),
+        OtherArena.id : (context) => const OtherArena(),
       },
       theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.transparent),

@@ -1,8 +1,7 @@
-
-import 'package:cric_scorer/models/batter.dart';
-import 'package:cric_scorer/models/bowler.dart';
+import '../../exports.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+
 class PdfUtil {
 
   static final List<pw.TableRow> _batterHeader = [

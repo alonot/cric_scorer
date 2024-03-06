@@ -1,5 +1,4 @@
-import 'package:cric_scorer/models/bowler.dart';
-import 'package:flutter/material.dart';
+import '../exports.dart';
 
 class CardBowler extends StatefulWidget {
   final List<Bowler> bowlers;

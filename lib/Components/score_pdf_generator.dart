@@ -1,10 +1,7 @@
-import 'package:cric_scorer/Components/pdf_widgets/pdf_util.dart';
-import 'package:cric_scorer/match_view_model.dart';
-import 'package:cric_scorer/models/batter.dart';
-import 'package:cric_scorer/models/bowler.dart';
-import 'package:cric_scorer/models/match.dart';
+
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import '../exports.dart';
 
 class ScorePdfGenerator {
   final MatchViewModel viewModel = MatchViewModel();

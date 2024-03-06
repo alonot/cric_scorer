@@ -1,6 +1,4 @@
-
-import 'package:cric_scorer/utils/util.dart';
-import 'package:flutter/material.dart';
+import '../../exports.dart';
 
 class CardInfo extends StatefulWidget {
   String val1 = "";

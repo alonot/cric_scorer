@@ -1,12 +1,4 @@
-import 'package:cric_scorer/Components/card_batter.dart';
-import 'package:cric_scorer/Components/card_bowler.dart';
-import 'package:cric_scorer/Components/match/card_balls.dart';
-import 'package:cric_scorer/Components/match/card_info_scorer.dart';
-import 'package:cric_scorer/Components/match/card_scorer.dart';
-import 'package:cric_scorer/match_view_model.dart';
-import 'package:cric_scorer/models/match.dart';
-import 'package:cric_scorer/utils/util.dart';
-import 'package:flutter/material.dart';
+import '../exports.dart';
 
 class MatchPage extends StatefulWidget {
   const MatchPage({super.key});

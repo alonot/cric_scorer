@@ -1,7 +1,4 @@
-
-
-import 'package:cric_scorer/utils/util.dart';
-import 'package:flutter/material.dart';
+import '../exports.dart';
 
 class WinnerPage extends StatefulWidget {
   const WinnerPage({super.key});

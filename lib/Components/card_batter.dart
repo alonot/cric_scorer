@@ -1,6 +1,4 @@
-import 'package:cric_scorer/models/batter.dart';
-import 'package:cric_scorer/utils/util.dart';
-import 'package:flutter/material.dart';
+import '../exports.dart';
 
 class CardBatter extends StatefulWidget {
   final List<Batter> batters;

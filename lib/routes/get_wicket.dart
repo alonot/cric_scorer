@@ -1,10 +1,4 @@
-import 'package:cric_scorer/Components/auto_complete_it.dart';
-import 'package:cric_scorer/Components/card_batter.dart';
-import 'package:cric_scorer/match_view_model.dart';
-import 'package:cric_scorer/models/batter.dart';
-import 'package:cric_scorer/models/match.dart';
-import 'package:cric_scorer/utils/util.dart';
-import 'package:flutter/material.dart';
+import '../exports.dart';
 
 class GetWicket extends StatefulWidget {
   const GetWicket({super.key});

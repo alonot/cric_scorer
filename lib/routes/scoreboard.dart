@@ -1,13 +1,5 @@
 
-
-import 'package:cric_scorer/Components/card_batter.dart';
-import 'package:cric_scorer/Components/card_bowler.dart';
-import 'package:cric_scorer/Components/fall_of_wickets.dart';
-import 'package:cric_scorer/match_view_model.dart';
-import 'package:cric_scorer/models/batter.dart';
-import 'package:cric_scorer/models/bowler.dart';
-import 'package:cric_scorer/models/match.dart';
-import 'package:flutter/material.dart';
+import '../exports.dart';
 
 class Scoreboard extends StatefulWidget {
   const Scoreboard({super.key});

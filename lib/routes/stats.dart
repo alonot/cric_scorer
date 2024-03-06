@@ -1,10 +1,4 @@
-import 'package:cric_scorer/Components/stat/card_batter_stat.dart';
-import 'package:cric_scorer/Components/stat/card_bowler_stat.dart';
-import 'package:cric_scorer/match_view_model.dart';
-import 'package:cric_scorer/models/batter_stat.dart';
-import 'package:cric_scorer/models/bowler_stat.dart';
-import 'package:cric_scorer/utils/util.dart';
-import 'package:flutter/material.dart';
+import '../exports.dart';
 
 class Stats extends StatefulWidget {
   const Stats({super.key});

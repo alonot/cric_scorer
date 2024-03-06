@@ -1,25 +1,6 @@
 
 
-import 'dart:io';
-
-import 'package:cric_scorer/routes/home.dart';
-import 'package:cric_scorer/match_view_model.dart';
-import 'package:cric_scorer/routes/create_match.dart';
-import 'package:cric_scorer/routes/get_batter.dart';
-import 'package:cric_scorer/routes/get_bowler.dart';
-import 'package:cric_scorer/routes/get_opener.dart';
-import 'package:cric_scorer/routes/get_wicket.dart';
-import 'package:cric_scorer/routes/main_page.dart';
-import 'package:cric_scorer/routes/match_page.dart';
-import 'package:cric_scorer/Routes/scoreboard.dart';
-import 'package:cric_scorer/Routes/stats.dart';
-import 'package:cric_scorer/routes/other_arena_screen.dart';
-import 'package:cric_scorer/routes/sign_in_or_up_page.dart';
-import 'package:cric_scorer/routes/winner_page.dart';
-import 'package:cric_scorer/utils/util.dart';
-import "package:firebase_core/firebase_core.dart";
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'exports.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,11 +1,4 @@
-import 'package:cric_scorer/Components/auto_complete_it.dart';
-import 'package:cric_scorer/Components/card_bowler.dart';
-import 'package:cric_scorer/match_view_model.dart';
-import 'package:cric_scorer/models/bowler.dart';
-import 'package:cric_scorer/models/match.dart';
-import 'package:cric_scorer/models/over.dart';
-import 'package:cric_scorer/utils/util.dart';
-import 'package:flutter/material.dart';
+import '../exports.dart';
 
 class GetBowler extends StatefulWidget {
   const GetBowler({super.key});

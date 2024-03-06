@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1089318839183",
+    "project_id": "cricscorer-e4157",
+    "storage_bucket": "cricscorer-e4157.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1089318839183:android:cbbd9f89c06f7a627621fa",
+        "android_client_info": {
+          "package_name": "com.example.cric_scorer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABNonH-Zf7LLr7hkohyU13czg3iioYN9U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

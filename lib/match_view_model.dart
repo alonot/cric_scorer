@@ -5,6 +5,9 @@ class MatchViewModel {
   DatabaseHelper _databaseHelper;
   static MatchViewModel? _viewModel; // singleton class
 
+  /**
+   * Creates a singleton instance of viewModel
+   */
   MatchViewModel._createInstance(this._repository, this._databaseHelper);
 
   factory MatchViewModel() {
@@ -24,29 +27,34 @@ class MatchViewModel {
     _repository.isSignedIn = true;
   }
 
+  /// Gets the email and password of this user stored in db
   Future<Map<String, Object?>?> getCurrentLogin() async{
     var result = await _databaseHelper.getCurrentLogin();
     return result;
   }
 
+  /// Sets the email and password of this user in db
   Future<int> setCurrentUser(String email,String password) async{
     var result = await _databaseHelper.setCurrentUser(email,password);
     return result;
   }
 
-
+  /// Gets the current ongoing match
   TheMatch? getCurrentMatch() => _repository.currentMatch;
 
+  /// Get the match with this particular id
   Future<TheMatch?> getMatch(int id) async {
     var result = await _databaseHelper.getMatch(id);
     return result;
   }
 
+  /// Get all the matches
   Future<List<TheMatch>> getAllMatches() async {
     var result = await _databaseHelper.getMatchesAsMatch();
     return result;
   }
 
+  /// Delete this match from db
   Future<int> deleteMatch(int id) async {
     return await _databaseHelper.deleteMatch(id);
   }
@@ -63,12 +71,13 @@ class MatchViewModel {
 
 
 
+  /// sets the current Match
   bool setCurrentMatch(TheMatch match) {
-    // print("here");
     _repository.currentMatch = match;
     return true;
   }
 
+  /// Gets all the online matches
   Future<List<TheMatch>> getOnlineMatches(int id) async  {
     List<TheMatch> matches = [];
     await FirebaseFirestore.instance.collection('matches').get()
@@ -85,12 +94,13 @@ class MatchViewModel {
 
   /// To be called when reistering.
   /// This will create a unique PlayArenaId
-  /// PlayArena : can be scene as a collection of matches and their stats
+  /// PlayArena : can be understood as a collection of matches and their stats
+  /// base variable tells whether this playArenaId is base id of this user
   /// Each user may keep atmost 2 playArena : One which is created
   /// while regestering (here) and another he can manually add to hi profile.
   Future<int> uploadUser(String email) async{
     int maximumId = -9;
-    await FirebaseFirestore.instance.collection('users').get().then(
+    await FirebaseFirestore.instance.collection('user').get().then(
         (querySnapshot) {
           for(var doc in querySnapshot.docs){
             if(doc.data()['playArena'] > maximumId){
@@ -117,6 +127,7 @@ class MatchViewModel {
 
   }
 
+  /// logs out of the account
   Future logout() async {
     _repository.isSignedIn = false;
     _repository.baseId = -1;
@@ -195,6 +206,7 @@ class MatchViewModel {
     return emails;
   }
 
+  @deprecated  /// To be removed
   Future<bool> verifyEmail(String email) async {
     var baseId = _repository.baseId;
     try {
@@ -221,7 +233,7 @@ class MatchViewModel {
     }
   }
 
-  /// unverifies this email
+  @deprecated  /// unverifies this email. To be removed
   Future<bool> unverifyEmail(String email) async {
     try {
       var baseId = _repository.baseId;
@@ -248,6 +260,7 @@ class MatchViewModel {
     }
   }
 
+  @deprecated
   Future<bool> deleteEmailForThisId(String email,int baseId) async {
     try {
       var found  =false;
@@ -286,6 +299,7 @@ class MatchViewModel {
     final List<Batter> finalListBatter = [];
     final List<Bowler> finalListBowler = [];
 
+    // Converting batters to List
     for (Batter batter in match.batters[0]) {
       var toAdd = batter;
       for (Batter b in finalListBatter) {
@@ -314,6 +328,8 @@ class MatchViewModel {
       }
       finalListBatter.add(toAdd);
     }
+
+    // Converting Bowlers to List
     for (Bowler bowler in match.bowlers[0]) {
       var toAdd = bowler;
       for (Bowler b in finalListBowler) {
@@ -346,6 +362,7 @@ class MatchViewModel {
     // debugPrint("Batters" + finalListBatter.toString());
     // debugPrint("Bowlers" + finalListBowler.toString());
 
+    // Updating all the batters stats, Before uploading this match
     for (Batter b in finalListBatter) {
       // Update the player
       var docPlayer = batterCol.doc("${b.name}_$playArenaId");
@@ -408,6 +425,7 @@ class MatchViewModel {
       }
     }
 
+    // Updating all the bowlers stats, Before uploading this match
     for (Bowler b in finalListBowler) {
       final docPlayer = bowlerCol.doc("${b.name}_$playArenaId");
       // Update the player
@@ -448,7 +466,7 @@ class MatchViewModel {
     }
   }
 
-
+  /// gets all the batters associated with all the playarenas of this account
   Future<List<BatterStat>> getBatters(bool forceFetch, {int? id}) async {
     if (_repository.batters == null ||
         _repository.batters?.length != _repository.battersCount || forceFetch) {
@@ -495,6 +513,7 @@ class MatchViewModel {
     }
   }
 
+  /// gets all the bowlers associated with all the playarenas of this account
   Future<List<BowlerStat>> getBowlers(bool forceFetch, {int? id}) async {
     List<BowlerStat> bowlers = [];
     var playArenaId = id?.toString();

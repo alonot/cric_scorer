@@ -1,4 +1,3 @@
-
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import '../exports.dart';
@@ -24,8 +23,6 @@ class ScorePdfGenerator {
   String extras1 = "0";
   String extras2 = "0";
 
-  
-
   ScorePdfGenerator() {
     TheMatch match = viewModel.getCurrentMatch()!;
     battersTeam1 = match.batters[0];
@@ -40,8 +37,10 @@ class ScorePdfGenerator {
     score2 = "${match.score[1]}-${match.wickets[1]}";
     overs1 = "${match.over_count[0].toStringAsFixed(1)} OVERS";
     overs2 = "${match.over_count[1].toStringAsFixed(1)} OVERS";
-    runRate1 = "${match.score[0] / match.totalOvers}";
-    runRate2 = "${match.score[1] / match.totalOvers}";
+    double overInPercen = (match.totalOvers * 10).toInt() / 10 +
+        (((match.totalOvers * 10).toInt() % 10) / 6);
+    runRate1 = "${match.score[0] / overInPercen}";
+    runRate2 = "${match.score[1] / overInPercen}";
     var cur = match.currentTeam;
     if (match.hasWon) {
       if (match.score[cur] >= match.score[(cur + 1) % 2]) {
@@ -59,7 +58,8 @@ class ScorePdfGenerator {
           (match.score[(cur + 1) % 2] - match.score[cur] + 1).toString();
       int curBalls = ((match.over_count[cur] * 10).toInt() ~/ 10 * 6) +
           ((match.over_count[cur] * 10).toInt() % 10).toInt();
-      int totalBalls = ((match.totalOvers * 10).toInt() ~/ 10 * 6);
+      int total = (match.totalOvers * 10).toInt();
+      int totalBalls = ((total ~/ 10 * 6).toInt() + total % 10);
       String needfrom = (totalBalls - curBalls).toString();
       toDisplay = "$team needs $needrun runs from $needfrom balls";
     }
@@ -103,7 +103,6 @@ class ScorePdfGenerator {
   }
 
   generatePdf(pw.Document pdf) {
-
     pdf.addPage(pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(32),

@@ -15,12 +15,13 @@ class _CardBallsState extends State<CardBalls> {
   Widget build(BuildContext context) {
     var viewModel = MatchViewModel();
     TheMatch? match = viewModel.getCurrentMatch();
+    debugPrint("Bowls");
     if (match != null) {
       if (match.Overs[match.currentTeam].isNotEmpty) {
         setState(() {
           bowls = match.Overs[match.currentTeam].last.bowls;
           count = bowls.length;
-          // debugPrint("$count, $bowls");
+          debugPrint("$count, $bowls");
         });
       }
     }

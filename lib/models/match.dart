@@ -13,7 +13,7 @@ class TheMatch {
   late bool hasWon;
   late int currentTeam;
   late int inning;
-  late int totalOvers;
+  late double totalOvers;
   late int no_of_players;
   late int currentBatterIndex;
   bool uploaded = false;
@@ -78,171 +78,116 @@ class TheMatch {
     date = timeNowMinutes(now);
   }
 
-  bool addBatter(Batter batter) {
-    if (wickets[currentTeam] != no_of_players - 1 &&
-        over_count[currentTeam] != totalOvers) {
+  void addBatter(Batter batter) {
       currentBatters.add(batter);
-
       batters[currentTeam].add(batter);
-      return true;
-    } else {
-      return false;
-    }
   }
 
-  bool addBowler(Bowler bowler) {
-    if (wickets[currentTeam] != no_of_players - 1 &&
-        over_count[currentTeam] != totalOvers) {
+  void addBowler(Bowler bowler) {
       currentBowler = bowler;
       bowlers[currentTeam].add(bowler);
-      return true;
-    } else {
-      return false;
-    }
   }
 
-  bool addScore(String s, String run) {
-    var count = over_count[currentTeam];
-    if (count < totalOvers) {
-      var runOnBall = int.parse(run[0]);
-      if (s == "" || s == "Nb") {
-        currentBatters[currentBatterIndex]
-            .addRun(runOnBall); // Add Batter's run and bowl
-        // Checking for change of strike
-        if (runOnBall % 2 == 1) {
-          currentBatters = List.of(currentBatters.reversed);
-        }
-      }
-
-      // Handling extra runs
-      if (s == "Nb" || s == "Wd") {
-        runOnBall++;
-      }
-      // Adding team's score
-      score[currentTeam] += runOnBall;
-
-      // Handling overCount of the current Team
-      if (Overs[currentTeam].isNotEmpty) {
-        // Adding Bowler stats
-        Overs[currentTeam].last.wasMaiden = runOnBall == 0;
-        currentBowler!.addBowl(
-            runOnBall, s, run.length != 1, Overs[currentTeam].last.runs);
-        Overs[currentTeam].last.bowls.add([run, s]);
-        Overs[currentTeam].last.runs += runOnBall;
-        if (s != "Wd" && s != "Nb") {
-          if ((count * 10).toInt() % 10 == 5) {
-            over_count[currentTeam] += 0.5;
-            currentBatters = List.of(currentBatters.reversed);
-            if (over_count[currentTeam] == totalOvers) {
-              return false; // If over limit exeeded . Do not take new bowler.
-            }
-
-            return true; // signal to get a new bowler
-          } else {
-            over_count[currentTeam] += 0.1;
-          }
-        }
+  void addScore(String s, String run) {
+    var runOnBall = int.parse(run[0]);
+    if (s == "" || s == "Nb") {
+      currentBatters[0].addRun(runOnBall); // Add Batter's run and bowl
+      // Checking for change of strike
+      if (runOnBall % 2 == 1) {
+        currentBatters = List.of(currentBatters.reversed);
       }
     }
-    return false;
+
+    // Handling extra runs
+    if (s == "Nb" || s == "Wd") {
+      runOnBall++;
+    }
+    var over = Overs[currentTeam].last;
+    if(s != "Wd" && s != "Nb"){
+      // increase over count
+      over_count[currentTeam] +=0.1;
+      currentBowler!.addBowl(
+          runOnBall, true);
+    }else {
+      currentBowler!.addBowl(
+          runOnBall, false);
+    }
+    over.bowls.add([run, s]);
+    over.runs += runOnBall;
+    score[currentTeam] += runOnBall;
+
+    over_count[currentTeam] = double.parse(over_count[currentTeam].toStringAsFixed(2));
+
   }
 
   bool popScore() {
-    var count = over_count[currentTeam];
-    // If batter retires
-    if (wicketOrder[currentTeam].isNotEmpty) {
-      var lastWicket = wicketOrder[currentTeam].last;
-      if (lastWicket[0].outBy == "Retired Out") {
-        // debugPrint("Wicket Order is:"+wicketOrder.toString());
-        Batter batter = wicketOrder[currentTeam].removeLast()[0];
-        currentBatters.remove(batters[currentTeam].removeLast());
-        batter.outBy = 'Not Out';
-        currentBatters.add(batter);
-        currentBatters = List.of(currentBatters.reversed);
-        return false;
-      }
-    }
 
-
-    if (Overs[currentTeam].isNotEmpty) {
-      List<dynamic> result;
-      int runInOver = 1;
-      // Removing the ball
-      if (Overs[currentTeam].last.bowls.isNotEmpty) {
-        // If in the latest over any ball is left
-
-        result = Overs[currentTeam].last.bowls.removeLast();
-        Overs[currentTeam].last.runs -= int.parse(result[0][0]);
-        runInOver = Overs[currentTeam].last.wasMaiden ? 0 : 1;
-      } else {
-        // pop the latest over
-        Overs[currentTeam].removeLast();
-        // check if after removing that lates over any more overs are left to b removed or not
-        if (Overs[currentTeam].isNotEmpty) {
-          result = Overs[currentTeam].last.bowls.removeLast();
-          Overs[currentTeam].last.runs -= int.parse(result[0][0]);
-          runInOver = Overs[currentTeam].last.wasMaiden ? 0 : 1;
-        } else {
-          // If no then we have reached 0.0 ... return the function
-          return true;
-        }
-      }
-
-      var runOnBall = int.parse(result[0][0]);
-      var s = result[1];
-
-      // decreasing the batters run
-      if (s == "" || s == "Nb") {
-        if (runOnBall % 2 == 1) {
-          currentBatters = List.of(currentBatters.reversed);
-        }
-        currentBatters[currentBatterIndex].removeRun(runOnBall);
-      }
-
-      // Handling extras
-      if (s == "Nb" || s == "Wd") {
-        runOnBall++;
-      }
-
-      // Handling the team score
-      score[currentTeam] -= runOnBall;
-
-      // decreasing the over count
-      if (s != "Wd" && s != "Nb") {
-        if ((count * 10).toInt() % 10 == 0) {
-          over_count[currentTeam] -= 0.5;
-          currentBatters = List.of(currentBatters.reversed);
-          var bowlerName = Overs[currentTeam].last.bowlerName;
-          Bowler? bowler;
-          for (Bowler b in bowlers[currentTeam]) {
-            if (b.name == bowlerName) {
-              bowler = b;
-              break;
-            }
+    if (Overs.isNotEmpty){
+      var lastOver = Overs[currentTeam].last;
+      var bowl = lastOver.bowls.last;
+      lastOver.bowls.removeLast();
+      if (bowl[0] == "Retired Out"){
+        // retreive the batter from wicket order
+        // If batter retires
+        if (wicketOrder[currentTeam].isNotEmpty) {
+          var lastWicket = wicketOrder[currentTeam].last;
+          if (lastWicket[0].outBy == "Retired Out") {
+            // debugPrint("Wicket Order is:"+wicketOrder.toString());
+            Batter batter = wicketOrder[currentTeam].removeLast()[0];
+            currentBatters.remove(batters[currentTeam].removeLast());
+            batter.outBy = 'Not Out';
+            currentBatters.add(batter);
+            currentBatters = List.of(currentBatters.reversed);
+            return false;
           }
-          currentBowler = bowler;
-        } else {
-          over_count[currentTeam] -= 0.1;
         }
-        currentBowler!
-            .removeBowl(runOnBall, s, result[0].length != 1, runInOver);
       }
+      else{
+        var run = int.parse(bowl[0][0]);
+        var s = bowl[1];
+        if (s == "" || s == "Nb") {
+          // Checking for change of strike
+          if (run % 2 == 1) {
+            currentBatters = List.of(currentBatters.reversed);
+          }
+          currentBatters[0].removeRun(run); // Add Batter's run and bowl
+        }
+        // Handling extra runs
+        if (s == "Nb" || s == "Wd") {
+          run++;
+        }
+        var over = Overs[currentTeam].last;
+        if(s != "Wd" && s != "Nb"){
+          // increase over count
+          over_count[currentTeam] -=0.1;
+          currentBowler!.removeBowl(
+              run, true);
+        }else {
+          currentBowler!.removeBowl(
+              run, false);
+        }
 
-      //  Handle Wicket
-      if (result[0].length != 1) {
-        wickets[currentTeam] -= 1;
-        // debugPrint("Wicket Order wicket:"+wicketOrder.toString());
-        Batter batter = wicketOrder[currentTeam].removeLast()[0];
-        currentBatters.remove(batters[currentTeam].removeLast());
-        batter.outBy = 'Not Out';
-        currentBatters.add(batter);
-        currentBatters = List.of(currentBatters.reversed);
+        //  Handle Wicket
+        debugPrint(LOGSTRING + s);
+        if (bowl[0].length != 1) {
+          wickets[currentTeam] -= 1;
+          // debugPrint("Wicket Order wicket:"+wicketOrder.toString());
+          Batter batter = wicketOrder[currentTeam].removeLast()[0];
+          currentBatters.remove(batters[currentTeam].removeLast());
+          batter.outBy = 'Not Out';
+          currentBatters.add(batter);
+          currentBatters = List.of(currentBatters.reversed);
+        }
+
+        score[currentTeam] -= run;
+        lastOver.runs -= run;
+
+        over_count[currentTeam] = double.parse(over_count[currentTeam].toStringAsFixed(2));
       }
-
-      return false;
-    } else {
-      return true;
     }
+    return false;
+
+
   }
 
   Map<String, dynamic> toMap() {
@@ -423,7 +368,7 @@ class TheMatch {
     no_of_players = map['no_of_players'];
     currentBatterIndex = map['currentBatterIndex'];
     inning = map['inning'];
-    totalOvers = map['totalOvers'];
+    totalOvers = (map['totalOvers']).toDouble();
     currentTeam = map['currentTeam'];
     uploaded = bool.parse(map['uploaded']);
     if (map['currentBowler'] != "null") {

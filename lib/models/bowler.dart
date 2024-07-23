@@ -29,36 +29,20 @@ class Bowler{
 
   Bowler(this.name,{ this.runs=0, this.wickets=0, this.overs=0, this.maidens=0,});
 
-  void addBowl(int run,String type,bool isWicket,int runInOver){
+  void addBowl(int run,bool ball){
     runs+=run;
-    if (isWicket){
-      wickets+=1;
-    }
-    if (type != "Wd" && type != "Nb"){
-      if((overs*10).toInt()%10 ==5){
-        overs+=0.5;
-        maidens +=runInOver ==0?1:0;
-      }else{
-        overs+=0.1;
-      }
-    }
+    overs+= (ball) ? 0.1 : 0.0;
     double overInPercen = (overs*10).toInt() /10 + (((overs *10).toInt() % 10)/6);
-    economy = runs / overInPercen;
+    if (overInPercen == 0){
+      economy = 0.0;
+    }else {
+      economy = runs / overInPercen;
+    }
   }
 
-  void removeBowl(int run, String type,bool wasWicket,int runInOver){
+  void removeBowl(int run, bool ball){
     runs-=run;
-    if (wasWicket){
-      wickets-=1;
-    }
-    if (type != "Wd" && type != "Nb"){
-      if((overs*10).toInt()%10 ==0){
-        overs-=0.5;
-        maidens -=runInOver ==0?1:0;
-      }else{
-        overs-=0.1;
-      }
-    }
+    overs -= (ball) ? 0.1 : 0.0;
     double overInPercen = (overs*10).toInt() /10 + (((overs *10).toInt() % 10)/6);
     if (overInPercen == 0){
       economy = 0.0;

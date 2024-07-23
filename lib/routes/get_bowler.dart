@@ -24,9 +24,8 @@ class _GetBowlerState extends State<GetBowler> {
       setState(() {
         match!.currentBowler = bowler;
         match!.Overs[match!.currentTeam].add(Over(
-          match!.over_count[match!.currentTeam].toInt(),
           bowler.name,
-          [match!.currentBatters[match!.currentBatterIndex].name],
+          [match!.currentBatters[0].name],
         ));
       });
       // await viewModel.updateMatch(match!);
@@ -54,7 +53,6 @@ class _GetBowlerState extends State<GetBowler> {
       match!.addBowler(bowler);
       // Adding a new Over
       match!.Overs[match!.currentTeam].add(Over(
-        match!.over_count[match!.currentTeam].toInt(),
         bowler.name,
         [match!.currentBatters[match!.currentBatterIndex].name],
       ));

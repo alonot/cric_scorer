@@ -36,6 +36,7 @@ class _SignInPageState extends State<SignInPage> {
         currentUser = result['email'].toString();
         playArenaIds = await viewModel
             .getPlayArenaIds(currentUser); // getting all the arenaIds
+        // debugPrint(LOGSTRING + "ids >" + playArenaIds.toString());
         Util.batterNames = (await viewModel.getBatters(true))
             .map((batter) => batter.name)
             .toList();

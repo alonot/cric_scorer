@@ -58,8 +58,8 @@ class _ScoreboardState extends State<Scoreboard> {
       int curBalls =
           ((match.over_count[cur] * 10).toInt() ~/ 10 * 6) +
               ((match.over_count[cur] * 10).toInt() % 10).toInt();
-      int totalBalls =
-      ((match.totalOvers * 10).toInt() ~/ 10 * 6);
+      int total = (match.totalOvers * 10).toInt();
+      int totalBalls = ((total ~/ 10 * 6).toInt() + total % 10);
       String needfrom = (totalBalls - curBalls).toString();
       toDisplay = "$team needs $needrun runs from $needfrom balls";
     }

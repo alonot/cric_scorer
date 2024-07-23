@@ -17,21 +17,27 @@ class _OnlineMatchesScreenState extends State<OnlineMatchesScreen> {
 
   @override
   void initState() {
-    selectedId = associatedIds[0];
+    if (associatedIds.isEmpty){
+      selectedId = -1;
+    }else{
+      selectedId = associatedIds[0];
+    }
     super.initState();
     fetchMatches();
   }
 
   void fetchMatches() async {
-    setState(() {
-      isLoading = true;
-    });
-    matches = await viewModel
-        .getOnlineMatches(selectedId); // We will fetch the matches
-    count = matches!.length;
-    setState(() {
-      isLoading = false;
-    });
+    if (selectedId != -1) {
+      setState(() {
+        isLoading = true;
+      });
+      matches = await viewModel
+          .getOnlineMatches(selectedId); // We will fetch the matches
+      count = matches!.length;
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -88,7 +94,7 @@ class _OnlineMatchesScreenState extends State<OnlineMatchesScreen> {
       body: Stack(
         children: [
           !isLoading
-              ? ListView.builder(
+              ? selectedId != -1? ListView.builder(
             itemCount: count,
             itemBuilder: (context, index) {
               if (matches![index].currentBowler == null) {
@@ -112,7 +118,8 @@ class _OnlineMatchesScreenState extends State<OnlineMatchesScreen> {
               }
               return null;
             },
-          )
+          ) :
+              const Center(child: Text("Not Logged In",style: TextStyle(color: Colors.white),),)    
               : const SizedBox(
             width: 0,
             height: 0,

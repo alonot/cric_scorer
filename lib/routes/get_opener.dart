@@ -91,8 +91,7 @@ class _GetOpenersState extends State<GetOpeners> {
       match.currentBatters = [];
       match.addBatter(batter1);
       match.addBatter(batter2);
-      match.Overs[match.currentTeam].add(Over(0, bowler.name, [batter1.name]));
-      match.currentBatterIndex = 0;
+      match.Overs[match.currentTeam].add(Over(bowler.name, [batter1.name]));
       // debugPrint(match.team1);
       Util.batterNames.remove(batter1.name);
       Util.batterNames.remove(batter2.name);

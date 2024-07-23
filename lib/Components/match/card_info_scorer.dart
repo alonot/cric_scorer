@@ -55,7 +55,8 @@ class _CardInfoScorerState extends State<CardInfoScorer> {
               (match.score[(cur + 1) % 2] - match.score[cur] + 1).toString();
           int curBalls = ((match.over_count[cur] * 10).toInt() ~/ 10 * 6) +
               ((match.over_count[cur] * 10).toInt() % 10).toInt();
-          int totalBalls = ((match.totalOvers * 10).toInt() ~/ 10 * 6);
+          int total = (match.totalOvers * 10).toInt();
+          int totalBalls = ((total ~/ 10 * 6).toInt() + total % 10);
           _needfrom = (totalBalls - curBalls).toString();
         }
       }

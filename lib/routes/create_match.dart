@@ -58,7 +58,14 @@ class _CreateMatchState extends State<CreateMatch> {
       });
     } else {
       // print("No ${oversController.text}");
-      if (int.parse(oversController.text) > 450 ||
+      if (oversController.text.contains('.')){
+        allGood = false;
+        setState(() {
+          errorTextOver = "Only Integer";
+          oversController.text = "";
+        });
+      }
+      else if (int.parse(oversController.text) > 450 ||
           int.parse(oversController.text) < 1) {
         allGood = false;
         setState(() {
@@ -165,7 +172,7 @@ class _CreateMatchState extends State<CreateMatch> {
                               info2['toss']!,
                               info2['optTo']!,
                               int.parse(noplayersController.text),
-                              int.parse(oversController.text),
+                              double.parse(oversController.text),
                             );
                             viewModel.setCurrentMatch(match);
                             _save(match);

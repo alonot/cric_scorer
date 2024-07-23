@@ -1,7 +1,5 @@
 
 class Over{
-  late int over_no;
-  late bool wasMaiden;
   late String bowlerName;
   late List<String> batters;
   late List<List<String>> bowls;
@@ -10,22 +8,20 @@ class Over{
 
   Over.fromString(String s){
     List<String> arrayOfData = s.split('#');
-    // print(arrayOfData.toString());
-    over_no = int.parse(arrayOfData[0]);
-    wasMaiden = bool.parse(arrayOfData[1]);
-    bowlerName = (arrayOfData[2]);
-    runs = int.parse(arrayOfData[4]);
+    print(arrayOfData.toString());
+    bowlerName = (arrayOfData[0]);
+    runs = int.parse(arrayOfData[2]);
 
     // getting batters
     batters= [];
-    List<String> arrayOfBatters = arrayOfData[3].split('&');
+    List<String> arrayOfBatters = arrayOfData[1].split('&');
     for(String s in arrayOfBatters){
       batters.add(s);
     }
 
     // getting bowls
     bowls = [];
-    List<String> arrayOfBowls = arrayOfData[5].split('@');
+    List<String> arrayOfBowls = arrayOfData[3].split('@');
     for (String s in arrayOfBowls){
       List<String> eachBowl = s.split('&');
       // debugPrint(eachBowl.toString());
@@ -42,7 +38,7 @@ class Over{
   String toString() {
     String resultString = "";
 
-    resultString = "$over_no#$wasMaiden#$bowlerName#${batters.join('&')}#$runs#";
+    resultString = "$bowlerName#${batters.join('&')}#$runs#";
 
     int count = bowls.length;
     for (dynamic d in bowls){
@@ -56,7 +52,7 @@ class Over{
     return resultString;
   }
 
-  Over(this.over_no,this.bowlerName,this.batters,{this.runs=0,bowls,this.wasMaiden=false}){
+  Over(this.bowlerName,this.batters,{this.runs=0,bowls}){
     if(bowls != null){
       this.bowls = bowls;
     }else{

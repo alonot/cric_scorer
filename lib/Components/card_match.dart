@@ -48,8 +48,9 @@ class CardMatch extends StatelessWidget {
               match.score[match.currentTeam])
           .toString();
       int overs = (match.over_count[match.currentTeam] * 10).toInt();
+      int totalBalls = (match.totalOvers * 10).toInt();
       int overCount =
-          (match.totalOvers * 6) - ((overs ~/ 10 * 6).toInt() + overs % 10);
+          ((totalBalls ~/ 10 * 6).toInt() + totalBalls % 10) - ((overs ~/ 10 * 6).toInt() + overs % 10);
       // debugPrint("$overs,$overCount");
       needfrom = overCount.toString();
 

@@ -32,7 +32,7 @@ class _GetWicketState extends State<GetWicket> {
       isMatchOver = match.hasWon ||
           match.over_count[match.currentTeam] == match.totalOvers ||
           match.wickets[match.currentTeam] == match.no_of_players - 1;
-      debugPrint("Match:$isMatchOver");
+      // debugPrint("Match:$isMatchOver");
       score = match.score[match.currentTeam].toString();
       wickets = match.wickets[match.currentTeam].toString();
       overs = match.over_count[match.currentTeam].toStringAsFixed(1);
@@ -45,16 +45,7 @@ class _GetWicketState extends State<GetWicket> {
   }
 
   void handleWicket() async {
-    if (showhelper) {
-      // print("Yes" + helperName.text);
-      if (helperName.text.isEmpty) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(Util.getsnackbar('Fields must not be empty'));
-        return;
-      }
-    }
     if (match != null) {
-      // print("yes");
       // Batter Already present or not
       Batter? batter;
       for (Batter b in match!.currentBatters) {
@@ -362,8 +353,8 @@ class _GetWicketState extends State<GetWicket> {
                                 return;
                               }
                             }
-                            debugPrint("Lets Continue > Got Wicket!!");
-                            if (!isMatchOver && batterName.isEmpty) {
+                            // debugPrint("Lets Continue > Got Wicket!!");
+                            if ((!isMatchOver && batterName.isEmpty) || (showhelper && helperName.text.isEmpty)) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   Util.getsnackbar('Fields must not be empty'));
                               return;

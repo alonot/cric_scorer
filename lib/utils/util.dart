@@ -25,6 +25,18 @@ class Util {
   static List<String> bowlerNames = [];
 }
 
+const String LOGSTRING = "CRIC-SCORER :";
+const String UPDATE = "update";
+const String POP = "pop";
+const String RETIRE = "retire";
+const String SWAP = "swap";
+const String END = "end";
+const String CHECKOVER = "over";
+const String GETBOWLER = "bowler";
+const String CHECKINNING = "inning";
+const String SAVE = "save";
+const String WICKET = "wicket";
+
 String currentUser="";
 Map<int,bool> playArenaIds = {};
 

@@ -19,8 +19,9 @@ class _GetBatterState extends State<GetBatter> {
   void setBatterName(String val) => batterName = val;
 
   void onTap(Batter b) async {
-    final match = this.match;
+    final match = viewModel.getCurrentMatch();
     if (match != null) {
+      match.Overs[match.currentTeam].last.bowls.add(["Retired Out","0"]);
       match.currentBatters[match.currentBatterIndex].outBy = 'Retired Out';
       match.wicketOrder[match.currentTeam].add([
         match.currentBatters[match.currentBatterIndex],
@@ -45,6 +46,7 @@ class _GetBatterState extends State<GetBatter> {
               .showSnackBar(Util.getsnackbar('Duplicate Batter'));
         }
       }
+      match.Overs[match.currentTeam].last.bowls.add(["Retired Out","0"]);
       match.currentBatters[match.currentBatterIndex].outBy = 'Retired Out';
       match.wicketOrder[match.currentTeam].add([
         match.currentBatters[match.currentBatterIndex],

@@ -110,7 +110,7 @@ class DatabaseHelper {
     Database db = await login_database;
     var result = await db.query('login_table').then((value)
     {
-      debugPrint(value.toString());
+      // debugPrint(value.toString());
       return value.firstOrNull;});
     if (result != null) {
       return result;

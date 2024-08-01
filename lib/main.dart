@@ -65,9 +65,13 @@ class MyApp extends StatelessWidget {
           fontFamily: 'Roboto',
           useMaterial3: true,
           textTheme: const TextTheme(
+            titleMedium: TextStyle(fontFamily: 'Roboto', color: Colors.white),
+            titleLarge: TextStyle(fontFamily: 'Roboto', color: Colors.white),
+            titleSmall: TextStyle(fontFamily: 'Roboto', color: Colors.white),
               bodyLarge: TextStyle(fontFamily: 'Roboto', color: Colors.white),
-              displayMedium:
+              bodyMedium:
                   TextStyle(fontFamily: 'Roboto', color: Colors.white))),
+          color: Colors.white,
     );
   }
 }

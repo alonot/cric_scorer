@@ -44,7 +44,7 @@ class _GetWicketState extends State<GetWicket> {
     }
   }
 
-  void handleWicket() async {
+  int handleWicket() {
     if (match != null) {
       // Batter Already present or not
       Batter? batter;
@@ -54,46 +54,54 @@ class _GetWicketState extends State<GetWicket> {
           break;
         }
       }
+      helperName.text = helperName.text.trim();
       batter!.outBy = '';
       switch (wicketType) {
         case "Hit Wicket":
-          batter.outBy = 'Hit Wicket';
+          batter.outBy = 'Hit Wicket ';
           break;
         case "LBW":
           batter.outBy = 'LBW ';
           break;
         case "Stumping":
-          batter.outBy = 'St ${helperName.text} ';
+          batter.outBy = 'St (${helperName.text}) ';
           break;
         case "Catch Out":
-          batter.outBy = 'c ${helperName.text}';
+          batter.outBy = 'c (${helperName.text}) ';
           break;
         case 'Run out':
           batter.outBy = 'run out (${helperName.text})';
           break;
       }
-      if (wicketType != "Run Out") {
+      if (wicketType != "Run out") {
         batter.outBy += 'b ${match!.currentBowler?.name}';
+        match!.currentBowler!.wickets += 1;
       }
+      match!.updateWicketPoints(
+          wicketType, batter, match!.currentBowler!, helperName.text);
       match!.wicketOrder[match!.currentTeam]
           .add([batter, "$overs\t\t $score-$wickets"]);
-      match!.currentBatters.remove(batter);
+      // match!.currentBatters.remove(batter);
+      return match!.currentBatters.indexOf(batter);
     }
+    return -1;
   }
 
   void onTap(Batter b) async {
     final match = this.match;
     if (match != null) {
-      handleWicket();
-      b.outBy = 'Not Out';
-      match.currentBatters.add(b);
-      match.currentBatters = List.of(match.currentBatters.reversed);
-      // await viewModel.updateMatch(match);
-      Navigator.pop(context);
+      int pos = handleWicket();
+      if (pos != -1) {
+        b.outBy = 'Not Out';
+        match.batters[match.currentTeam].remove(b);
+        match.batters[match.currentTeam].add(b);
+        match.currentBatters[pos] = b;
+        Navigator.pop(context);
+      }
     }
   }
 
-  void setBatterName(String val) => batterName = val;
+  void setBatterName(String val) => batterName = val.trim();
 
   @override
   Widget build(BuildContext context) {
@@ -333,6 +341,7 @@ class _GetWicketState extends State<GetWicket> {
                             false,
                             onTap,
                             false,
+                            null,
                             key: const Key("Unique"),
                           )
                         : const SizedBox(
@@ -354,20 +363,27 @@ class _GetWicketState extends State<GetWicket> {
                               }
                             }
                             // debugPrint("Lets Continue > Got Wicket!!");
-                            if ((!isMatchOver && batterName.isEmpty) || (showhelper && helperName.text.isEmpty)) {
+                            if ((!isMatchOver && batterName.isEmpty) ||
+                                (showhelper && helperName.text.isEmpty)) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   Util.getsnackbar('Fields must not be empty'));
                               return;
                             }
-                            handleWicket();
-                            Batter? batter;
-                            batter = Batter(batterName);
-                            match!.addBatter(batter);
-                            match!.currentBatters =
-                                List.of(match!.currentBatters.reversed);
-                            Util.batterNames.remove(batterName);
-                            // await viewModel.updateMatch(match!);
-                            Navigator.pop(context);
+                            int pos = handleWicket();
+                            if (pos != -1) {
+                              Batter? batter;
+                              batter = Batter(batterName.trim());
+
+                              match!.addBatter(batter);
+                              match!.currentBatters[pos] = batter;
+
+                              if (!players.any(
+                                  (element) => element == batterName)) {
+                                players.add((batterName));
+                              }
+                              // await viewModel.updateMatch(match!);
+                              Navigator.pop(context);
+                            }
                           },
                           style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all(

@@ -3,7 +3,7 @@ import '../../exports.dart';
 class CardBatterStat extends StatelessWidget {
   final Border _border =
       const Border(bottom: BorderSide(color: Color(0x41eceff1), width: 1));
-  final List<BatterStat> batters;
+  final List<Player> batters;
 
   const CardBatterStat(this.batters, {super.key});
 
@@ -79,7 +79,7 @@ class CardBatterStat extends StatelessWidget {
                           ),
                         ]);
                   } else {
-                    BatterStat batter = batters[index - 1];
+                    Player batter = batters[index - 1];
                     return TableRow(children: <Widget>[
                       GestureDetector(
                         child: Padding(
@@ -133,7 +133,7 @@ class CardBatterStat extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                           child: Text(
-                            batter.average.toStringAsFixed(2),
+                            batter.Bataverage.toStringAsFixed(2),
                             style: const TextStyle(color: Colors.white),
                           ),
                         ),

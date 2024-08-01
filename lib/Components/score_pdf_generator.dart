@@ -8,6 +8,7 @@ class ScorePdfGenerator {
   List<Batter> battersTeam2 = [];
   List<Bowler> bowlersTeam1 = [];
   List<Bowler> bowlersTeam2 = [];
+  List<MapEntry<String,List<int>>> players = [];
   var wicketOrder1 = [[]];
   var wicketOrder2 = [[]];
   String team1 = "";
@@ -31,6 +32,18 @@ class ScorePdfGenerator {
     bowlersTeam2 = match.bowlers[1];
     wicketOrder1 = match.wicketOrder[0];
     wicketOrder2 = match.wicketOrder[1];
+    players = match.players.entries.toList();
+    players.sort((MapEntry a, MapEntry b) {
+      int totalA = getTotal(a.value);
+      int totalB = getTotal(b.value);
+      if (totalA > totalB){
+        return -1;
+      }else if (totalB == totalA) {
+        return 0;
+      }else{
+        return 1;
+      }
+    });
     team1 = match.team1;
     team2 = match.team2;
     score1 = "${match.score[0]}-${match.wickets[0]}";
@@ -103,112 +116,122 @@ class ScorePdfGenerator {
   }
 
   generatePdf(pw.Document pdf) {
-    pdf.addPage(pw.MultiPage(
+    pdf.addPage(
+      pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(32),
         build: (pw.Context context) => <pw.Widget>[
-              pw.Header(
-                level: 0,
-                child: pw.Row(
-                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                    children: [
-                      pw.Text("ScoreBoard", style: pw.TextStyle(fontSize: 18)),
-                      pw.Text(
-                        toDisplay,
-                        style: const pw.TextStyle(
-                          color: PdfColors.redAccent,
-                        ),
-                        textAlign: pw.TextAlign.end,
-                      )
-                    ]),
-              ),
-              pw.Column(
-                children: [
-                  pw.Container(
-                      decoration: pw.BoxDecoration(
-                        border: pw.Border.all(color: PdfColors.grey),
-                      ),
-                      child: pw.Column(children: [
-                        pw.Container(
-                            color: PdfColors.green,
-                            child: pw.Padding(
-                              padding: const pw.EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 5),
-                              child: pw.Row(
-                                mainAxisAlignment:
-                                    pw.MainAxisAlignment.spaceBetween,
-                                children: <pw.Widget>[
-                                  pw.Text(
-                                    team1,
-                                    style: const pw.TextStyle(
-                                        color: PdfColors.white, fontSize: 15),
-                                  ),
-                                  pw.Text(score1,
-                                      style: const pw.TextStyle(
-                                        color: PdfColors.white,
-                                      )),
-                                  pw.Text(overs1,
-                                      style: const pw.TextStyle(
-                                        color: PdfColors.white,
-                                      ))
-                                ],
-                              ),
-                            )),
-                        PdfUtil.getBatter(battersTeam1),
-                        pw.Padding(padding: const pw.EdgeInsets.all(2)),
-                        pw.Row(
-                            crossAxisAlignment: pw.CrossAxisAlignment.end,
-                            mainAxisAlignment: pw.MainAxisAlignment.end,
-                            children: <pw.Widget>[
-                              pw.Text(extras1),
-                              pw.Text("   Run  Rate : $runRate1  ")
-                            ]),
-                        pw.Padding(padding: const pw.EdgeInsets.all(5)),
-                        PdfUtil.getBowlers(bowlersTeam1),
-                      ])),
-                  pw.Padding(padding: const pw.EdgeInsets.all(10)),
-                  pw.Container(
-                      color: PdfColors.green,
-                      child: pw.Padding(
-                        padding: pw.EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        child: pw.Row(
-                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                          children: <pw.Widget>[
-                            pw.Text(
-                              team2,
-                              style: const pw.TextStyle(
-                                  color: PdfColors.white, fontSize: 15),
-                            ),
-                            pw.Text(score2,
-                                style: const pw.TextStyle(
-                                  color: PdfColors.white,
-                                )),
-                            pw.Text(overs2,
-                                style: const pw.TextStyle(
-                                  color: PdfColors.white,
-                                ))
-                          ],
-                        ),
-                      )),
-                  pw.Container(
-                      decoration: pw.BoxDecoration(
-                          border: pw.Border.all(color: PdfColors.grey)),
-                      child: pw.Column(children: [
-                        PdfUtil.getBatter(battersTeam2),
-                        pw.Padding(padding: const pw.EdgeInsets.all(2)),
-                        pw.Row(
-                            crossAxisAlignment: pw.CrossAxisAlignment.end,
-                            mainAxisAlignment: pw.MainAxisAlignment.end,
-                            children: <pw.Widget>[
-                              pw.Text(extras2),
-                              pw.Text("   Run  Rate : $runRate2  ")
-                            ]),
-                        pw.Padding(padding: const pw.EdgeInsets.all(5)),
-                        PdfUtil.getBowlers(bowlersTeam2),
-                      ]))
-                ],
-              ),
-            ]));
+          _buildHeader(),
+          pw.Center(
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.center,
+              children: [
+                _buildTeamSection(
+                  team: team1,
+                  score: score1,
+                  overs: overs1,
+                  batters: battersTeam1,
+                  extras: extras1,
+                  runRate: runRate1,
+                  bowlers: bowlersTeam1,
+                ),
+                pw.SizedBox(height: 10),
+                _buildTeamSection(
+                  team: team2,
+                  score: score2,
+                  overs: overs2,
+                  batters: battersTeam2,
+                  extras: extras2,
+                  runRate: runRate2,
+                  bowlers: bowlersTeam2,
+                ),
+                PdfUtil.getPlayers(players),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
   }
+
+  pw.Widget _buildHeader() {
+    return pw.Header(
+      level: 0,
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        children: [
+          pw.Text("ScoreBoard", style: pw.TextStyle(fontSize: 18)),
+          pw.Text(
+            toDisplay,
+            style: const pw.TextStyle(color: PdfColors.redAccent),
+            textAlign: pw.TextAlign.end,
+          ),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildTeamSection({
+    required String team,
+    required String score,
+    required String overs,
+    required List<Batter> batters,
+    required String extras,
+    required String runRate,
+    required List<Bowler> bowlers,
+  }) {
+    return pw.Column(
+      children: [
+        _buildTeamHeader(team: team, score: score, overs: overs),
+        pw.Container(
+          decoration: pw.BoxDecoration(border: pw.Border.all(color: PdfColors.grey)),
+          child: pw.Column(
+            children: [
+              pw.SizedBox(height: 1),
+              PdfUtil.getBatter(batters),
+              pw.SizedBox(height: 2),
+              _buildExtrasRow(extras: extras, runRate: runRate),
+              pw.SizedBox(height: 5),
+              PdfUtil.getBowlers(bowlers),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+
+
+  pw.Widget _buildTeamHeader({
+    required String team,
+    required String score,
+    required String overs,
+  }) {
+    return pw.Container(
+      color: PdfColors.green,
+      child: pw.Padding(
+        padding: const pw.EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        child: pw.Row(
+          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+          children: [
+            pw.Text(team, style: const pw.TextStyle(color: PdfColors.white, fontSize: 15)),
+            pw.Text(score, style: const pw.TextStyle(color: PdfColors.white)),
+            pw.Text(overs, style: const pw.TextStyle(color: PdfColors.white)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  pw.Widget _buildExtrasRow({required String extras, required String runRate}) {
+    return pw.Row(
+      crossAxisAlignment: pw.CrossAxisAlignment.end,
+      mainAxisAlignment: pw.MainAxisAlignment.end,
+      children: [
+        pw.Text(extras),
+        pw.Text("   Run  Rate : $runRate  "),
+      ],
+    );
+  }
+
 }

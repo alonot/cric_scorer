@@ -1,3 +1,5 @@
+import 'package:pdf/widgets.dart';
+
 import '../exports.dart';
 
 
@@ -25,6 +27,7 @@ class TheMatch {
   late List<List<List<dynamic>>> wicketOrder;
   late List<List<Batter>> batters;
   late List<List<Bowler>> bowlers;
+  late Map<String, List<int>> players;  //[ 1stBat, 2ndBat, 1stBowl, 2ndBowl, bat1st(0/1), bat2nd(0/1),  bowl1st(0/1), bowl2nd(0/1) ]
   late List<List<Over>> Overs;
   late int date;
 
@@ -42,6 +45,7 @@ class TheMatch {
     this.score = List.of([0, 0]);
     this.batters = List.of([[], []]);
     this.bowlers = List.of([[], []]);
+    players = {};
     currentBatters = List.of([]);
     currentBowler = null;
     wicketOrder = [[], []];
@@ -79,23 +83,260 @@ class TheMatch {
   }
 
   void addBatter(Batter batter) {
-      currentBatters.add(batter);
+
+      if (! players.containsKey(batter.name)){
+        players[batter.name] = [SCORE_MIN, SCORE_MIN, SCORE_MIN, SCORE_MIN];
+      }
       batters[currentTeam].add(batter);
   }
 
   void addBowler(Bowler bowler) {
       currentBowler = bowler;
+      if (! players.containsKey(bowler.name)){
+        players[bowler.name] = [SCORE_MIN, SCORE_MIN, SCORE_MIN, SCORE_MIN];
+      }
       bowlers[currentTeam].add(bowler);
   }
 
+  /// Updates Points of the player on wicket
+  void updateWicketPoints(String type, Batter batter, Bowler bowler, String helperName){
+    updateBatterStrikeRatePoints(batter);
+    //
+    if (batter.runs == 0){
+      this.players[batter.name]![inning - 1] += -4;
+    }
+    //
+    if (this.players[bowler.name]![inning + 1] == SCORE_MIN){
+      this.players[bowler.name]![inning + 1] = 0;
+    }
+
+    switch(type){
+      case "Hit Wicket":
+      case "LBW":
+      case "Bowled":
+        this.players[bowler.name]![inning + 1] += 25;
+        break;
+      case "Stumping":
+      case "Catch Out":
+        this.players[bowler.name]![inning + 1] += 25;
+      case 'Run out':
+        if (!players.containsKey(helperName) ){
+          players[helperName] = [SCORE_MIN, SCORE_MIN, SCORE_MIN, SCORE_MIN];
+        }
+        if (players[helperName]![inning + 1] == SCORE_MIN){
+          players[helperName]![inning + 1] = 0;
+        }
+        players[helperName]![inning + 1] +=  10;
+        break;
+    }
+    if (bowler.wickets == 4){
+        this.players[bowler.name]![inning + 1] += 8;
+    }else if (bowler.wickets == 6){
+        this.players[bowler.name]![inning + 1] += 8;
+    }
+  }
+
+  /// Pop Points on wicket
+  void popWicketPoints(String type, Batter batter, Bowler bowler){
+    popBatterStrikeRatePoints(batter);
+    //
+    if (batter.runs == 0){
+      players[batter.name]![inning - 1] += -4;
+    }
+
+    String wicketType = type.split(' ')[0];
+
+
+    switch(wicketType){
+      case "Hit":
+      case "LBW":
+      case "b":
+        players[bowler.name]![inning + 1] -= 25;
+        break;
+      case "St":
+      case "c":
+        players[bowler.name]![inning + 1] -= 25;
+      case 'run':
+        var helperName = type.split('(')[0].split(')')[0];
+        if (players.containsKey(helperName) ){
+          players[helperName]![inning + 1] -=  10;
+        }
+        break;
+    }
+    if (bowler.wickets == 4){
+      players[bowler.name]![inning + 1] -= 8;
+    }else if (bowler.wickets == 6){
+      players[bowler.name]![inning + 1] -= 8;
+    }
+  }
+
+  /// Updates Points of the player on Over
+  void updateBowlerEconomyPoints(Bowler bowler, bool wasMaiden){
+    double economy = bowler.economy;
+    int score = 0;
+    if (wasMaiden){
+      score = 12;
+    }
+    if(economy < 4){
+      score += 6;
+    }else if (economy < 6){
+      score += 4;
+    }else if (economy < 9){
+      score += 1;
+    }else {
+      score += -1;
+    }
+    if (!players.containsKey(bowler.name)){
+      players[bowler.name] = [SCORE_MIN, SCORE_MIN, SCORE_MIN, SCORE_MIN];
+    }
+    if (players[bowler.name]![inning + 1] == SCORE_MIN){
+      players[bowler.name]![inning + 1] = 0;
+    }
+    players[bowler.name]![inning + 1] += score;
+  }
+
+  /// Pops Points of player on Over
+  void popBowlerEconomyPoints(Bowler bowler, bool wasMaiden){
+    double economy = bowler.economy;
+    int score = 0;
+    if (wasMaiden){
+      score = 12;
+    }
+    if(economy < 4){
+      score += 6;
+    }else if (economy < 6){
+      score += 4;
+    }else if (economy < 9){
+      score += 1;
+    }else {
+      score += -1;
+    }
+    if (players.containsKey(bowler.name)){
+      players[bowler.name]![inning + 1] -= score;
+    }
+  }
+
+  /// Updates Points of batter it is called on wicket or on every 6th ball of batter
+  void updateBatterStrikeRatePoints(Batter batter) {
+    int score = 0;
+    double stRate = batter.strikeRate;
+    if (stRate < 50){
+      score = -5;
+    }else if (stRate < 75){
+      score = -3;
+    }else if (stRate < 100){
+      score = -1;
+    }else if (stRate < 125){
+      score = 1;
+    }else if (stRate < 150){
+      score = 3;
+    }else{
+      score = 5;
+    }
+    if (!players.containsKey(batter.name)){
+      players[batter.name] = [SCORE_MIN, SCORE_MIN, SCORE_MIN, SCORE_MIN];
+    }
+    if (players[batter.name]![inning - 1] == SCORE_MIN){
+      players[batter.name]![inning - 1] = 0;
+    }
+    players[batter.name]![inning - 1] += score;
+  }
+
+  /// Pops the Points due to strike Rate
+  void popBatterStrikeRatePoints(Batter batter) {
+    int score = 0;
+    double stRate = batter.strikeRate;
+    if (stRate < 50){
+      score = -5;
+    }else if (stRate < 75){
+      score = -3;
+    }else if (stRate < 100){
+      score = -1;
+    }else if (stRate < 125){
+      score = 1;
+    }else if (stRate < 150){
+      score = 3;
+    }else{
+      score = 5;
+    }
+    if (players.containsKey(batter.name)){
+      players[batter.name]![inning - 1] -= score;
+    }
+  }
+
+
+  /// Updates batter points on that ball
+  void updatePointsBeforeUpdate(Batter batter, String runString){
+    // Reward/ Penalty for Strike Rate and Economy will be calculated at the end of the over(for batter it will be 6 balls and after wicket)
+    //NOTE: Wicket score will be credited separately from the getWicket Screen
+
+    var runOnBall = int.parse(runString[0]);
+    int newRun = batter.runs + runOnBall;
+    int batterBallScore = 0;
+
+    if (newRun >= 100){
+      batterBallScore +=12;
+    }else if (newRun >= 50){
+      batterBallScore += 6;
+    }
+
+    batterBallScore += runOnBall;
+
+    if (runOnBall == 6){
+      batterBallScore += 2;
+    }else if (runOnBall >= 4){
+      batterBallScore += 1;
+    }
+    if (!players.containsKey(batter.name)){
+      players[batter.name] = [SCORE_MIN, SCORE_MIN, SCORE_MIN, SCORE_MIN];
+    }
+    if (players[batter.name]![inning - 1] == SCORE_MIN){
+      players[batter.name]![inning - 1] = 0;
+    }
+    players[batter.name]![inning - 1] += batterBallScore;
+  }
+
+  /// Pop Points of batter  on that ball
+  void popPointsBeforeUpdate(Batter batter, String runString){
+
+    var runOnBall = int.parse(runString[0]);
+    int newRun = batter.runs + runOnBall;
+    int batterBallScore = 0;
+
+    if (newRun >= 100){
+      batterBallScore +=12;
+    }else if (newRun >= 50){
+      batterBallScore += 6;
+    }
+
+    batterBallScore += runOnBall;
+
+    if (runOnBall == 6){
+      batterBallScore += 2;
+    }else if (runOnBall >= 4){
+      batterBallScore += 1;
+    }
+
+    if (players.containsKey(batter.name)){
+      players[batter.name]![inning - 1] -= batterBallScore;
+    }
+  }
+
+
+
   void addScore(String s, String run) {
     var runOnBall = int.parse(run[0]);
+
+
     if (s == "" || s == "Nb") {
+      updatePointsBeforeUpdate(currentBatters[0], run); // updates point for this batter
       currentBatters[0].addRun(runOnBall); // Add Batter's run and bowl
-      // Checking for change of strike
-      if (runOnBall % 2 == 1) {
-        currentBatters = List.of(currentBatters.reversed);
-      }
+    }else if (s == "LB" || s == "B"){
+      currentBatters[0].addRun(0);
+    }
+    // Checking for change of strike
+    if (runOnBall % 2 == 1) {
+      currentBatters = List.of(currentBatters.reversed);
     }
 
     // Handling extra runs
@@ -112,11 +353,30 @@ class TheMatch {
       currentBowler!.addBowl(
           runOnBall, false);
     }
+
     over.bowls.add([run, s]);
     over.runs += runOnBall;
     score[currentTeam] += runOnBall;
 
     over_count[currentTeam] = double.parse(over_count[currentTeam].toStringAsFixed(2));
+
+    if ((over_count[currentTeam] * 10) % 10 == 6){
+      // Over finished
+      bool wasMaiden = false;
+
+      if (Overs[currentTeam].last.runs == 0){
+        currentBowler!.maidens ++;
+        wasMaiden = true;
+      }
+      updateBowlerEconomyPoints(currentBowler!, wasMaiden);
+    }
+
+
+    for (Batter b in currentBatters){
+      if (b.balls % 6 == 0 && b.balls != 0){
+        updateBatterStrikeRatePoints(b);
+      }
+    }
 
   }
 
@@ -124,9 +384,13 @@ class TheMatch {
 
     if (Overs.isNotEmpty){
       var lastOver = Overs[currentTeam].last;
-      var bowl = lastOver.bowls.last;
+      var bowl = lastOver.bowls.lastOrNull;
+      if (bowl == null){
+        return false;
+      }
       lastOver.bowls.removeLast();
-      if (bowl[0] == "Retired Out"){
+
+      if (bowl[1] == "Retired Out"){
         // retreive the batter from wicket order
         // If batter retires
         if (wicketOrder[currentTeam].isNotEmpty) {
@@ -134,23 +398,59 @@ class TheMatch {
           if (lastWicket[0].outBy == "Retired Out") {
             // debugPrint("Wicket Order is:"+wicketOrder.toString());
             Batter batter = wicketOrder[currentTeam].removeLast()[0];
-            currentBatters.remove(batters[currentTeam].removeLast());
-            batter.outBy = 'Not Out';
-            currentBatters.add(batter);
-            currentBatters = List.of(currentBatters.reversed);
-            return false;
+            // debugPrint(batters[currentTeam].last.toString());
+            int pos = currentBatters.indexOf(batters[currentTeam].removeLast());
+            if (pos != -1) {
+              batter.outBy = 'Not Out';
+              currentBatters[pos] = batter;
+              return false;
+            }
           }
         }
       }
       else{
         var run = int.parse(bowl[0][0]);
         var s = bowl[1];
-        if (s == "" || s == "Nb") {
-          // Checking for change of strike
-          if (run % 2 == 1) {
-            currentBatters = List.of(currentBatters.reversed);
+
+        //  Handle Wicket
+        // debugPrint(LOGSTRING + s);
+        if (bowl[0].length != 1) {
+          wickets[currentTeam] -= 1;
+          // debugPrint("Wicket Order wicket:"+wicketOrder.toString());
+          var wicket_order = wicketOrder[currentTeam].removeLast();
+          Batter batter = wicket_order[0];
+          Batter b = batters[currentTeam].removeLast();
+          int pos = currentBatters.indexOf(b);
+          if (b.balls != 0){
+            b.outBy = "Retired Out";
+            batters[currentTeam].add(b);
           }
-          currentBatters[0].removeRun(run); // Add Batter's run and bowl
+          // int pos = 0;
+          currentBatters[pos] = batter;
+          batters[currentTeam].remove(batter);
+          batters[currentTeam].add(batter);
+          if (!batter.outBy.startsWith('run')){
+            currentBowler!.wickets --;
+          }
+          batter.outBy = 'Not Out';
+          popWicketPoints(batter.outBy, batter, currentBowler!);
+        }
+
+        for (Batter b in currentBatters){
+          if (b.balls % 6 == 0 && b.balls != 0){
+            popBatterStrikeRatePoints(b);
+          }
+        }
+
+        // Checking for change of strike
+        if (run % 2 == 1) {
+          currentBatters = List.of(currentBatters.reversed);
+        }
+        if (s == "" || s == "Nb") {
+          currentBatters[0].removeRun(run); // Remove Batter's run and bowl
+          popPointsBeforeUpdate(currentBatters[0], bowl[0]);
+        }else if (s == "LB" || s == "B"){
+          currentBatters[0].removeRun(0);
         }
         // Handling extra runs
         if (s == "Nb" || s == "Wd") {
@@ -167,23 +467,15 @@ class TheMatch {
               run, false);
         }
 
-        //  Handle Wicket
-        debugPrint(LOGSTRING + s);
-        if (bowl[0].length != 1) {
-          wickets[currentTeam] -= 1;
-          // debugPrint("Wicket Order wicket:"+wicketOrder.toString());
-          Batter batter = wicketOrder[currentTeam].removeLast()[0];
-          currentBatters.remove(batters[currentTeam].removeLast());
-          batter.outBy = 'Not Out';
-          currentBatters.add(batter);
-          currentBatters = List.of(currentBatters.reversed);
-        }
+
+
+        over_count[currentTeam] = double.parse(over_count[currentTeam].toStringAsFixed(2));
 
         score[currentTeam] -= run;
         lastOver.runs -= run;
 
-        over_count[currentTeam] = double.parse(over_count[currentTeam].toStringAsFixed(2));
       }
+
     }
     return false;
 
@@ -216,9 +508,20 @@ class TheMatch {
     theMatchMap['currentBatters'] = currentBatters.join("*");
     theMatchMap['date'] = date;
 
-    String allWicketOrders = "";
-    int len = wicketOrder[0].length;
+    var players_string = "";
+    int len = players.length;
     int count = 0;
+    for (var ply_entity in players.entries){
+      players_string +=  "${ply_entity.key}#${ply_entity.value.join("/")}";
+      if (count++ != len - 1){
+        players_string += "*";
+      }
+    }
+    theMatchMap["players"] = players_string;
+
+    String allWicketOrders = "";
+    len = wicketOrder[0].length;
+    count = 0;
     for (List<dynamic> lst in wicketOrder[0]) {
       allWicketOrders += lst.join("^");
       if (count++ != len - 1) {
@@ -293,9 +596,20 @@ class TheMatch {
     theMatchMap['over_count'] = over_count.join('#');
     theMatchMap['currentBatters'] = currentBatters.join("*");
 
-    String allWicketOrders = "";
-    int len = wicketOrder[0].length;
+    var players_string = "";
+    int len = players.length;
     int count = 0;
+    for (var ply_entity in players.entries){
+      players_string +=  "${ply_entity.key}#${ply_entity.value.join("/")}";
+      if (count++ != len - 1){
+        players_string += "*";
+      }
+    }
+    theMatchMap["players"] = players_string;
+
+    String allWicketOrders = "";
+    len = wicketOrder[0].length;
+    count = 0;
     for (List<dynamic> lst in wicketOrder[0]) {
       allWicketOrders += lst.join("^");
       if (count++ != len - 1) {
@@ -381,6 +695,18 @@ class TheMatch {
     List<String> arrayOfOverCount = map['over_count'].split('#');
     List<String> arrayOfCurrentBatter = map['currentBatters'].split('*');
     List<String> arrayOfWicketOrder = map['wicketOrder'].split('*');
+    List<String> arrayOfPlayers = map['players'].split('*');
+
+
+    // getting players
+    players = {};
+    for (String p in arrayOfPlayers){
+      if (p != "") {
+        var arrayOfPly = p.split('#');
+        players[arrayOfPly[0]] =
+            arrayOfPly[1].split('/').map((e) => int.parse(e)).toList();
+      }
+    }
 
     //getting score
     score = [];

@@ -67,11 +67,11 @@ class _GetOpenersState extends State<GetOpeners> {
     return allGood;
   }
 
-  void setbowlerName(String val) => bowlerName = val;
+  void setbowlerName(String val) => bowlerName = val.trim();
 
-  void setbatter1Name(String val) => batter1Name = val;
+  void setbatter1Name(String val) => batter1Name = val.trim();
 
-  void setbatter2Name(String val) => batter2Name = val;
+  void setbatter2Name(String val) => batter2Name = val.trim();
 
   void onPlayBtnClicked() async {
     // debugPrint("Lets Play!2!",);
@@ -87,10 +87,23 @@ class _GetOpenersState extends State<GetOpeners> {
       Bowler bowler = Bowler(bowlerName);
       Batter batter1 = Batter(batter1Name);
       Batter batter2 = Batter(batter2Name);
+
+      if (!players.any((element) => element == batter1Name)){
+        players.add(batter1Name);
+      }
+      if (!players.any((element) => element == batter2Name)){
+        players.add(batter2Name);
+      }
+      if (!players.any((element) => element == bowlerName)){
+        players.add(bowlerName);
+      }
+
       match!.addBowler(bowler);
       match.currentBatters = [];
       match.addBatter(batter1);
       match.addBatter(batter2);
+      match.currentBatters.add(batter1);
+      match.currentBatters.add(batter2);
       match.Overs[match.currentTeam].add(Over(bowler.name, [batter1.name]));
       // debugPrint(match.team1);
       Util.batterNames.remove(batter1.name);
@@ -160,6 +173,7 @@ class _GetOpenersState extends State<GetOpeners> {
                           AutoCompleteIt(
                             Util.batterNames,
                             setbatter2Name,
+
                             key: const Key("Batter2 Opener"),
                           ),
                           Text(errorBatter2,

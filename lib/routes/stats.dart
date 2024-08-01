@@ -9,25 +9,38 @@ class Stats extends StatefulWidget {
 
 class _StatsState extends State<Stats> {
   final MatchViewModel viewModel = MatchViewModel();
-  List<BatterStat> batters = [];
-  List<BowlerStat> bowlers = [];
+  TextEditingController editingController = TextEditingController();
+  List<Player> batters = [];
+  List<Player> bowlers = [];
   int isSelected = 0;
   String toDisplay = "1st innings";
   bool isLoading = false;
-  List<int> associatedIds = playArenaIds.keys.toList();
+  List<int> associatedIds = [-1];
   int selectedId = 0;
+  int batterBowler = 0;
 
   @override
   void initState() {
-    selectedId = associatedIds[0];
+    associatedIds.insertAll(0, playArenaIds);
+    if (associatedIds.isEmpty){
+      selectedId = -1;
+    }else{
+      selectedId = associatedIds[0];
+    }
     getPlayers();
     super.initState();
   }
 
   void getPlayers() async {
     isLoading = true;
-    batters = await viewModel.getBatters(true,id : selectedId);
-    bowlers = await viewModel.getBowlers(true,id : selectedId);
+    if (selectedId == -1) {
+      batters = await viewModel.getAllPlayers();
+      bowlers = batters;
+    }else{
+      // get them online
+      batters = await viewModel.getOnlinePlayers(selectedId);
+      bowlers = batters;
+    }
     setState(() {
       isLoading = false;
     });
@@ -38,27 +51,31 @@ class _StatsState extends State<Stats> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor:  const Color(0x89000000),
-        leading: DropdownButton<int>(
-          isExpanded: true,
-          icon: const Icon(Icons.sort_rounded),
-          elevation: 20,
-          value: selectedId,
-          underline: Container(),
-          items: associatedIds
-              .map((id) => DropdownMenuItem(
-            value: id,
-            child: Text(" $id    ",style: TextStyle(color: Colors.red),),
-          ))
-              .toList(),
-          onChanged: (value) {
-            if(!playArenaIds[value]!){
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Not verified')));
-            }
-            setState(() {
-              selectedId = value!;
-            });
-            getPlayers();
-          },
+        leading: Container(
+          width: 150,
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          child: DropdownButton<int>(
+            // isExpanded: true,
+            icon: const Icon(Icons.sort_rounded),
+            elevation: 20,
+            value: selectedId,
+            underline: Container(),
+            items: associatedIds
+                .map((id) => DropdownMenuItem(
+              value: id,
+              child: Text(" ${(id == -1)? "Local" : id}    ",style: TextStyle(color: Colors.red),),
+            ))
+                .toList(),
+            onChanged: (value) {
+              // if(!playArenaIds[value]!){
+              //   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Not verified')));
+              // }
+              setState(() {
+                selectedId = value!;
+              });
+              getPlayers();
+            },
+          ),
         ),
       ),
       backgroundColor: const Color(0x89000000),
@@ -83,6 +100,24 @@ class _StatsState extends State<Stats> {
                   ),
                   titleAlignment: ListTileTitleAlignment.center,
                 ),
+                Row(
+                  children: [
+                    TextField(
+                      controller: editingController,
+                      keyboardType: TextInputType.number,
+                    ),
+                    ElevatedButton(onPressed: () {
+                       if (editingController.text.trim().isNotEmpty){
+                         try{
+                           selectedId = int.parse(editingController.text.trim());
+                           getPlayers();
+                         }on FormatException{
+
+                         }
+                       }
+                    }, child: Text('Find'))
+                  ],
+                ),
                 Column(
                   children: [
                     ListTile(
@@ -90,10 +125,10 @@ class _StatsState extends State<Stats> {
                           side: BorderSide(color: Colors.grey)),
                       onTap: () {
                         setState(() {
-                          isSelected = 0;
+                          batterBowler = 0;
                         });
                       },
-                      tileColor: isSelected == 1
+                      tileColor: batterBowler == 1
                           ? Colors.transparent
                           : Colors.grey,
                       title: const Text(
@@ -101,7 +136,7 @@ class _StatsState extends State<Stats> {
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
-                    isSelected == 0
+                    batterBowler == 0
                         ? CardBatterStat(batters)
                         : const SizedBox(
                       width: 0,
@@ -116,10 +151,10 @@ class _StatsState extends State<Stats> {
                           side: BorderSide(color: Colors.grey)),
                       onTap: () {
                         setState(() {
-                          isSelected = 1;
+                          batterBowler = 1;
                         });
                       },
-                      tileColor: isSelected == 0
+                      tileColor: batterBowler == 0
                           ? Colors.transparent
                           : Colors.grey,
                       title: const Text(
@@ -127,7 +162,7 @@ class _StatsState extends State<Stats> {
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
-                    isSelected == 1
+                    batterBowler == 1
                         ? CardBowlerStat(bowlers)
                         : const SizedBox(
                       width: 0,

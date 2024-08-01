@@ -10,6 +10,7 @@ export 'models/batter.dart';
 export 'components/card_bowler.dart';
 export 'models/bowler.dart';
 export 'models/over.dart';
+export 'models/Player.dart';
 export 'Routes/stats.dart';
 export 'routes/main_page.dart';
 export 'routes/online_matches_screen.dart';

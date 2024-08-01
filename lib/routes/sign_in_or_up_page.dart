@@ -34,15 +34,12 @@ class _SignInPageState extends State<SignInPage> {
             password: result['password'].toString());
         // If above line does not throw an error then login successfull
         currentUser = result['email'].toString();
+        uuid = userCredential.user!.uid;
+        Util.batterNames = viewModel.getPlayers().toList();
+        Util.bowlerNames = viewModel.getPlayers().toList();
         playArenaIds = await viewModel
-            .getPlayArenaIds(currentUser); // getting all the arenaIds
-        // debugPrint(LOGSTRING + "ids >" + playArenaIds.toString());
-        Util.batterNames = (await viewModel.getBatters(true))
-            .map((batter) => batter.name)
-            .toList();
-        Util.bowlerNames = (await viewModel.getBowlers(true))
-            .map((bowler) => bowler.name)
-            .toList();
+            .getAllArenaIds(
+            userCredential.user!.uid);
         viewModel.haveLoggedIn();
         Navigator.pushNamed(context, Util.homePage);
       } catch (e) {
@@ -64,24 +61,32 @@ class _SignInPageState extends State<SignInPage> {
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
               email: emailController.text, password: passwordController.text);
-      playArenaIds = {await viewModel.uploadUser(emailController.text): true};
-      await viewModel.setCurrentUser(
-          emailController.text, passwordController.text);
-      currentUser = emailController.text;
-      Util.batterNames = (await viewModel.getBatters(true))
-          .map((batter) => batter.name)
-          .toList();
-      Util.bowlerNames = (await viewModel.getBowlers(true))
-          .map((bowler) => bowler.name)
-          .toList();
-      viewModel.haveLoggedIn();
-      Navigator.pushNamedAndRemoveUntil(
-          context, Util.homePage, (route) => false);
+      if (userCredential.user != null) {
+          await viewModel.uploadUser(
+              emailController.text, userCredential.user!.uid);
+        if (playArenaIds[0] == -1){
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('User already exists')));
+          playArenaIds = [];
+          return;
+        }
+        playArenaIds = await viewModel
+            .getAllArenaIds(
+            userCredential.user!.uid); // getting all the arenaIds
+        await viewModel.setCurrentUser(
+            emailController.text, passwordController.text);
+        uuid = userCredential.user!.uid;
+        currentUser = emailController.text;
+        Util.batterNames = viewModel.getPlayers().toList();
+        Util.bowlerNames = viewModel.getPlayers().toList();
+        viewModel.haveLoggedIn();
+        Navigator.pushNamedAndRemoveUntil(
+            context, Util.homePage, (route) => false);
+      }
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("${e.code}")));
     } catch (e) {
-      debugPrint("e::$e");
+      // debugPrint("e::$e");
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to took you in.')));
     }
@@ -98,19 +103,19 @@ class _SignInPageState extends State<SignInPage> {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
       debugPrint("User: ${userCredential.user!.email}");
-      playArenaIds = await viewModel
-          .getPlayArenaIds(emailController.text); // getting all the arenaIds
-      viewModel.setCurrentUser(emailController.text, passwordController.text);
-      currentUser = emailController.text;
-      Util.batterNames = (await viewModel.getBatters(true))
-          .map((batter) => batter.name)
-          .toList();
-      Util.bowlerNames = (await viewModel.getBowlers(true))
-          .map((bowler) => bowler.name)
-          .toList();
-      viewModel.haveLoggedIn();
-      Navigator.pushNamedAndRemoveUntil(
-          context, Util.homePage, (route) => false);
+      if (userCredential.user != null) {
+        Util.batterNames = viewModel.getPlayers().toList();
+        Util.bowlerNames = viewModel.getPlayers().toList();
+        playArenaIds = await viewModel
+            .getAllArenaIds(
+            userCredential.user!.uid); // getting all the arenaIds
+        viewModel.setCurrentUser(emailController.text, passwordController.text);
+        currentUser = emailController.text;
+        uuid = userCredential.user!.uid;
+        viewModel.haveLoggedIn();
+        Navigator.pushNamedAndRemoveUntil(
+            context, Util.homePage, (route) => false);
+      }
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("${e.code}")));
@@ -216,7 +221,22 @@ class _SignInPageState extends State<SignInPage> {
                                 passwordController.text = "";
                               });
                             },
-                          )
+                          ),
+                            TextButton(
+                            child: Text(
+                              "Guest Mode",
+                              style: const TextStyle(
+                                  color: Colors.blue,
+                                  decoration: TextDecoration.underline,
+                                  fontSize: 11),
+                            ),
+                            onPressed: () {
+                              viewModel.logout();
+                              Navigator.pushNamedAndRemoveUntil(
+                                  context, Util.homePage, (route) => false);
+                            },
+                          ),
+
                         ],
                       ),
                     ),

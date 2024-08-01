@@ -25,10 +25,12 @@ class _CreateMatchState extends State<CreateMatch> {
   }
 
   void loadBatterNBowler() async {
-    Util.batterNames =
-        (await viewModel.getBatters(false)).map((e) => e.name).toList();
-    Util.bowlerNames =
-        (await viewModel.getBowlers(false)).map((e) => e.name).toList();
+    Util.batterNames = viewModel.getPlayers().toList();
+    Util.bowlerNames = viewModel.getPlayers().toList();
+    // Util.batterNames =
+    //     (await viewModel.getBatters(false)).map((e) => e.name).toList();
+    // Util.bowlerNames =
+    //     (await viewModel.getBowlers(false)).map((e) => e.name).toList();
   }
 
   void update(String t1, String t2, String t3, String t4) {

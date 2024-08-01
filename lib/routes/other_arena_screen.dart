@@ -13,7 +13,7 @@ class _OtherArenaState extends State<OtherArena> {
   var viewModel = MatchViewModel();
   bool isLoading = false;
   TextEditingController arenaIdController = TextEditingController();
-  Map<String, bool> emails = {};
+  Map<String, List<dynamic>> emails = {};
 
   @override
   void initState() {
@@ -22,7 +22,7 @@ class _OtherArenaState extends State<OtherArena> {
   }
 
   void getEmails() async {
-    emails = await viewModel.getAttachedAccounts();
+    emails = await viewModel.getAttachedAccouts();
     setState(() {
       isLoading = false;
     });
@@ -63,16 +63,14 @@ class _OtherArenaState extends State<OtherArena> {
                         ),
                         ElevatedButton(
                             onPressed: () async {
-                              bool result = await viewModel.findnUploadUser(
-                                  currentUser,
-                                  int.parse(arenaIdController.text));
-                              if (!result) {
+                              int result = await viewModel.requestPlayArena(int.parse(arenaIdController.text));
+                              if (result == 0) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                        content: Text('Not Found/Duplicate')));
-                              } else {
+                                        content: Text('Not Found')));
+                              } else if (result == 1) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Done')));
+                                    const SnackBar(content: Text('Request Sent')));
                               }
                             },
                             child: const Text("Submit")),
@@ -91,141 +89,120 @@ class _OtherArenaState extends State<OtherArena> {
                             scrollDirection: Axis.vertical,
                             children: emails
                                 .map<Widget, bool>((key, value) => MapEntry(
-                                    Dismissible(
-                                      key: Key(count.toString() + key),
-                                      onDismissed: (direction) {
-                                        if (direction ==
-                                            DismissDirection.startToEnd) {
+                                ListTile(
+                                  title: Text(
+                                    "${count++}. $key",
+                                    style: const TextStyle(
+                                        color: Colors.white),
+                                  ),
+                                  trailing: SizedBox(
+                                    width: 100,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                            const BorderRadius.all(
+                                                Radius.circular(25)),
+                                            color: value[1]
+                                                ? const Color(0x424242a1)
+                                                : Colors.transparent,
+                                          ),
+                                          width: 40,
+                                          height: 40,
+                                          child: IconButton(
+                                            onPressed: value[1]
+                                                ? null
+                                                : () async {
+                                              setState(() {
+                                                isLoading = true;
+                                              });
+                                              viewModel.verifyUser(value[0])
+                                              .then((result) {
+                                                if (result == 0){
+                                                  viewModel.unVerifyUser(value[0]);
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(Util.getsnackbar('This User does not exists'));
 
-                                          viewModel.deleteEmailForThisId(
-                                              key, viewModel.getbaseId);
-                                        }
-                                      },
-                                      child: ListTile(
-                                        title: Text(
-                                          "${count++}. $key",
-                                          style: const TextStyle(
-                                              color: Colors.white),
-                                        ),
-                                        trailing: SizedBox(
-                                          width: 100,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(25)),
-                                                  color: value
-                                                      ? const Color(0x424242a1)
-                                                      : Colors.transparent,
-                                                ),
-                                                width: 40,
-                                                height: 40,
-                                                child: IconButton(
-                                                  onPressed: value
-                                                      ? null
-                                                      : () {
-                                                          setState(() {
-                                                            isLoading = true;
-                                                          });
-                                                          viewModel
-                                                              .verifyEmail(key)
-                                                              .then((value) {
-                                                            if (value) {
-                                                              ScaffoldMessenger
-                                                                      .of(
-                                                                          context)
-                                                                  .showSnackBar(
-                                                                      const SnackBar(
-                                                                          content:
-                                                                              Text('Verified')));
-                                                            } else {
-                                                              ScaffoldMessenger
-                                                                      .of(
-                                                                          context)
-                                                                  .showSnackBar(
-                                                                      const SnackBar(
-                                                                          content:
-                                                                              Text('Failed to Verified')));
-                                                            }
-                                                            setState(() {
-                                                              getEmails();
-                                                            });
-                                                          }).onError((error,
-                                                                  stackTrace) {
-                                                            setState(() {
-                                                              isLoading = false;
-                                                            });
-                                                          });
-                                                          // send request to make verify = true
-                                                        },
-                                                  disabledColor:
-                                                      Colors.green.shade50,
-                                                  icon: Icon(
-                                                    Icons.check,
-                                                    color: !value
-                                                        ? Colors.green
-                                                        : Colors.white.withOpacity(0.3),
-                                                  ),
-                                                ),
-                                              ),
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(25)),
-                                                  color: !value
-                                                      ? const Color(0x424242a1)
-                                                      : Colors.transparent,
-                                                ),
-                                                width: 40,
-                                                height: 40,
-                                                child: IconButton(
-                                                  onPressed: !value
-                                                      ? null
-                                                      : () {
-                                                          setState(() {
-                                                            isLoading = true;
-                                                          });
-                                                          viewModel.unverifyEmail(key)
-                                                              .then((value) {
-                                                            if (value) {
-                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                                                          content:Text('Un-verified')));
-                                                            } else {
-                                                              ScaffoldMessenger.of(context)
-                                                                  .showSnackBar(
-                                                                      const SnackBar(
-                                                                          content:Text('Operation Failed')));
-                                                            }
-                                                            setState(() {
-                                                              getEmails();
-                                                            });
-                                                          }).onError((error,
-                                                                  stackTrace) {
-                                                            setState(() {
-                                                              isLoading = false;
-                                                            });
-                                                          });
-                                                          // send request to make verify = false
-                                                        },
-                                                  disabledColor:
-                                                      Colors.red.shade50,
-                                                  icon: Icon(
-                                                    Icons.cancel_outlined,
-                                                    color: value? Colors.red :
-                                                    Colors.white.withOpacity(0.3),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
+                                                }else if (result == -1){
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(Util.getsnackbar('Not logged In'));
+                                                }else if (result == 1){
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(Util.getsnackbar('Verified'));
+                                                }
+                                                setState(() {
+                                                  getEmails();
+                                                  isLoading = false;
+                                                });
+                                              });
+                                            },
+                                            disabledColor:
+                                            Colors.green.shade50,
+                                            icon: Icon(
+                                              Icons.check,
+                                              color: !value[1]
+                                                  ? Colors.green
+                                                  : Colors.white
+                                                  .withOpacity(0.3),
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                            const BorderRadius.all(
+                                                Radius.circular(25)),
+                                            color: !value[1]
+                                                ? const Color(0x424242a1)
+                                                : Colors.transparent,
+                                          ),
+                                          width: 40,
+                                          height: 40,
+                                          child: IconButton(
+                                            onPressed: !value[1]
+                                                ? null
+                                                : () {
+                                              setState(() {
+                                                isLoading = true;
+                                              });
+                                              viewModel.unVerifyUser(value[0])
+                                                  .then((result) {
+                                                if (result == 0){
+                                                  viewModel.unVerifyUser(value[0]);
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(Util.getsnackbar('This User does not exists'));
+
+                                                }else if (result == -1){
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(Util.getsnackbar('Not logged In'));
+                                                }else if (result == 1){
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(Util.getsnackbar('Verified'));
+                                                }
+                                                setState(() {
+                                                  getEmails();
+                                                  isLoading = false;
+                                                });
+                                              });
+                                            },
+                                            disabledColor:
+                                            Colors.red.shade50,
+                                            icon: Icon(
+                                              Icons.cancel_outlined,
+                                              color: value[1]
+                                                  ? Colors.red
+                                                  : Colors.white
+                                                  .withOpacity(0.3),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
+                                  ),
+                                ),
                                     true))
                                 .keys
                                 .toList(),

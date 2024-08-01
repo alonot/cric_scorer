@@ -1,3 +1,7 @@
+import 'dart:ui';
+
+import 'package:cric_scorer/models/Player.dart';
+
 import 'exports.dart';
 
 class MatchViewModel {
@@ -18,8 +22,6 @@ class MatchViewModel {
 
     return _viewModel!;
   }
-
-  int get getbaseId => _repository.baseId;
 
   bool isLoggedIn() => _repository.isSignedIn;
 
@@ -48,6 +50,29 @@ class MatchViewModel {
     return result;
   }
 
+  /// Get all the players
+  Future<void> getAllLocalPlayerName() async {
+    var playersAsMap = await _databaseHelper.getAllPlayers();
+    List<String> players = [];
+    for (var ply in playersAsMap){
+      players.add(ply['name']);
+    }
+    _repository.setPlayers(players);
+  }
+
+  Future<List<Player>> getAllPlayers() async {
+    var playersAsMap = await _databaseHelper.getAllPlayers();
+    List<Player> players = [];
+    for (var ply in playersAsMap){
+      players.add(Player.fromMap(ply));
+    }
+    return players;
+  }
+
+  List<String> getPlayers() {
+    return _repository.players;
+  }
+
   /// Get all the matches
   Future<List<TheMatch>> getAllMatches() async {
     var result = await _databaseHelper.getMatchesAsMatch();
@@ -60,8 +85,12 @@ class MatchViewModel {
   }
 
   Future<int> updateMatch(TheMatch match) async {
-    debugPrint("${match.inning}IDini${match.id}");
+    // debugPrint("${match.inning}IDini${match.id}");
     return await _databaseHelper.updateMatch(match);
+  }
+
+  Future<bool> updateLocalPlayersStats(TheMatch match) async {
+    return await _databaseHelper.updateLocalStats(match);
   }
 
   Future<int> insertMatch(TheMatch match) async {
@@ -69,6 +98,23 @@ class MatchViewModel {
     return result;
   }
 
+  /// Returns all the players present in the given arena Id (if this id exists)
+  Future<List<Player>> getOnlinePlayers(int playArenaId) async {
+    List<Player> players = [];
+    final docPlayArena = await FirebaseFirestore.instance.collection('playArena').doc(playArenaId.toString());
+    final snapShot = await docPlayArena.get();
+    if (snapShot.exists){
+      final data = snapShot.data()!['players'];
+      for (String playerId in data){
+        final player = FirebaseFirestore.instance.collection('players').doc(playerId);
+        final playerSnapShot = await player.get();
+        if (playerSnapShot.exists){
+          players.add(Player.fromMap(playerSnapShot.data()!));
+        }
+      }
+    }
+    return players;
+  }
 
 
   /// sets the current Match
@@ -78,16 +124,21 @@ class MatchViewModel {
   }
 
   /// Gets all the online matches
-  Future<List<TheMatch>> getOnlineMatches(int id) async  {
+  Future<List<TheMatch>> getOnlineMatches(int playArenaId) async  {
     List<TheMatch> matches = [];
-    await FirebaseFirestore.instance.collection('matches').get()
-    .then((querySnapshot) {
-      for(var doc in querySnapshot.docs){
-        if (doc.data()['playArena'] == id){
-          matches.add(TheMatch.fromMap(doc.data()));
+    final docPlayArena = await FirebaseFirestore.instance.collection('playArena').doc(playArenaId.toString());
+    final snapShot = await docPlayArena.get();
+    if (snapShot.exists){
+      final data = snapShot.data()!['matches'];
+      for (String match_id in data){
+        final docMatch = await FirebaseFirestore.instance.collection('matches').doc(match_id);
+        final snapShotMatch = await docPlayArena.get();
+        if (snapShotMatch.exists){
+          matches.add(TheMatch.fromMap(snapShotMatch.data()!));
         }
       }
-    });
+    }
+
     return matches;
   }
 
@@ -98,481 +149,511 @@ class MatchViewModel {
   /// base variable tells whether this playArenaId is base id of this user
   /// Each user may keep atmost 2 playArena : One which is created
   /// while regestering (here) and another he can manually add to hi profile.
-  Future<int> uploadUser(String email) async{
-    int maximumId = -9;
-    await FirebaseFirestore.instance.collection('user').get().then(
-        (querySnapshot) {
-          for(var doc in querySnapshot.docs){
-            if(doc.data()['playArena'] > maximumId){
-              maximumId = doc.data()['playArena'];
-            }
-          }
-        },
-        onError: (e) => debugPrint("Error : $e")
-    );
-    var rng = Random();
-    if(maximumId < 0){
-      maximumId = rng.nextInt(1000);
+  Future<int> uploadUser(String email,String uuid) async{
+
+    final docUser = FirebaseFirestore.instance.collection('user').doc(uuid);
+    var snapShot = await docUser.get();
+    if (snapShot.exists){
+      return -1;
     }
+
+    int maximumId = 0;
+    await FirebaseFirestore.instance.collection('playArena').get().then(
+        (querySnapshot) {
+          var playArenaDocs = querySnapshot.docs;
+          for (var element in playArenaDocs) {
+            maximumId = max(maximumId, element.id as int);
+          }
+        }
+    );
     maximumId ++;
-    String id = FirebaseFirestore.instance.collection('user').doc().id;
-    final docUser = FirebaseFirestore.instance.collection('user').doc(id);
+
+    var newPlayArenaId = FirebaseFirestore.instance.collection('playArena').doc(maximumId.toString());
+    newPlayArenaId.set({
+      "allowed_users":[uuid],
+      "matches":[], // holds reference to all the matches in this playArena
+      "players":[] // holds reference to all the players played in this playArena.
+    });
+    final arenaAllowedDoc = newPlayArenaId.collection('allowed').doc(uuid);
+    await arenaAllowedDoc.set({
+      "val":true
+    });
+
+
     await docUser.set({
       "email":email,
-      "playArena":maximumId,
-      "verified":true,
-      "base":true
+      "baseArena":maximumId,
     });
+    // final playUserDoc = await docUser.collection('userPlayArena').doc();
     return maximumId;
 
+  }
+
+  Future<List<int>> getAllArenaIds(String uuid) async {
+    var userDoc = await FirebaseFirestore.instance.collection('user').doc(uuid);
+    var snapshot = await userDoc.get();
+    List<int> playArenas = [];
+    if (snapshot.exists){
+      await userDoc.collection('userPlayArena').get().then(
+              (querySnapshot) {
+                for (var query  in querySnapshot.docs){
+                    playArenas.add(query.data()['uid']);
+                }
+              }
+      );
+    }
+    return playArenas;
   }
 
   /// logs out of the account
   Future logout() async {
     _repository.isSignedIn = false;
-    _repository.baseId = -1;
+    uuid = "";
     await _databaseHelper.removeCurrentUser(currentUser);
   }
 
-  /// This function checks if the given Id exist or not and then
-  /// if exits then add it to the user table with verified = false
-  /// User have to ask the owner of this playArenaId to verify him
-  /// in order to use this playArenaId
-  Future<bool> findnUploadUser(String email,int Arenaid) async{
-    bool found = false;
-    await FirebaseFirestore.instance.collection('user').get().then(
-        (querySnapshot) {
-          for(var doc in querySnapshot.docs){
-            if(doc.data()['playArena'] == Arenaid){
-              if(doc.data()['email'] == email){
-                found = false;
-                break;
+
+  /// Requests for permission
+  /// 0 : arenaId does not exists
+  /// -1 : user not loggedIn
+  /// 1 : successful
+  Future<int> requestPlayArena(int arenaId) async {
+    if (uuid == ""){
+      return -1; // user not loggedIn
+    }
+    final docPlayArena = await FirebaseFirestore.instance.collection('playArena').doc(arenaId.toString());
+    final snapShot = await docPlayArena.get();
+    if (snapShot.exists){
+      final allowed = docPlayArena.collection('allowed').doc(uuid);
+      await allowed.set({
+        "val":false
+      });
+      return 1;
+    }
+    return 0; // id does not exists
+  }
+
+  /// Get All Attached uuids (pending or verified, both)
+  /// // Output :
+  /// key : email
+  /// value : 0 : email
+  ///         1 : verified
+  Future<Map<String,List<dynamic>>> getAttachedAccouts() async{
+    final docUser = await FirebaseFirestore.instance.collection('user').doc(uuid);
+    final userSnapShot = await docUser.get();
+    if (userSnapShot.exists){
+      final baseArena = userSnapShot.data()!['baseArena'];
+      final arenaDoc = FirebaseFirestore.instance.collection('playArena').doc(baseArena.toString());
+      final snapShot = await arenaDoc.get();
+      if (snapShot.exists){
+        Map<String,List<dynamic>> finalList = {};
+        await arenaDoc.collection('allowed').get().then(
+            (querySnapShot) async {
+              for (var query in querySnapShot.docs){
+                final associatedUuid = query.id;
+                final associatedUser = FirebaseFirestore.instance.collection('user').doc(associatedUuid);
+                final associatedUserSnapshot = await associatedUser.get();
+                if (associatedUserSnapshot.exists){
+                  finalList[associatedUserSnapshot.data()!['email']] = [associatedUuid,query.data()['val']];
+                }
               }
-              found = true;
+
             }
-          }
-        },
-      onError: (e) => debugPrint("Error : $e")
-    );
-    if(found) {
-      String id = FirebaseFirestore.instance.collection('user').doc().id;
-      final docUser = FirebaseFirestore.instance.collection('user').doc(id);
-      await docUser.set({
-        "email" : email,
-        "playArena" : Arenaid,
-        "verified": false,
-        "base":false
-      });
-      playArenaIds = await getPlayArenaIds(email);
+        );
+      }
+      return {};
     }
-    return found;
+    return {};
   }
 
-  /// Returns A List<int> which contains the playArenaIds associated with this
-  /// profile
-  Future<Map<int,bool>> getPlayArenaIds(String email) async{
-    Map<int,bool> ids = {};
-    await FirebaseFirestore.instance.collection('user').get().then(
-        (querySnapshot) {
-          for(var doc in querySnapshot.docs){
-            if(doc.data()['email'] == email){
-              ids[doc.data()['playArena']] = (doc.data()['verified']);
-              if (doc.data()['base']){
-                _repository.baseId = doc.data()['playArena'];
-              }
-            }
-          }
-        }
-    );
-    return ids;
+  /// remove playArenaId
+  /// 1 : successfull
+  /// 0: given id does not exists.
+  /// -1: user not exists
+  /// -2 : cannot remove base Id
+  Future<int> removePlayArena(int arenaId) async {
+    final docPlayArena = await FirebaseFirestore.instance.collection('playArena').doc(arenaId.toString());
+    final snapShot = await docPlayArena.get();
+    if (snapShot.exists){
+      final docUser = await FirebaseFirestore.instance.collection('user').doc(uuid);
+      final userSnapShot = await docUser.get();
+      if (userSnapShot.exists){
 
-  }
+        final baseId = docUser.collection('userPlayArena').doc(arenaId.toString());
+        await baseId.delete();
 
-  /// Returns A Map<String,bool> with key as email and verified as value
-  /// This map contains all those emails which have connected to the baseId
-  /// for this account.
-  Future<Map<String,bool>> getAttachedAccounts() async {
-    Map<String,bool> emails = {};
-    await FirebaseFirestore.instance.collection('user').get()
-    .then(
-        (querySnapshot) {
-          for (var doc in querySnapshot.docs){
-            if (doc.data()['playArena'] == _repository.baseId && doc.data()['email'] != currentUser){
-              emails[doc.data()['email']] = doc.data()['verified'];
-            }
-          }
-        }
-    );
-    return emails;
-  }
+        final arenaDoc = docPlayArena.collection('allowed').doc(uuid);
+        await arenaDoc.delete();
 
-  @deprecated  /// To be removed
-  Future<bool> verifyEmail(String email) async {
-    var baseId = _repository.baseId;
-    try {
-      bool found = false;
-      await FirebaseFirestore.instance.collection('user').get()
-          .then((querySnapshot) {
-        for (var doc in querySnapshot.docs) {
-          if (doc.data()['email'] == email &&
-              doc.data()['playArena'] == baseId) {
-            final docUser = FirebaseFirestore.instance.collection('user').doc(
-                doc.id);
-            docUser.update({
-              "verified": true
-            });
-            found =true;
-            return true;
-          }
-        }
-      });
-      return found;
-    }catch (e){
-      debugPrint("Error while verify : $e");
-      return false;
+        return 1;
+      }else{
+        return -1;
+      }
     }
+    return 0;
   }
 
-  @deprecated  /// unverifies this email. To be removed
-  Future<bool> unverifyEmail(String email) async {
-    try {
-      var baseId = _repository.baseId;
-      bool found  = false;
-      await FirebaseFirestore.instance.collection('user').get()
-          .then((querySnapshot) {
-        for (var doc in querySnapshot.docs) {
-          if (doc.data()['email'] == email &&
-              doc.data()['playArena'] == baseId) {
-            final docUser = FirebaseFirestore.instance.collection('user').doc(
-                doc.id);
-            docUser.update({
-              "verified": false
-            });
-            found = true;
-            return true;
-          }
-        }
-      });
-      return found;
-    }catch(e){
-      debugPrint("Error while verify : $e");
-      return false;
+  /// Verifies playArenaId
+  /// 1 : successfull
+  /// 0: given id does not exists.
+  /// -1: user not exists
+  /// -2 :  new User does not exists
+  Future<int> verifyUser(String new_uuid) async {
+    final docUser = await FirebaseFirestore.instance.collection('user').doc(uuid);
+    final userSnapShot = await docUser.get();
+    if (userSnapShot.exists){
+      final baseId = userSnapShot.data()!['baseArena'];
+      final docNewUser = await FirebaseFirestore.instance.collection('user').doc(new_uuid);
+      final newUserSnapShot = await docUser.get();
+      if (!userSnapShot.exists){
+        return -2; // new User does not exists
+      }
+      final docPlayArena = await FirebaseFirestore.instance.collection('playArena').doc(baseId.toString());
+      final snapShot = await docPlayArena.get();
+      if (snapShot.exists){
+
+        final newUserId = docNewUser.collection('userPlayArena').doc(baseId);
+        await newUserId.set({
+          "uid" : uuid
+        });
+
+        final playArenaAllowed = docPlayArena.collection('allowed').doc(new_uuid);
+        await playArenaAllowed.set({
+          "val":true
+        });
+
+        return 1;
+      }
+      return 0; // arena Id does not exists(almost impossible)
     }
+    return -1;
   }
 
-  @deprecated
-  Future<bool> deleteEmailForThisId(String email,int baseId) async {
-    try {
-      var found  =false;
-      await FirebaseFirestore.instance.collection('user').get()
-          .then((querySnapshot) {
-        for (var doc in querySnapshot.docs) {
-          if (doc.data()['email'] == email &&
-              doc.data()['playArena'] == baseId) {
-            final docUser = FirebaseFirestore.instance.collection('user').doc(
-                doc.id);
-            docUser.delete();
-            found = true;
-            return true;
-          }
-        }
-      });
-      return found;
-    }catch (e){
-      debugPrint("Error while verify : $e");
-      return false;
+  /// Unverifies playArenaId
+  /// It is equal to removing the id
+  /// 1 : successfull
+  /// 0: given id does not exists.
+  /// -1: user not exists
+  /// -2 :  new User does not exists
+  Future<int> unVerifyUser(String new_uuid) async {
+    final docUser = await FirebaseFirestore.instance.collection('user').doc(uuid);
+    final userSnapShot = await docUser.get();
+    if (userSnapShot.exists){
+      final baseId = userSnapShot.data()!['baseArena'];
+      final docNewUser = await FirebaseFirestore.instance.collection('user').doc(new_uuid);
+      final newUserSnapShot = await docNewUser.get();
+      if (newUserSnapShot.exists){
+        final userArenaDoc = docNewUser.collection('userPlayArena').doc(baseId.toString());
+        await userArenaDoc.delete();
+      }
+      final docPlayArena = await FirebaseFirestore.instance.collection('playArena').doc(baseId.toString());
+      final snapShot = await docPlayArena.get();
+      if (snapShot.exists){
+        final arenaDoc = docPlayArena.collection('allowed').doc(new_uuid);
+        await arenaDoc.delete();
+        return 1;
+      }
+      return 0; // arena Id does not exists(almost impossible)
+    }
+    return -1;
+  }
+
+
+  Future<Player?> getOnlinePlayer(String name, int playArenaId) async {
+    if (playArenaId == -1){
+      return null;
+    }
+
+    var docPlayer = await FirebaseFirestore.instance.collection('players').doc("${name}_${playArenaId}");
+    var snapShot = await docPlayer.get();
+    if (snapShot.exists){
+      return Player.fromMap(snapShot.data()!);
+    }else{
+      return null;
     }
   }
+
+  /// Upsert a Player
+  Future<bool> updateOnline(Player player,int playArenaId) async {
+    var docPlayer = await FirebaseFirestore.instance.collection('players').doc("${player.name}_${player.ArenaId}");
+    var snapShot = await docPlayer.get();
+    if (!snapShot.exists){
+      var docUser = await FirebaseFirestore.instance.collection('playArena').doc(playArenaId.toString());
+      var snapShot = await docUser.get();
+      if (!snapShot.exists){
+        return false;
+      }else{
+        var data = snapShot.data()!;
+        data['players'].add("${player.name}_${player.ArenaId}");
+        docUser.update(data);
+      }
+    }
+    docPlayer.set(player.toMap());
+    return true;
+  }
+
+  /// updates the stats online
+  Future<bool> updateStats(TheMatch match, int playArenaId) async {
+
+    Map<String, Player> players = {};
+    for (String player_name in match.players.keys){
+      var ply = await getOnlinePlayer(player_name, playArenaId);
+      if (ply == null){
+        players[player_name] = Player(player_name);
+      }else{
+        players[player_name] = ply;
+      }
+    }
+
+    for (var batters in match.batters){
+      for (var batter in batters){
+        _updateBattingStats(batter, players[batter.name]!);
+      }
+    }
+
+    for (var bowlers in match.bowlers){
+      for (var bowler in bowlers){
+        _updateBowlerStats(bowler, players[bowler.name]!);
+      }
+    }
+    bool allSuccessFull = true;
+    for (Player ply in players.values){
+      allSuccessFull &= (await updateOnline(ply,playArenaId));
+    }
+    return allSuccessFull; // for later to add check whether operation was successfull
+
+  }
+
+  void _updateBattingStats(Batter batter, Player ply){
+    if (batter.outBy != "Not Out"){
+      ply.innings ++;
+    }
+    ply.balls += batter.balls;
+    ply.runs += batter.runs;
+    ply.highest = max(ply.highest, batter.runs);
+    if (ply.innings != 0) {
+      ply.Bataverage = ply.runs / ply.innings;
+    }else{
+      ply.Bataverage = ply.runs.toDouble();
+    }
+    ply.strikeRate = (ply.strikeRate * ply.balls);
+    if (batter.runs >= 100){
+      ply.hundreds ++;
+    }else if (batter.runs >=50){
+      ply.fifties ++;
+    }else if (batter.runs >= 30){
+      ply.thirtys ++;
+    }
+  }
+  void _updateBowlerStats(Bowler bowler, Player ply){
+    ply.matches ++;
+    ply.bowlerRuns += bowler.runs;
+    ply.wickets += bowler.wickets;
+    ply.economy = ((ply.economy * (ply.matches - 1)) + bowler.economy) / ply.matches;
+    if (ply.wickets == 0){
+      ply.Bowlaverage = ply.bowlerRuns.toDouble();
+    }else{
+      ply.Bowlaverage = ply.bowlerRuns / ply.wickets;
+    }
+  }
+
 
   /// Uploads the match online on the given playArenaId
-  Future uploadMatch(TheMatch match,int playArenaId) async {
+  Future<bool> uploadMatch(TheMatch match,int playArenaId) async {
+    if (match.uploaded){
+      return false;
+    }
+    // The rules on firebase check first whether this user is allowed for this playArena or not
+    final docUser = await FirebaseFirestore.instance.collection('playArena').doc(playArenaId.toString());
     String id = FirebaseFirestore.instance.collection('matches').doc().id;
+    final userSnapshot = await docUser.get();
+    if (userSnapshot.exists){
+      var data = userSnapshot.data()!;
+      data['matches'].add(id);
+    }else{
+      return false;
+    }
     final docMatch = FirebaseFirestore.instance.collection('matches').doc(id);
 
     var matchMap = match.toMap();
+
     matchMap['playArena'] = playArenaId;
     await docMatch.set(matchMap);
+    match.uploaded = true;
 
-    final batterCol = FirebaseFirestore.instance.collection('batters');
-    final bowlerCol = FirebaseFirestore.instance.collection('bowlers');
+    return await updateStats(match, playArenaId);
 
-    final List<Batter> finalListBatter = [];
-    final List<Bowler> finalListBowler = [];
-
-    // Converting batters to List
-    for (Batter batter in match.batters[0]) {
-      var toAdd = batter;
-      for (Batter b in finalListBatter) {
-        if (b.name == batter.name) {
-          if (b.runs > batter.runs) {
-            toAdd = b;
-          } else {
-            toAdd = batter;
-          }
-          break;
-        }
-      }
-      finalListBatter.add(toAdd);
-    }
-    for (Batter batter in match.batters[1]) {
-      var toAdd = batter;
-      for (Batter b in finalListBatter) {
-        if (b.name == batter.name) {
-          if (b.runs > batter.runs) {
-            toAdd = b;
-          } else {
-            toAdd = batter;
-          }
-          break;
-        }
-      }
-      finalListBatter.add(toAdd);
-    }
-
-    // Converting Bowlers to List
-    for (Bowler bowler in match.bowlers[0]) {
-      var toAdd = bowler;
-      for (Bowler b in finalListBowler) {
-        if (b.name == bowler.name) {
-          if (b.wickets > bowler.wickets) {
-            toAdd = b;
-          } else {
-            toAdd = bowler;
-          }
-          break;
-        }
-      }
-      finalListBowler.add(toAdd);
-    }
-    for (Bowler bowler in match.bowlers[1]) {
-      var toAdd = bowler;
-      for (Bowler b in finalListBowler) {
-        if (b.name == bowler.name) {
-          if (b.wickets > bowler.wickets) {
-            toAdd = b;
-          } else {
-            toAdd = bowler;
-          }
-          break;
-        }
-      }
-      finalListBowler.add(toAdd);
-    }
-
-    // debugPrint("Batters" + finalListBatter.toString());
-    // debugPrint("Bowlers" + finalListBowler.toString());
-
-    // Updating all the batters stats, Before uploading this match
-    for (Batter b in finalListBatter) {
-      // Update the player
-      var docPlayer = batterCol.doc("${b.name}_$playArenaId");
-      var snapShot = await docPlayer.get();
-      Map<String, dynamic> newStats = {};
-      if (snapShot.exists) {
-        var data = snapShot.data()!;
-
-        if (data['I'] != null) {
-          if(b.outBy == "Not Out") {
-            newStats['I'] = data['I'];
-          }else{
-            newStats['I'] = (data['I'] + 1);
-          }
-          newStats['R'] = (data['R'] + b.runs);
-          newStats['B'] = (data['B'] + b.balls);
-          if(newStats['I'] == 0){
-            newStats['Avg'] = newStats['R']!.toDouble();
-          }else {
-            newStats['Avg'] = (newStats['R']! / newStats['I']!);
-          }
-
-          if (data['H'] < b.runs) {
-            newStats['H'] = b.runs;
-          } else {
-            newStats['H'] = data['H'];
-          }
-
-          newStats['SkR'] =newStats['R'] / newStats['B'];
-
-          newStats['thirties'] =
-              data['thirties'] + b.runs >= 30 && b.runs < 50 ? 1 : 0;
-          newStats['fifties'] =
-              data['fifties'] + b.runs >= 50 && b.runs < 99 ? 1 : 0;
-          newStats['hundreds'] = data['hundreds'] + b.runs >= 100 ? 1 : 0;
-
-          await docPlayer.update(newStats);
-        }
-      } else {
-        if (b.outBy == "Not Out") {
-          newStats['I'] = 0;
-        }else{
-          newStats['I'] = 1;
-        }
-        newStats['R'] = b.runs;
-        newStats['B'] = b.balls;
-        newStats['Avg'] = b.runs.toDouble();
-        newStats['H'] = b.runs;
-        if (b.balls == 0){
-          newStats['SkR'] = 0.0;
-        }else {
-          newStats['SkR'] = b.strikeRate;
-        }
-        newStats['thirties'] = b.runs >= 30 && b.runs < 50 ? 1 : 0;
-        newStats['fifties'] = b.runs >= 50 && b.runs < 99 ? 1 : 0;
-        newStats['hundreds'] = b.runs >= 100 ? 1 : 0;
-
-        final player = batterCol.doc("${b.name}_$playArenaId");
-        await player.set(newStats);
-      }
-    }
-
-    // Updating all the bowlers stats, Before uploading this match
-    for (Bowler b in finalListBowler) {
-      final docPlayer = bowlerCol.doc("${b.name}_$playArenaId");
-      // Update the player
-      Map<String, dynamic> newStats = {};
-      var snapShot = await docPlayer.get();
-      if (snapShot.exists) {
-        var data = snapShot.data();
-        if (data?['M'] != null) {
-          newStats['M'] = (data!['M'] + 1);
-          newStats['W'] = (data['W'] + b.wickets);
-          newStats['R'] = data['R'] + b.runs;
-
-          if (newStats['W'] != 0) {
-            newStats['Avg'] = (newStats['R']! / newStats['W']!);
-          } else {
-            newStats['Avg'] = newStats['R']!.toDouble();
-          }
-
-          newStats['Eco'] =
-              ((data['Eco'] * data['M']) + b.economy) / newStats['M'];
-        await docPlayer.update(newStats);
-        }
-      } else {
-        newStats['M'] = 1;
-        newStats['W'] = b.wickets;
-        newStats['R'] = b.runs;
-
-        if (b.wickets != 0) {
-          newStats['Avg'] = b.runs / b.wickets;
-        } else {
-          newStats['Avg'] = b.runs.toDouble();
-        }
-
-        newStats['Eco'] = b.economy;
-        final player = bowlerCol.doc("${b.name}_$playArenaId");
-        await player.set(newStats);
-      }
-    }
-  }
-
-  /// gets all the batters associated with all the playarenas of this account
-  Future<List<BatterStat>> getBatters(bool forceFetch, {int? id}) async {
-    if (_repository.batters == null ||
-        _repository.batters?.length != _repository.battersCount || forceFetch) {
-      List<BatterStat> batters = [];
-      var playArenaId = id?.toString();
-      await FirebaseFirestore.instance.collection("batters").get().then(
-            (querySnapshot) {
-          for (var docSnapshot in querySnapshot.docs) {
-            var splittedName = docSnapshot.id.split('_');
-            // debugPrint(splittedName.toString()  +":${playArenaId}");
-            if ( playArenaId  != null && splittedName[1] == playArenaId) {
-              batters.add(
-                  BatterStat.fromMap(docSnapshot.data(), splittedName[0]));
-            }else if (playArenaId == null){
-              try {
-                if (playArenaIds.keys.contains(int.parse(splittedName[1]))) {
-                  batters.add(
-                      BatterStat.fromMap(docSnapshot.data(), splittedName[0]));
-                }
-              }catch(e){}
-            }
-          }
-        },
-        onError: (e) => debugPrint("Error completing: $e"),
-      );
-      batters.sort((BatterStat b1, BatterStat b2) {
-        if (b1.runs == b2.runs) {
-          if (b1.highest < b2.highest) { // If highest is less then swap
-            return 1; // 1 means swap
-          } else {
-            return -1;
-          }
-        } else if (b1.runs < b2.runs) {
-          return 1;
-        } else {
-          return -1;
-        }
-      });
-      _repository.battersCount = batters.length;
-      _repository.batters = batters;
-      return batters;
-    } else {
-      return _repository.batters!;
-    }
-  }
-
-  /// gets all the bowlers associated with all the playarenas of this account
-  Future<List<BowlerStat>> getBowlers(bool forceFetch, {int? id}) async {
-    List<BowlerStat> bowlers = [];
-    var playArenaId = id?.toString();
-    if (_repository.bowlers != null ||
-        _repository.bowlers?.length != _repository.bowlersCount || forceFetch) {
-      await FirebaseFirestore.instance.collection("bowlers").get().then(
-            (querySnapshot) {
-          // debugPrint("Successfully completed ${querySnapshot.docs.length}");
-          for (var docSnapshot in querySnapshot.docs) {
-            var splittedName = docSnapshot.id.split('_');
-            if ( playArenaId != null && splittedName[1] == playArenaId) {
-              bowlers.add(BowlerStat.fromMap(
-                  docSnapshot.data(), docSnapshot.id.split('_')[0]));
-            }else if (playArenaId == null){
-              try {
-                if (playArenaIds.keys.contains(int.parse(splittedName[1]))) {
-                  bowlers.add(BowlerStat.fromMap(
-                      docSnapshot.data(), splittedName[0]));
-                }
-              }catch(e){}
-            }
-          }
-        },
-        onError: (e) => debugPrint("Error completing: $e"),
-      );
-      bowlers.sort(
-              (BowlerStat b1,BowlerStat b2){
-            if (b1.wickets==b2.wickets){
-              if(b1.economy== b2.economy){
-                if(b1.average == b2.average){
-                  if (b1.matches > b2.matches){ // person with more matches is good.
-                    return 1;
-                  }else{
-                    return -1;
-                  }
-                }else if(b1.average > b2.average){  // less avg is good
-                  return 1; // 1 means swap
-                }else{
-                  return -1;
-                }
-              }else if (b1.economy > b2.economy){ // // less eco is good
-                return 1;
-              }else{
-                return -1;
-              }
-            }else if (b1.wickets < b2.wickets){ // // more wickets is good
-              return 1; // swap if wickets are less
-            }else{
-              return -1;
-            }
-          }
-      );
-
-      _repository.bowlers = bowlers;
-      _repository.bowlersCount = bowlers.length;
-    } else {
-      bowlers = _repository.bowlers!;
-    }
-    return bowlers;
+    // final batterCol = FirebaseFirestore.instance.collection('batters');
+    // final bowlerCol = FirebaseFirestore.instance.collection('bowlers');
+    //
+    // final List<Batter> finalListBatter = [];
+    // final List<Bowler> finalListBowler = [];
+    //
+    // // Converting batters to List
+    // for (Batter batter in match.batters[0]) {
+    //   var toAdd = batter;
+    //   for (Batter b in finalListBatter) {
+    //     if (b.name == batter.name) {
+    //       if (b.runs > batter.runs) {
+    //         toAdd = b;
+    //       } else {
+    //         toAdd = batter;
+    //       }
+    //       break;
+    //     }
+    //   }
+    //   finalListBatter.add(toAdd);
+    // }
+    // for (Batter batter in match.batters[1]) {
+    //   var toAdd = batter;
+    //   for (Batter b in finalListBatter) {
+    //     if (b.name == batter.name) {
+    //       if (b.runs > batter.runs) {
+    //         toAdd = b;
+    //       } else {
+    //         toAdd = batter;
+    //       }
+    //       break;
+    //     }
+    //   }
+    //   finalListBatter.add(toAdd);
+    // }
+    //
+    // // Converting Bowlers to List
+    // for (Bowler bowler in match.bowlers[0]) {
+    //   var toAdd = bowler;
+    //   for (Bowler b in finalListBowler) {
+    //     if (b.name == bowler.name) {
+    //       if (b.wickets > bowler.wickets) {
+    //         toAdd = b;
+    //       } else {
+    //         toAdd = bowler;
+    //       }
+    //       break;
+    //     }
+    //   }
+    //   finalListBowler.add(toAdd);
+    // }
+    // for (Bowler bowler in match.bowlers[1]) {
+    //   var toAdd = bowler;
+    //   for (Bowler b in finalListBowler) {
+    //     if (b.name == bowler.name) {
+    //       if (b.wickets > bowler.wickets) {
+    //         toAdd = b;
+    //       } else {
+    //         toAdd = bowler;
+    //       }
+    //       break;
+    //     }
+    //   }
+    //   finalListBowler.add(toAdd);
+    // }
+    //
+    // // debugPrint("Batters" + finalListBatter.toString());
+    // // debugPrint("Bowlers" + finalListBowler.toString());
+    //
+    // // Updating all the batters stats, Before uploading this match
+    // for (Batter b in finalListBatter) {
+    //   // Update the player
+    //   var docPlayer = batterCol.doc("${b.name}_$playArenaId");
+    //   var snapShot = await docPlayer.get();
+    //   Map<String, dynamic> newStats = {};
+    //   if (snapShot.exists) {
+    //     var data = snapShot.data()!;
+    //
+    //     if (data['I'] != null) {
+    //       if(b.outBy == "Not Out") {
+    //         newStats['I'] = data['I'];
+    //       }else{
+    //         newStats['I'] = (data['I'] + 1);
+    //       }
+    //       newStats['R'] = (data['R'] + b.runs);
+    //       newStats['B'] = (data['B'] + b.balls);
+    //       if(newStats['I'] == 0){
+    //         newStats['Avg'] = newStats['R']!.toDouble();
+    //       }else {
+    //         newStats['Avg'] = (newStats['R']! / newStats['I']!);
+    //       }
+    //
+    //       if (data['H'] < b.runs) {
+    //         newStats['H'] = b.runs;
+    //       } else {
+    //         newStats['H'] = data['H'];
+    //       }
+    //
+    //       newStats['SkR'] =newStats['R'] / newStats['B'];
+    //
+    //       newStats['thirties'] =
+    //           data['thirties'] + b.runs >= 30 && b.runs < 50 ? 1 : 0;
+    //       newStats['fifties'] =
+    //           data['fifties'] + b.runs >= 50 && b.runs < 99 ? 1 : 0;
+    //       newStats['hundreds'] = data['hundreds'] + b.runs >= 100 ? 1 : 0;
+    //
+    //       await docPlayer.update(newStats);
+    //     }
+    //   } else {
+    //     if (b.outBy == "Not Out") {
+    //       newStats['I'] = 0;
+    //     }else{
+    //       newStats['I'] = 1;
+    //     }
+    //     newStats['R'] = b.runs;
+    //     newStats['B'] = b.balls;
+    //     newStats['Avg'] = b.runs.toDouble();
+    //     newStats['H'] = b.runs;
+    //     if (b.balls == 0){
+    //       newStats['SkR'] = 0.0;
+    //     }else {
+    //       newStats['SkR'] = b.strikeRate;
+    //     }
+    //     newStats['thirties'] = b.runs >= 30 && b.runs < 50 ? 1 : 0;
+    //     newStats['fifties'] = b.runs >= 50 && b.runs < 99 ? 1 : 0;
+    //     newStats['hundreds'] = b.runs >= 100 ? 1 : 0;
+    //
+    //     final player = batterCol.doc("${b.name}_$playArenaId");
+    //     await player.set(newStats);
+    //   }
+    // }
+    //
+    // // Updating all the bowlers stats, Before uploading this match
+    // for (Bowler b in finalListBowler) {
+    //   final docPlayer = bowlerCol.doc("${b.name}_$playArenaId");
+    //   // Update the player
+    //   Map<String, dynamic> newStats = {};
+    //   var snapShot = await docPlayer.get();
+    //   if (snapShot.exists) {
+    //     var data = snapShot.data();
+    //     if (data?['M'] != null) {
+    //       newStats['M'] = (data!['M'] + 1);
+    //       newStats['W'] = (data['W'] + b.wickets);
+    //       newStats['R'] = data['R'] + b.runs;
+    //
+    //       if (newStats['W'] != 0) {
+    //         newStats['Avg'] = (newStats['R']! / newStats['W']!);
+    //       } else {
+    //         newStats['Avg'] = newStats['R']!.toDouble();
+    //       }
+    //
+    //       newStats['Eco'] =
+    //           ((data['Eco'] * data['M']) + b.economy) / newStats['M'];
+    //     await docPlayer.update(newStats);
+    //     }
+    //   } else {
+    //     newStats['M'] = 1;
+    //     newStats['W'] = b.wickets;
+    //     newStats['R'] = b.runs;
+    //
+    //     if (b.wickets != 0) {
+    //       newStats['Avg'] = b.runs / b.wickets;
+    //     } else {
+    //       newStats['Avg'] = b.runs.toDouble();
+    //     }
+    //
+    //     newStats['Eco'] = b.economy;
+    //     final player = bowlerCol.doc("${b.name}_$playArenaId");
+    //     await player.set(newStats);
+    //   }
+    // }
   }
 
 }

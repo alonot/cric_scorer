@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:cric_scorer/models/Player.dart';
 import 'package:flutter/material.dart';
 
 class Util {
@@ -5,6 +8,7 @@ class Util {
         backgroundColor: Colors.grey,
         content: Text(text),
       );
+  static TextStyle text_style = TextStyle(fontFamily: 'Roboto',color: Colors.white);
 
   static String createMatchRoute = "New Match";
   static String homePage = "home Match";
@@ -33,12 +37,26 @@ const String SWAP = "swap";
 const String END = "end";
 const String CHECKOVER = "over";
 const String GETBOWLER = "bowler";
+const String CHECKWINNER = "winner";
 const String CHECKINNING = "inning";
 const String SAVE = "save";
 const String WICKET = "wicket";
+const int SCORE_MIN = -99999;
+
+int getTotal(List<int> points){
+  int maxABat = max(points[0],points[1]);
+  int maxABowl = max(points[2],points[3]);
+  int total = 0;
+  total += (maxABat == SCORE_MIN) ? 0 : maxABat;
+  total += (maxABowl == SCORE_MIN) ? 0 : maxABowl;
+  return total;
+}
 
 String currentUser="";
-Map<int,bool> playArenaIds = {};
+String uuid = "";
+List<int> playArenaIds = [];
+
+List<String> players= [];
 
 List<String> logos = [
   "RCB","CSK","RR","MI","PK","DC","LSG","GT","SRH","KKR"

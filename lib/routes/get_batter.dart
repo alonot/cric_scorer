@@ -16,49 +16,57 @@ class _GetBatterState extends State<GetBatter> {
   String wickets = "0";
   String overs = "0.0";
 
-  void setBatterName(String val) => batterName = val;
+  void setBatterName(String val) => batterName = val.trim();
 
   void onTap(Batter b) async {
     final match = viewModel.getCurrentMatch();
     if (match != null) {
-      match.Overs[match.currentTeam].last.bowls.add(["Retired Out","0"]);
-      match.currentBatters[match.currentBatterIndex].outBy = 'Retired Out';
-      match.wicketOrder[match.currentTeam].add([
-        match.currentBatters[match.currentBatterIndex],
-        "$overs\t\t $score-$wickets"
-      ]);
-      match.currentBatters.removeAt(match.currentBatterIndex);
       b.outBy = 'Not Out';
-      match.currentBatters.add(b);
-      match.currentBatters = List.of(match.currentBatters.reversed);
+      match.batters[match.currentTeam].remove(b);
+      match.batters[match.currentTeam].add(b);
+      updateMatch(match,b);
       Navigator.pop(context);
     }
   }
 
-  void onPlayBtnClick() async {
+  void updateMatch(TheMatch match, Batter b) async {
+    match.Overs[match.currentTeam].last.bowls.add(["0","Retired Out"]);
+    match.currentBatters[match.currentBatterIndex].outBy = 'Retired Out';
+    match.wicketOrder[match.currentTeam].add([
+      match.currentBatters[match.currentBatterIndex],
+      "$overs\t\t $score-$wickets"
+    ]);
+    match.currentBatters[match.currentBatterIndex] = b;
+  }
+
+  void onPlayBtnClick()  {
+    if (batterName.isEmpty){
+      ScaffoldMessenger.of(context)
+          .showSnackBar(Util.getsnackbar('Please select a Batter or write a new name'));
+      return;
+    }
     // debugPrint("Lets Play!!");
     TheMatch? match = viewModel.getCurrentMatch();
     if (match != null) {
+      bool valid = true;
       // To check for same name
       for (Batter b in match.batters[match.currentTeam]) {
         if (b.name == batterName) {
+          valid = false;
           ScaffoldMessenger.of(context)
               .showSnackBar(Util.getsnackbar('Duplicate Batter'));
+          return;
         }
       }
-      match.Overs[match.currentTeam].last.bowls.add(["Retired Out","0"]);
-      match.currentBatters[match.currentBatterIndex].outBy = 'Retired Out';
-      match.wicketOrder[match.currentTeam].add([
-        match.currentBatters[match.currentBatterIndex],
-        "$overs\t\t $score-$wickets"
-      ]);
-      match.currentBatters.removeAt(match.currentBatterIndex);
-      // debugPrint(match.currentBatters[0].toString());
-      match.addBatter(Batter(batterName));
-      match.currentBatters = List.of(match.currentBatters.reversed);
-      Util.batterNames.remove(batterName);
-
-      Navigator.pop(context);
+      if (valid) {
+        if (!players.any((element) => element == batterName)) {
+          players.add(batterName);
+        }
+        var b = Batter(batterName);
+        updateMatch(match, b);
+        match.addBatter(b);
+        Navigator.pop(context);
+      }
     }
   }
 
@@ -132,7 +140,7 @@ class _GetBatterState extends State<GetBatter> {
                       ),
                     ),
                   ),
-                  CardBatter(retiredBatters, false, onTap, false),
+                  CardBatter(retiredBatters, false, onTap, false, null),
                   Padding(
                     padding: const EdgeInsets.only(top: 20, bottom: 20),
                     child: Center(

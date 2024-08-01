@@ -45,7 +45,12 @@ class _GetBowlerState extends State<GetBowler> {
       if (b.name == bowlerName) {
         ScaffoldMessenger.of(context)
             .showSnackBar(Util.getsnackbar('Duplicate Bowler'));
+        return;
       }
+    }
+
+    if (!players.any((element) => element == bowlerName)){
+      players.add(bowlerName);
     }
 
     Bowler bowler = Bowler(bowlerName); // Adding the new Bowler
@@ -56,14 +61,16 @@ class _GetBowlerState extends State<GetBowler> {
         bowler.name,
         [match!.currentBatters[match!.currentBatterIndex].name],
       ));
+
     });
     Navigator.pop(context);
   }
 
-  void setBowlerName(String val) => bowlerName = val;
+  void setBowlerName(String val) => bowlerName = val.trim();
 
   @override
   Widget build(BuildContext context) {
+    debugPrint(LOGSTRING + Util.bowlerNames.toString());
     match = viewModel.getCurrentMatch();
     if (match != null) {
       setState(() {

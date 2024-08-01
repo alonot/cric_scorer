@@ -1,4 +1,6 @@
 
+import 'package:cric_scorer/components/PlayerCard.dart';
+
 import '../exports.dart';
 
 class Scoreboard extends StatefulWidget {
@@ -10,6 +12,7 @@ class Scoreboard extends StatefulWidget {
 
 class _ScoreboardState extends State<Scoreboard> {
   final MatchViewModel viewModel =  MatchViewModel();
+  List<MapEntry<String,List<int>>> player_entries = [];
   List<Batter> battersTeam1 = [];
   List<Batter> battersTeam2 = [];
   List<Bowler> bowlersTeam1 = [];
@@ -30,6 +33,18 @@ class _ScoreboardState extends State<Scoreboard> {
   @override
   Widget build(BuildContext context) {
     TheMatch match = viewModel.getCurrentMatch()!;
+    player_entries = match.players.entries.toList();
+    player_entries.sort((MapEntry<String,List<int>> a ,MapEntry<String,List<int>> b) {
+      int totalA = getTotal(a.value);
+      int totalB = getTotal(b.value);
+      if (totalA > totalB){
+        return -1;
+      }else if (totalA == totalB){
+        return 0;
+      }else {
+        return 1;
+      }
+    });
     battersTeam1 = match.batters[0];
     battersTeam2 = match.batters[1];
     bowlersTeam1 = match.bowlers[0];
@@ -76,7 +91,8 @@ class _ScoreboardState extends State<Scoreboard> {
       ),
       child: Scaffold(
         backgroundColor: const Color(0x89000000),
-        body: Padding(
+        body: Container(
+          height: MediaQuery.of(context).size.height,
           padding: const EdgeInsets.only(top:50 ),
           child: ListView(
             children: [
@@ -95,7 +111,11 @@ class _ScoreboardState extends State<Scoreboard> {
                     ),
                     onTap: (){
                       setState(() {
-                        isSelected = 0;
+                        if (isSelected == 0){
+                          isSelected = -1;
+                        }else {
+                          isSelected = 0;
+                        }
                       });
                     },
                     tileColor: isSelected == 1 ? Colors.transparent :Colors.grey,
@@ -103,7 +123,7 @@ class _ScoreboardState extends State<Scoreboard> {
                     title: Text(score1,style: const TextStyle(color: Colors.white),),
                     trailing: Text(overs1,style: const TextStyle(color: Colors.white),),
                   ),
-                  isSelected == 0 ? CardBatter(battersTeam1, false, (p0) => null,true):const SizedBox(width: 0 ,height: 0,),
+                  isSelected == 0 ? CardBatter(battersTeam1, false, (p0) => null,true,null):const SizedBox(width: 0 ,height: 0,),
                   isSelected == 0 ? CardBowler(bowlersTeam1):const SizedBox(width: 0 ,height: 0,),
                   isSelected == 0 ? FallOfWickets(wicketOrder1, (wicketOrder1.length)):const SizedBox(width: 0 ,height: 0,),
                 ],
@@ -118,7 +138,11 @@ class _ScoreboardState extends State<Scoreboard> {
                     ),
                     onTap: (){
                       setState(() {
-                        isSelected = 1;
+                        if (isSelected == 1){
+                          isSelected = -1;
+                        }else {
+                          isSelected = 1;
+                        }
                       });
                     },
                     tileColor: isSelected == 0 ? Colors.transparent :Colors.grey,
@@ -127,12 +151,21 @@ class _ScoreboardState extends State<Scoreboard> {
                     trailing: Text(overs2,style: const TextStyle(color: Colors.white),),
                   ),
                   isSelected == 1 ?
-                  CardBatter(battersTeam2, false, (p0) => null,true):const SizedBox(width: 0,height: 0,),
+                  CardBatter(battersTeam2, false, (p0) => null,true,null):const SizedBox(width: 0,height: 0,),
                   isSelected == 1 ? CardBowler(bowlersTeam2):const SizedBox(width: 0,height: 0,),
                   isSelected == 1 ? FallOfWickets(wicketOrder2, wicketOrder2.length):const SizedBox(width: 0 ,height: 0,),
                 ],
               ),
-            ],
+              Container(
+                height: 50,
+                child: Center(child: Text('Match Points')),
+              )
+            ] + player_entries.map((e) {
+              var innings = e.value;
+              int total_points = getTotal(e.value);
+              return PlayerCard(e.key, e.value,
+                  total_points);
+            }).toList(),
           ),
         ),
       ),

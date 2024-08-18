@@ -4,11 +4,13 @@ class CardBatterStat extends StatelessWidget {
   final Border _border =
       const Border(bottom: BorderSide(color: Color(0x41eceff1), width: 1));
   final List<Player> batters;
+  final Function  onTap;
 
-  const CardBatterStat(this.batters, {super.key});
+  const CardBatterStat(this.batters, this.onTap, {super.key});
 
   @override
   Widget build(BuildContext context) {
+    batters.removeWhere((element) => element.runs == 0 && element.innings == 0);
     return Card(
       elevation: 20,
       color: Colors.transparent,
@@ -31,7 +33,7 @@ class CardBatterStat extends StatelessWidget {
                         decoration: BoxDecoration(
                           border: _border,
                         ),
-                        children: const <Widget>[
+                        children:  const <Widget>[
                           Padding(
                             padding: EdgeInsets.fromLTRB(10, 10.0, 0, 10.0),
                             child: Text(
@@ -87,17 +89,20 @@ class CardBatterStat extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                batter.name,
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontFamily: 'Roboto',
-                                    fontSize: 13),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Text(
+                                  batter.name,
+                                  style: const TextStyle(
+                                      color: Colors.white,
+                                      fontFamily: 'Roboto',
+                                      fontSize: 13),
+                                ),
                               ),
                             ],
                           ),
                         ),
-                        onTap: () {},
+                        onTap: () {onTap(batter);},
                       ),
                       GestureDetector(
                         child: Padding(
@@ -107,7 +112,7 @@ class CardBatterStat extends StatelessWidget {
                             style: const TextStyle(color: Colors.white),
                           ),
                         ),
-                        onTap: () {},
+                        onTap: () {onTap(batter);},
                       ),
                       GestureDetector(
                         child: Padding(
@@ -117,7 +122,7 @@ class CardBatterStat extends StatelessWidget {
                             style: const TextStyle(color: Colors.white),
                           ),
                         ),
-                        onTap: () {},
+                        onTap: () {onTap(batter);},
                       ),
                       GestureDetector(
                         child: Padding(
@@ -127,7 +132,7 @@ class CardBatterStat extends StatelessWidget {
                             style: const TextStyle(color: Colors.white),
                           ),
                         ),
-                        onTap: () {},
+                        onTap: () {onTap(batter);},
                       ),
                       GestureDetector(
                         child: Padding(
@@ -137,7 +142,7 @@ class CardBatterStat extends StatelessWidget {
                             style: const TextStyle(color: Colors.white),
                           ),
                         ),
-                        onTap: () {},
+                        onTap: () {onTap(batter);},
                       ),
                       GestureDetector(
                         child: Padding(
@@ -148,7 +153,7 @@ class CardBatterStat extends StatelessWidget {
                                 color: Colors.white, fontSize: 10),
                           ),
                         ),
-                        onTap: () {},
+                        onTap: () {onTap(batter);},
                       ),
                     ]);
                   }

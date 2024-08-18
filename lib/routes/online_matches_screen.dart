@@ -98,59 +98,72 @@ class _OnlineMatchesScreenState extends State<OnlineMatchesScreen> {
       backgroundColor: const Color(0x89000000),
       body: Stack(
         children: !isLoading
-            ? [
-                Row(
-                  children: [
-                    TextField(
-                      controller: editingController,
-                      keyboardType: TextInputType.number,
-                    ),
-                    ElevatedButton(
-                        onPressed: () {
-                          if (editingController.text.trim().isNotEmpty) {
-                            try {
-                              selectedId =
-                                  int.parse(editingController.text.trim());
-                              fetchMatches();
-                            } on FormatException {}
-                          }
-                        },
-                        child: Text('Find'))
-                  ],
-                ),
-                (selectedId != -1)
-                    ? ListView.builder(
-                        itemCount: count,
-                        itemBuilder: (context, index) {
-                          if (matches![index].currentBowler == null) {
-                            viewModel.deleteMatch(matches![index].id!);
-                            count -= 1;
-                            matches?.removeAt(index);
-                          } else {
-                            return Padding(
-                              padding: const EdgeInsets.all(5),
-                              child: SizedBox(
-                                height: 180,
-                                key: const Key("cont"),
-                                child: CardMatch(
-                                  onTap,
-                                  uploadMatchDummy,
-                                  setLoading,
-                                  matches![index],
-                                ),
-                              ),
-                            );
-                          }
-                          return null;
-                        },
+            ? <Widget>[
+              SingleChildScrollView(
+                child : Column(
+                 children:
+
+                <Widget>[
+                  Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: editingController,
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: ElevatedButton(
+                              onPressed: () {
+                                if (editingController.text.trim().isNotEmpty) {
+                                  try {
+                                    selectedId =
+                                        int.parse(editingController.text.trim());
+                                    fetchMatches();
+                                  } on FormatException {}
+                                }
+                              },
+                              child: Text('Find')),
+                        ),
                       )
-                    : const Center(
+                    ],
+                  ),
+                ),] +
+            ((selectedId != -1) ?
+                  List.generate(count, (index) {
+                    if (matches![index].currentBowler == null) {
+                      viewModel.deleteMatch(matches![index].id!);
+                      count -= 1;
+                      matches?.removeAt(index);
+                      return SizedBox();
+                    } else {
+                      return Padding(
+                        padding: const EdgeInsets.all(5),
+                        child: Container(
+                          height: 180,
+                          key: const Key("cont"),
+                          child: CardMatch(
+                            onTap,
+                            uploadMatchDummy,
+                            setLoading,
+                            matches![index],
+                          ),
+                        ),
+                      );
+                    }
+                  })
+                    : [const Center(
                         child: Text(
                         "Not Logged In",
                         style: TextStyle(color: Colors.white),
                       ))
               ]
-            : <Widget>[
+            )
+                )) ] : <Widget>[
                   const SizedBox(
                     width: 0,
                     height: 0,

@@ -19,6 +19,7 @@ class Player {
 
   Player(this.name,
       {this.innings = 0,
+        this.ArenaId = 0,
       this.runs = 0,
         this.balls = 0,
       this.highest = 0,

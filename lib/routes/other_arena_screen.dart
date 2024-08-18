@@ -71,6 +71,9 @@ class _OtherArenaState extends State<OtherArena> {
                               } else if (result == 1) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(content: Text('Request Sent')));
+                              } else if (result == -2){
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('This Areana Id is Already your base arena id')));
                               }
                             },
                             child: const Text("Submit")),

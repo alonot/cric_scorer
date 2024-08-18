@@ -45,7 +45,7 @@ class CardMatch extends StatelessWidget {
       uploaded = match.uploaded;
 
       needrun = (match.score[(match.currentTeam + 1) % 2] -
-              match.score[match.currentTeam])
+              match.score[match.currentTeam] + 1)
           .toString();
       int overs = (match.over_count[match.currentTeam] * 10).toInt();
       int totalBalls = (match.totalOvers * 10).toInt();
@@ -82,7 +82,7 @@ class CardMatch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return match != null ? Card(
-        elevation: 20,
+        elevation: 10,
         color: Colors.transparent,
         child: Center(
             child: Column(
@@ -104,7 +104,7 @@ class CardMatch extends StatelessWidget {
                                       final pdf = pw.Document();
                                       ScorePdfGenerator().generatePdf(pdf);
                                       String path = await savePdf(pdf);
-                                      debugPrint("File Path ${path}");
+                                      // debugPrint("File Path ${path}");
                                       await Share.shareXFiles([XFile(path)],
                                           text: "ScoreCard",
                                           subject: "Sharing ScoreCard");

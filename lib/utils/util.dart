@@ -57,6 +57,7 @@ String uuid = "";
 List<int> playArenaIds = [];
 
 List<String> players= [];
+Map<int,List<Player>> onlinePlayers = {};
 
 List<String> logos = [
   "RCB","CSK","RR","MI","PK","DC","LSG","GT","SRH","KKR"

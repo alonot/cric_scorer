@@ -109,7 +109,7 @@ class _MatchPageState extends State<MatchPage> {
     }
   }
 
-  Future<void> checkInning() async {
+  Future<bool> checkInning() async {
     /**
         Checks if Inning is finished or not
         If Finished, then opens Winner Page or Openers Page
@@ -131,18 +131,20 @@ class _MatchPageState extends State<MatchPage> {
               .then((value) => setState(() {}));
         }
       }
-      checkWinner();
+      return await checkWinner();
+
     }
+    return false;
   }
 
-  void checkWinner() async {
+  Future<bool> checkWinner() async {
     // Winner Calculation
     ////////////////////////////////////
 
     var cur = match!.currentTeam;
     var won = true;
     if (match!.inning == 1) {
-      return;
+      return false;
     }
     if (match!.score[cur] >= match!.score[(cur + 1) % 2] + 1) { 
       // batting team won
@@ -163,9 +165,11 @@ class _MatchPageState extends State<MatchPage> {
     ////////////////////////////////////////
     match!.hasWon = won;
     if (won) {
+      await viewModel.updateMatch(match!);
       viewModel.updateLocalPlayersStats(match!); // updates all the players
-      Navigator.popAndPushNamed(context, Util.winnerPageRoute);
+       await Navigator.popAndPushNamed(context, Util.winnerPageRoute);
     }
+    return won;
   }
 
   Future<void> getBowler() async {
@@ -209,16 +213,19 @@ class _MatchPageState extends State<MatchPage> {
     });
     while (workQueue.isNotEmpty) {
       var currWork = workQueue.removeFirst();
-      debugPrint(LOGSTRING + " : " + currWork[0]);
+      debugPrint(LOGSTRING + " :> " + currWork[0]);
       switch (currWork[0]) {
         case CHECKOVER:
           await checkOver(currWork[1]);
           break;
         case CHECKWINNER:
-          checkWinner();
+          await checkWinner();
           break;
         case CHECKINNING:
-          await checkInning();
+          if (await checkInning()){
+            workQueue.clear();
+            break;
+          }
           break;
         case GETBOWLER:
           await getBowler();

@@ -37,12 +37,68 @@ class _StatsState extends State<Stats> {
       batters = await viewModel.getAllPlayers();
       bowlers = batters;
     }else{
+      if (onlinePlayers.containsKey(selectedId)){
+        batters = onlinePlayers[selectedId]!;
+      }else{
       // get them online
       batters = await viewModel.getOnlinePlayers(selectedId);
+        onlinePlayers[selectedId] = batters;
+      }
       bowlers = batters;
     }
     setState(() {
       isLoading = false;
+    });
+  }
+
+  Future<void> showBatter(Player batter) async {
+    await showDialog(context: context, builder: (context){
+      return AlertDialog(
+        contentPadding: EdgeInsets.zero,
+        backgroundColor: Colors.black12,
+        content: Container(
+          height: 150,
+          padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
+          color: Colors.black87,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                  child: Text(batter.name,style: TextStyle(color: Colors.red,fontSize: 20,fontWeight: FontWeight.bold),)),
+              Expanded(child: Table(
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                children: [
+                  TableRow(
+                    children: [
+                      Text('Thirties',style: Util.text_style,),
+                      Text(batter.thirtys.toString(),style: Util.text_style, textAlign: TextAlign.end,)
+                    ]
+                  ),
+                  TableRow(
+                    children: [
+                      Text('Fifties',style: Util.text_style,),
+                      Text(batter.fifties.toString(),style: Util.text_style, textAlign: TextAlign.end)
+                    ]
+                  ),
+                  TableRow(
+                    children: [
+                      Text('Hundreds',style: Util.text_style,),
+                      Text(batter.hundreds.toString(),style: Util.text_style, textAlign: TextAlign.end)
+                    ]
+                  ),
+                  TableRow(
+                    children: [
+                      Text('Balls',style: Util.text_style,),
+                      Text(batter.balls.toString(),style: Util.text_style, textAlign: TextAlign.end)
+                    ]
+                  ),
+                ],
+              )),
+            ],
+          ),
+        ),
+      );
     });
   }
 
@@ -100,23 +156,34 @@ class _StatsState extends State<Stats> {
                   ),
                   titleAlignment: ListTileTitleAlignment.center,
                 ),
-                Row(
-                  children: [
-                    TextField(
-                      controller: editingController,
-                      keyboardType: TextInputType.number,
-                    ),
-                    ElevatedButton(onPressed: () {
-                       if (editingController.text.trim().isNotEmpty){
-                         try{
-                           selectedId = int.parse(editingController.text.trim());
-                           getPlayers();
-                         }on FormatException{
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: editingController,
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ElevatedButton(onPressed: () {
+                             if (editingController.text.trim().isNotEmpty){
+                               try{
+                                 associatedIds.add(int.parse(editingController.text.trim()));
+                                 selectedId = associatedIds.last;
+                                 getPlayers();
+                               }on FormatException{
 
-                         }
-                       }
-                    }, child: Text('Find'))
-                  ],
+                               }
+                             }
+                          }, child: Text('Find')),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
                 Column(
                   children: [
@@ -137,7 +204,7 @@ class _StatsState extends State<Stats> {
                       ),
                     ),
                     batterBowler == 0
-                        ? CardBatterStat(batters)
+                        ? CardBatterStat(batters,showBatter)
                         : const SizedBox(
                       width: 0,
                       height: 0,

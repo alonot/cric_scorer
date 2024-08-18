@@ -1,3 +1,5 @@
+import 'package:flutter/rendering.dart';
+
 import '../exports.dart';
 
 class MainPage extends StatefulWidget {
@@ -28,6 +30,9 @@ class _MainPageState extends State<MainPage> {
 
     return Scaffold(
         appBar: AppBar(
+          title: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+              child: Text(currentUser,style: TextStyle(color: Colors.white60),)),
           backgroundColor: const Color(0x89000000),
           actions: [
             IconButton(
@@ -239,22 +244,22 @@ class _MainPageState extends State<MainPage> {
                     ),)
                             .toList() +
                         [
-                          TextField(
-                            decoration: const InputDecoration(
-                                hintText: 'Password',
-                                hintStyle: TextStyle(color: Colors.white)),
-                            keyboardType: TextInputType.visiblePassword,
-                            obscureText: true,
-                            controller: passwordCntrl,
-                          ),
+                          // TextField(
+                          //   decoration: const InputDecoration(
+                          //       hintText: 'Password',
+                          //       hintStyle: TextStyle(color: Colors.white)),
+                          //   keyboardType: TextInputType.visiblePassword,
+                          //   obscureText: true,
+                          //   controller: passwordCntrl,
+                          // ),
                         ]),
               ),
               actions: [
                 TextButton(
                     onPressed: () {
-                      if (passwordCntrl.text != "pass") {
-                        groupValue = null;
-                      }
+                      // if (passwordCntrl.text != "pass") {
+                      //   groupValue = null;
+                      // }
                       return Navigator.pop(context, groupValue);
                     },
                     child: const Text(
@@ -274,16 +279,21 @@ class _MainPageState extends State<MainPage> {
           setState(() {
             isLoading = true;
           });
-          await viewModel.uploadMatch(match, value);
+          await viewModel.uploadMatch(match, value)
+          .then((result) {
+            if (result == -1){
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(Util.getsnackbar('PlayArena Id not present'));
+            }else if (result == -2){
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(Util.getsnackbar('not allowed. Please request for permission in the play Arena tab.'));
+            }else if (result == 1){
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(Util.getsnackbar('Match uploaded successfully'));
+            }
+          }
+          );
           await viewModel.updateMatch(match);
-          // Util.batterNames =
-          //     (await viewModel.getBatters(true))
-          //         .map((e) => e.name)
-          //         .toList();
-          // Util.bowlerNames =
-          //     (await viewModel.getBowlers(true))
-          //         .map((e) => e.name)
-          //         .toList();
           setState(() {
             updateMatches();
             isLoading = false;

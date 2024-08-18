@@ -370,7 +370,7 @@ class _GetWicketState extends State<GetWicket> {
                               return;
                             }
                             int pos = handleWicket();
-                            if (pos != -1) {
+                            if (pos != -1 && batterName.isNotEmpty) {
                               Batter? batter;
                               batter = Batter(batterName.trim());
 

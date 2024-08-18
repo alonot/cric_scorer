@@ -9,6 +9,7 @@ class CardBowlerStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bowlers.removeWhere((e) => e.matches == 0);
     return Card(
       elevation: 20,
       color: Colors.transparent,

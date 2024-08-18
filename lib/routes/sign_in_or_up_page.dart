@@ -62,9 +62,9 @@ class _SignInPageState extends State<SignInPage> {
           await _auth.createUserWithEmailAndPassword(
               email: emailController.text, password: passwordController.text);
       if (userCredential.user != null) {
-          await viewModel.uploadUser(
+          int result = await viewModel.uploadUser(
               emailController.text, userCredential.user!.uid);
-        if (playArenaIds[0] == -1){
+        if (result == -1){
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('User already exists')));
           playArenaIds = [];
           return;
@@ -85,8 +85,9 @@ class _SignInPageState extends State<SignInPage> {
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("${e.code}")));
-    } catch (e) {
-      // debugPrint("e::$e");
+    }
+    catch (e) {
+      debugPrint("e::$e");
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to took you in.')));
     }
@@ -119,11 +120,12 @@ class _SignInPageState extends State<SignInPage> {
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("${e.code}")));
-    } catch (e) {
-      debugPrint("e::$e");
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to took you in.')));
     }
+    // catch (e) {
+    //   debugPrint("e::$e");
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(content: Text('Failed to took you in.')));
+    // }
     setState(() {
       isLoading = false;
     });
